@@ -225,5 +225,32 @@ namespace Raymagic
             this.vertices[this.vertexCount++] = new VertexPositionColor(new Vector3(q4, 0f), color);
             this.shapeCount++;
         }
+
+        public void DrawText(string text, SpriteFont font, Vector2 position, Color color, int anchorX = 1, int anchorY = 1)
+        {
+            //anchor = 0 left, 1 center, 2 right
+            
+            Vector2 stringSize = font.MeasureString(text); // center alligned texts
+            Vector2 allignedPosition = new Vector2();
+
+            if(anchorX == 0)
+                allignedPosition.X = position.X;
+            else if(anchorX == 1)
+                allignedPosition.X = position.X - stringSize.X/2;
+            else
+                allignedPosition.X = position.X - stringSize.X;
+
+            if(anchorY == 0)
+                allignedPosition.Y = position.Y;
+            else if(anchorY == 1)
+                allignedPosition.Y = position.Y - stringSize.Y/2;
+            else
+                allignedPosition.Y = position.Y - stringSize.Y;
+            
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(font, text, allignedPosition, color);
+            spriteBatch.End();
+        }
     }
 }

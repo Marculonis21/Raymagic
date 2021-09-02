@@ -18,9 +18,9 @@ namespace Raymagic
         private Player()
         {
             position = map.GetPlayerStart();
-            rotation = new Vector2(0,90);
+            rotation = new Vector2(75,90);
 
-            xFOV = 100;
+            xFOV = 90;
             yFOV = 90;
         }
 
