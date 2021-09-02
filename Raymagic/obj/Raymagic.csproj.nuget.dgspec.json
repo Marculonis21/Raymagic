@@ -1,0 +1,85 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic.csproj": {}
+  },
+  "projects": {
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic.csproj",
+        "projectName": "Raymagic",
+        "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic.csproj",
+        "packagesPath": "/home/marculonis/.nuget/packages/",
+        "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/marculonis/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "MonoGame.Content.Builder.Task": {
+              "target": "Package",
+              "version": "[3.8.0.1641, )"
+            },
+            "MonoGame.Framework.DesktopGL": {
+              "target": "Package",
+              "version": "[3.8.0.1641, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+              "version": "[3.1.18, 3.1.18]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.linux-x64",
+              "version": "[3.1.18, 3.1.18]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "linux-x64": {
+          "#import": []
+        }
+      }
+    }
+  }
+}
