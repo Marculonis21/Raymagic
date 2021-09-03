@@ -13,6 +13,8 @@ namespace Raymagic
         public float xFOV;
         public float yFOV;
 
+        float speed;
+
         Map map = Map.instance;
 
         private Player()
@@ -25,5 +27,15 @@ namespace Raymagic
         }
 
         public static readonly Player instance = new Player();
+
+        public void Rotate(Vector2 rot)
+        {
+            rot /= 3;
+            this.rotation += rot;
+            if(this.rotation.Y < 50)
+                this.rotation.Y = 50;
+            if(this.rotation.Y > 140)
+                this.rotation.Y = 140;
+        }
     }
 }

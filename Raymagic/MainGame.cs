@@ -30,7 +30,7 @@ namespace Raymagic
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -54,23 +54,33 @@ namespace Raymagic
             shapes = new Shapes(this, new Point(0, winHeight), _spriteBatch);
         }
 
+        int lastMouseX = 200;
+        int lastMouseY = 200;
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up)) // F1 - change draw style
+            if (Keyboard.GetState().IsKeyDown(Keys.W)) 
                 player.position += new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Down)) // F1 - change draw style
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) 
                 player.position -= new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left)) // F1 - change draw style
-                player.rotation.X -= 1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+                player.position -= new Vector3((float)Math.Cos((90+player.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+player.rotation.X)*Math.PI/180)*2,0);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Right)) // F1 - change draw style
-                player.rotation.X += 1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.D)) 
+                player.position += new Vector3((float)Math.Cos((90+player.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+player.rotation.X)*Math.PI/180)*2,0);
 
+            MouseState mouse = Mouse.GetState(this.Window);
+            if(lastMouseX != -1)
+                player.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
+
+            Mouse.SetPosition(200,200);
+            lastMouseX = 200;
+            lastMouseY = 200;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -102,8 +112,6 @@ namespace Raymagic
                                             Color.Blue);
                     }
                     shapes.End();
-                    /* shapes.DrawText($"{azimuth}:{inclination}", font, new Vector2(x*detailSize + 25,y*detailSize + 25), Color.Red, 1,1); */
-                    /* shapes.DrawText($"{length}", font, new Vector2(x*detailSize + 25,y*detailSize + 37), Color.Red, 1,1); */
                 }
             watch.Stop();
             shapes.DrawText($"{watch.ElapsedMilliseconds}", font, new Vector2(10,10), Color.Red, 0,0);
@@ -126,10 +134,11 @@ namespace Raymagic
             
             Vector3 testPos;
             Vector3 rayVector = new Vector3((float)x,(float)y,(float)z);
-            for (int r = 10; r < length; r+=5)
+
+            for (int r = 0; r < length; r+=5)
             {
                 testPos = playerPos + rayVector*r;
-                if(map.Collide(testPos, out Color colColor))
+                if(map.CheckPointBox(testPos, out Color colColor))
                 {
                     length = r;
                     color = colColor;
