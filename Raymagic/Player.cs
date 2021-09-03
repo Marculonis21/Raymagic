@@ -22,8 +22,8 @@ namespace Raymagic
             position = map.GetPlayerStart();
             rotation = new Vector2(75,90);
 
-            xFOV = 90;
-            yFOV = 90;
+            xFOV = 70;
+            yFOV = 75;
         }
 
         public static readonly Player instance = new Player();
@@ -34,8 +34,8 @@ namespace Raymagic
             this.rotation += rot;
             if(this.rotation.Y < 50)
                 this.rotation.Y = 50;
-            if(this.rotation.Y > 140)
-                this.rotation.Y = 140;
+            if(this.rotation.Y > 135)
+                this.rotation.Y = 135;
         }
     }
 }

@@ -55,6 +55,21 @@ namespace Raymagic
                     case 'G':
                         color = Color.Green;
                         return true;
+                    case 'B':
+                        color = Color.Blue;
+                        return true;
+                    case 'Y':
+                        color = Color.Yellow;
+                        return true;
+                    case 'M':
+                        color = Color.Magenta;
+                        return true;
+                    case 'L':
+                        color = Color.Lime;
+                        return true;
+                    case 'O':
+                        color = Color.Orange;
+                        return true;
                 }
                 return true;
             }

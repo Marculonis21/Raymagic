@@ -25,7 +25,7 @@ namespace Raymagic
                                                     "WWWWWWWWW",
                                                     "WWGGWGWGG",
                                                     "WWG     G",
-                                                    "WWG  W  G",
+                                                    "WWG  Y  G",
                                                     "WWG     G",
                                                     "WWGGGGGGG"},
                                                    {"WWWWWWWWW",
@@ -33,16 +33,16 @@ namespace Raymagic
                                                     "W       W",
                                                     "W   W W W",
                                                     "W       W",
-                                                    "W    W  W",
+                                                    "W    O  W",
                                                     "W       W",
                                                     "WWWWWWWWW"},
-                                                   {"WWWWWWWWW",
-                                                    "WWWWWWWWW",
-                                                    "WWWWWWWWW",
-                                                    "WWWWWWWWW",
-                                                    "WWW     W",
-                                                    "WWW  W  W",
-                                                    "WWW     W",
+                                                   {"WRWWWWWWW",
+                                                    "WRWWWWWWW",
+                                                    "WRWWWWWWW",
+                                                    "WRWWWWWWW",
+                                                    "WRW     W",
+                                                    "WRW  L  W",
+                                                    "WRW     W",
                                                     "WWWWWWWWW"},
                                                    {"RRRRRRRRR",
                                                     "RRRRRRRRR",
@@ -55,6 +55,7 @@ namespace Raymagic
                                     new Vector3(2,2,2));
 
             maps.Add("basic", m);
+
         }
 
         public static readonly MapLayout instance = new MapLayout();
