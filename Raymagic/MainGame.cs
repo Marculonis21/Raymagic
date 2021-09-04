@@ -121,9 +121,9 @@ namespace Raymagic
                 {
                         shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), 
                                             detailSize,detailSize, 
-                                            new Color(colors[x,y].R*75/(lengths[x,y]*lengths[x,y]),
-                                                      colors[x,y].G*75/(lengths[x,y]*lengths[x,y]),
-                                                      colors[x,y].B*75/(lengths[x,y]*lengths[x,y])));
+                                            new Color(colors[x,y].R*50/(lengths[x,y]*lengths[x,y]),
+                                                      colors[x,y].G*50/(lengths[x,y]*lengths[x,y]),
+                                                      colors[x,y].B*50/(lengths[x,y]*lengths[x,y])));
                 }
             shapes.End();
             watch.Stop();
@@ -196,7 +196,7 @@ namespace Raymagic
             float b1 = sdf_box(p, boxPos, boxSize);
             float b2 = sdf_box(p, boxPos2, boxSize2);
 
-            return(Math.Min(b1,1/2*b2));
+            return(Math.Max(b1,-b2));
         }
 
         Vector3 boxPos = new Vector3(550,550,250);
