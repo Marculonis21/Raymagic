@@ -7,13 +7,7 @@ namespace Raymagic
 {
     public class MapData
     {
-        public string[,] map;
-        public Vector3 playerSpawn; //use ints pls
-
-        public MapData(string[,] map, Vector3 playerSpawn)
-        {
-            this.map = map;
-            this.playerSpawn = playerSpawn;
-        }
+        public List<IObject> mapObjects = new List<IObject>();
+        public Vector3 playerSpawn;
     }
 }

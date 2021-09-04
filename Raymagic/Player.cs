@@ -13,7 +13,7 @@ namespace Raymagic
         public float xFOV;
         public float yFOV;
 
-        float speed;
+        public int cursorSize = 8;
 
         Map map = Map.instance;
 
