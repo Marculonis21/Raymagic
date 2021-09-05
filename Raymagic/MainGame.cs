@@ -23,6 +23,7 @@ namespace Raymagic
 
         Map map;
         Player player;
+        int zoom = 450;
         SpriteFont font;
 
         Stopwatch watch;
@@ -45,24 +46,6 @@ namespace Raymagic
             map = Map.instance;
             map.SetMap("basic", this);
             player = Player.instance;
-
-            /* objectList.Add(new Box(new Vector3(350,350,250), */
-            /*                        new Vector3(100,100,300), */
-            /*                        Color.Red)); */
-
-            /* Box b2 = new Box(new Vector3(175,150,250), */
-            /*                  new Vector3(50,50,200), */
-            /*                  Color.Yellow); */
-
-            /* b2.bDiffList.Add(new Sphere(new Vector3(220,150,250), */
-            /*                             50, */
-            /*                             Color.Black)); */
-            /* objectList.Add(b2); */
-
-            /* objectList.Add(new Box(new Vector3(500,500,250), */
-            /*                        new Vector3(200,20,100), */
-            /*                        Color.Green)); */
-
 
             base.Initialize();
         }
@@ -95,6 +78,11 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(Keys.D)) 
                 player.position += new Vector3((float)Math.Cos((90+player.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+player.rotation.X)*Math.PI/180)*2,0);
 
+            if (Keyboard.GetState().IsKeyDown(Keys.PageUp)) 
+                zoom+=10;
+            if (Keyboard.GetState().IsKeyDown(Keys.PageDown)) 
+                zoom-=10;
+
             MouseState mouse = Mouse.GetState(this.Window);
             if(lastMouseX != -1)
                 player.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
@@ -107,27 +95,55 @@ namespace Raymagic
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            Console.Clear();
             watch = new Stopwatch();
 
             watch.Start();
             Color[,] colors = new Color[winWidth/detailSize,winHeight/detailSize];
             float[,] lengths = new float[winWidth/detailSize,winHeight/detailSize];
 
+            // Get player look dir vector
+            double R_inclination = player.rotation.Y*Math.PI/180f;
+            double R_azimuth = player.rotation.X*Math.PI/180f;
+            double _x = Math.Cos(R_azimuth)*Math.Sin(R_inclination); 
+            double _y = Math.Sin(R_azimuth)*Math.Sin(R_inclination); 
+            double _z = Math.Cos(R_inclination);
+            Vector3 playerLookDir = new Vector3((float)_x,(float)_y,(float)_z);
+            playerLookDir.Normalize();
+
+            // Get one of player look dir perpendicular vectors (UP)
+            double R_inclinPerpen = (player.rotation.Y+90)*Math.PI/180f;
+            double R_azimPerpen = (player.rotation.X)*Math.PI/180f;
+            _x = Math.Cos(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
+            _y = Math.Sin(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
+            _z = Math.Cos(R_inclinPerpen);
+            Vector3 playerLookPerpenUP = new Vector3((float)_x,(float)_y,(float)_z);
+
+            // Cross product look dir with perpen to get normal of a plane ->
+            // side perpen to the view dir
+            Vector3 playerLookPerpenSIDE = Vector3.Cross(playerLookDir, playerLookPerpenUP);
+
+            playerLookPerpenUP.Normalize();
+            playerLookPerpenSIDE.Normalize();
+
+            // Parallel RAYMARCHING!!!
             Parallel.For(0, winHeight/detailSize, y => 
             {
-            Parallel.For(0, winWidth/detailSize, x =>
+            Parallel.For(0, winWidth /detailSize, x => 
             {
-                    float azimuth     = player.rotation.X + (-player.xFOV/2 + (player.xFOV/(winWidth/detailSize)*(x+1)));
-                    float inclination = player.rotation.Y + (-player.yFOV/2 + (player.yFOV/(winHeight/detailSize)*(y+1)));
+                // get ray dir from camera through view plane (detailSize) "rectangles"
+                int _x = x - (winWidth /detailSize)/2;
+                int _y = y - (winHeight/detailSize)/2;
 
-                    float length = 0;
-                    Color color;
+                Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*_x*detailSize + playerLookPerpenUP*_y*detailSize) - player.position;
+                /* float azimuth     = player.rotation.X + (-player.xFOV/2 + (player.xFOV/(winWidth/detailSize)*(x+1))); */
+                /* float inclination = player.rotation.Y + (-player.yFOV/2 + (player.yFOV/(winHeight/detailSize)*(y+1))); */
 
-                    if(RayMarch(player.position, inclination, azimuth, out length, out color))
-                    {
-                        colors[x,y] = color;
-                        lengths[x,y] = length;
-                    }
+                if(RayMarch(player.position, rayDir, out float length, out Color color))
+                {
+                    colors[x,y] = color;
+                    lengths[x,y] = length;
+                }
             });
             });
 
@@ -154,13 +170,13 @@ namespace Raymagic
                 }
             shapes.End();
             watch.Stop();
+
             shapes.DrawText($"{watch.ElapsedMilliseconds}", font, new Vector2(10,10), Color.Red, 0,0);
 
             base.Draw(gameTime);
         }
 
-
-        bool RayMarch(Vector3 position, float inclination, float azimuth, out float length, out Color color)
+        bool OLDRayMarch(Vector3 position, float inclination, float azimuth, out float length, out Color color)
         {
             color = Color.Blue;
             length = 2000;
@@ -210,6 +226,52 @@ namespace Raymagic
                 }
 
                 testPos += rayVector*bestDst;
+            }
+            return false;
+        }
+
+        bool RayMarch(Vector3 position, Vector3 dir, out float length, out Color color)
+        {
+            color = Color.Blue;
+            length = 2000;
+
+            dir.Normalize();
+
+            Vector3 testPos = position;
+            float test;
+
+            const int maxSteps = 60;
+            for (int iter = 0; iter < maxSteps; iter++)
+            {
+                float bestDst = length;
+                Color bestColor = color;
+                foreach(IObject obj in objectList)
+                {
+                    test = obj.SDF(testPos);
+                    if(test < bestDst)
+                    {
+                        bestDst = test;
+                        bestColor = obj.GetColor();
+                    }
+                }
+
+                if(bestDst < 0)
+                {
+                    color = Color.Pink;
+                    length = 0;
+                    return true;
+                }
+                else
+                {
+                    if(bestDst<1)
+                    {
+                        length = (position - testPos).Length();
+                        color = bestColor;
+                        return true;
+                    }
+                }
+
+                testPos += dir*bestDst;
             }
             return false;
         }

@@ -112,7 +112,7 @@ namespace Raymagic
 
             m.mapObjects.Add(tunnel2);
 
-            m.playerSpawn = new Vector3(1,1,1);
+            m.playerSpawn = new Vector3(2,2,1);
 
             maps.Add("basic", m);
         }

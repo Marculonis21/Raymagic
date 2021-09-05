@@ -10,9 +10,6 @@ namespace Raymagic
         public Vector3 position;
         public Vector2 rotation;
 
-        public float xFOV;
-        public float yFOV;
-
         public int cursorSize = 8;
 
         Map map = Map.instance;
@@ -21,9 +18,6 @@ namespace Raymagic
         {
             position = map.GetPlayerStart();
             rotation = new Vector2(75,90);
-
-            xFOV = 70;
-            yFOV = 75;
         }
 
         public static readonly Player instance = new Player();
@@ -32,10 +26,10 @@ namespace Raymagic
         {
             rot /= 3;
             this.rotation += rot;
-            if(this.rotation.Y < 50)
-                this.rotation.Y = 50;
-            if(this.rotation.Y > 135)
-                this.rotation.Y = 135;
+            if(this.rotation.Y < 40)
+                this.rotation.Y = 40;
+            if(this.rotation.Y > 140)
+                this.rotation.Y = 140;
         }
     }
 }
