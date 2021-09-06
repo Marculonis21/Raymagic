@@ -24,7 +24,7 @@ namespace Raymagic
 
         public Vector3 SDF_normal(Vector3 testPos)
         {
-            const float EPS = 0.0001f;
+            const float EPS = 0.01f;
             Vector3 p = testPos;
             Vector3 pX = new Vector3(p.X + EPS, p.Y, p.Z);
             Vector3 mX = new Vector3(p.X - EPS, p.Y, p.Z);

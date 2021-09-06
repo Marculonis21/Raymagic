@@ -117,7 +117,15 @@ namespace Raymagic
                                         Color.Black));
             data.mapObjects.Add(platform);
 
-            data.playerSpawn = new Vector3(2,2,2);
+            Light light = new Light(new Vector3(600,550,200),
+                                    10000);
+            data.mapLights.Add(light);
+
+            Light light2 = new Light(new Vector3(250,200,350),
+                                     10000);
+            data.mapLights.Add(light2);
+
+            data.playerSpawn = new Vector3(5,5,1);
 
             Map.instance.AddMap("basic", data);
         }

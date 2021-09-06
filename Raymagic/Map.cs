@@ -29,6 +29,7 @@ namespace Raymagic
         {
             data = maps[id];
             game.objectList = data.mapObjects;
+            game.lightList = data.mapLights;
         }
 
         public Vector3 GetPlayerStart()

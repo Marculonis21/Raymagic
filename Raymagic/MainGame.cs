@@ -29,6 +29,7 @@ namespace Raymagic
         Stopwatch watch;
 
         public List<IObject> objectList = new List<IObject>();
+        public List<Light> lightList = new List<Light>();
 
         public MainGame()
         {
@@ -200,9 +201,9 @@ namespace Raymagic
                 {
                     shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), 
                                          detailSize,detailSize, 
-                                         new Color(colors[x,y].R*30/(lengths[x,y]*lengths[x,y]),
-                                                   colors[x,y].G*30/(lengths[x,y]*lengths[x,y]),
-                                                   colors[x,y].B*30/(lengths[x,y]*lengths[x,y])));
+                                         new Color(colors[x,y].R,
+                                                   colors[x,y].G,
+                                                   colors[x,y].B));
                 }
 
             for(int y = -player.cursorSize; y < player.cursorSize; y++)
@@ -240,6 +241,7 @@ namespace Raymagic
             {
                 float bestDst = length;
                 Color bestColor = color;
+                IObject bestObj = null;
                 foreach(IObject obj in objectList)
                 {
                     test = obj.SDF(testPos);
@@ -247,19 +249,79 @@ namespace Raymagic
                     {
                         bestDst = test;
                         bestColor = obj.GetColor();
+                        bestObj = obj;
                     }
                 }
 
-                if(bestDst < 1)
+                if(bestDst < 0.5f)
                 {
                     length = (position - testPos).Length();
-                    color = bestColor;
+
+                    Vector3 startPos;
+                    float lightIntensity = 0;
+                    foreach(Light light in lightList)
+                    {
+                        startPos = testPos+bestObj.SDF_normal(testPos)*5;
+
+                        lightIntensity += LightRayMarch(startPos, light);
+                    }
+
+                    color = new Color((int)(bestColor.R*lightIntensity),
+                                      (int)(bestColor.G*lightIntensity),
+                                      (int)(bestColor.B*lightIntensity));
+
                     return true;
                 }
 
                 testPos += dir*bestDst;
             }
             return false;
+        }
+
+        public float LightRayMarch(Vector3 position, Light light)
+        {
+            Vector3 dir = (light.position - position);
+            dir.Normalize();
+
+            Vector3 testPos = position;
+            float test;
+
+            float length = 0.1f;
+
+            const int maxSteps = 60;
+            const float maxOffset = 10;
+            for (int iter = 0; iter < maxSteps; iter++)
+            {
+                float bestDst = 9999;
+                test = light.SDF(testPos);
+                if(test < bestDst)
+                {
+                    bestDst = test;
+                }
+
+                foreach(IObject obj in objectList)
+                {
+                    test = obj.SDF(testPos);
+                    if(test < bestDst)
+                    {
+                        bestDst = test;
+                    }
+                }
+
+                length+=bestDst;
+                testPos += dir*bestDst;
+                if((light.position - testPos).Length() < maxOffset)
+                {
+                    length = (position - light.position).Length();
+                    return light.intensity/(length*length);
+                }
+
+                if(bestDst < 0.01f)
+                {
+                    return 0;
+                }
+            }
+            return 0;
         }
 
         public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out IObject hitObj)

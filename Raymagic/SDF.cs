@@ -39,6 +39,11 @@ namespace Raymagic
             return (center - test).Length() - size;
         }
 
+        public static float Point(Vector3 test, Vector3 center)
+        {
+            return (center - test).Length();
+        }
+
         public static float BooleanDifference(float ORIG, float DIFF)
         {
             return Math.Max(ORIG, -DIFF);
