@@ -12,48 +12,6 @@ namespace Raymagic
 
         private MapLayout()
         {
-            /* MapData m = new MapData(new string[,] {{"GGGGGGGGG", */
-            /*                                         "GGGGGGGGG", */ 
-            /*                                         "GGGGGGGGG", */
-            /*                                         "GGGGGGGGG", */
-            /*                                         "GGGGGGGGG", */
-            /*                                         "GGGGGGGGG", */
-            /*                                         "GGGGGGGGG", */
-            /*                                         "GGGGGGGGG"}, */
-            /*                                        {"WWWWWWWWW", */
-            /*                                         "WWWWWWWWW", */
-            /*                                         "WWWWWWWWW", */
-            /*                                         "WWGGWGWGG", */
-            /*                                         "WWG     G", */
-            /*                                         "WWG  Y  G", */
-            /*                                         "WWG     G", */
-            /*                                         "WWGGGGGGG"}, */
-            /*                                        {"WWWWWWWWW", */
-            /*                                         "W       W", */
-            /*                                         "W       W", */
-            /*                                         "W   W W W", */
-            /*                                         "W       W", */
-            /*                                         "W    O  W", */
-            /*                                         "W       W", */
-            /*                                         "WWWWWWWWW"}, */
-            /*                                        {"WRWWWWWWW", */
-            /*                                         "WRWWWWWWW", */
-            /*                                         "WRWWWWWWW", */
-            /*                                         "WRWWWWWWW", */
-            /*                                         "WRW     W", */
-            /*                                         "WRW  L  W", */
-            /*                                         "WRW     W", */
-            /*                                         "WWWWWWWWW"}, */
-            /*                                        {"RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR", */
-            /*                                         "RRRRRRRRR"}}, */
-            /*                         new Vector3(2,2,2)); */
-
             MapData m = new MapData();
 
             Box area = new Box(new Vector3(400,400,250),
@@ -72,14 +30,14 @@ namespace Raymagic
             
             m.mapObjects.Add(area);
 
-            Box pillar = new Box(new Vector3(400,400,250),
-                                 new Vector3(10, 10, 500),
+            Box pillar = new Box(new Vector3(300,300,250),
+                                 new Vector3(30, 30, 500),
                                  Color.Red);
 
             m.mapObjects.Add(pillar);
 
             Box dip = new Box(new Vector3(550,550,-50),
-                              new Vector3(300,300,220),
+                              new Vector3(300,300,201),
                               Color.Blue);
 
             dip.booleanOp.Add("difference");
@@ -95,7 +53,7 @@ namespace Raymagic
 
             tunnel.booleanOp.Add("difference");
             tunnel.booleanObj.Add(new Box(new Vector3(550,400,50),
-                                          new Vector3(30,140,200),
+                                          new Vector3(40,140,200),
                                           Color.Black));
 
 
@@ -112,7 +70,28 @@ namespace Raymagic
 
             m.mapObjects.Add(tunnel2);
 
-            m.playerSpawn = new Vector3(2,2,1);
+            Box platform = new Box(new Vector3(200,200,50),
+                                   new Vector3(20,100,25),
+                                   Color.Orange);
+            Box platform2 = new Box(new Vector3(220,200,50),
+                                    new Vector3(20,100,50),
+                                    Color.Orange);
+            Box platform3 = new Box(new Vector3(240,200,50),
+                                    new Vector3(20,100,75),
+                                    Color.Orange);
+            Box platform4 = new Box(new Vector3(260,200,50),
+                                    new Vector3(20,100,100),
+                                    Color.Orange);
+            Box platform5 = new Box(new Vector3(280,200,50),
+                                    new Vector3(20,100,125),
+                                    Color.Orange);
+
+            m.mapObjects.Add(platform);
+            m.mapObjects.Add(platform2);
+            m.mapObjects.Add(platform3);
+            m.mapObjects.Add(platform4);
+            m.mapObjects.Add(platform5);
+            m.playerSpawn = new Vector3(2,2,2);
 
             maps.Add("basic", m);
         }
