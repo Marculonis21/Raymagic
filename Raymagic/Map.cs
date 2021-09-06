@@ -1,27 +1,33 @@
-using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Raymagic
 {
     public class Map
     {
         //SINGLETON
+        Dictionary<string, MapData> maps = new Dictionary<string, MapData>();
         MapData data;
-        public string[,] map;
-
-        MapLayout layout = MapLayout.instance;
-
-        int blockSize = 100;
 
         private Map()
-        {}
+        {
+        }
 
         public static readonly Map instance = new Map();
 
+        public void AddMap(string id, MapData data)
+        {
+            maps.Add(id, data);
+        }
+
+        public void LoadMaps()
+        {
+            new Basic();
+        }
+
         public void SetMap(string id, MainGame game)
         {
-            data = layout.maps[id];
+            data = maps[id];
             game.objectList = data.mapObjects;
         }
 

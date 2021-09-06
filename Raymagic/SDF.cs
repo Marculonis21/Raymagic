@@ -1,9 +1,15 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Raymagic
 {
+    public enum BooleanOP
+    {
+        DIFFERENCE,
+        INTERSECT,
+        UNION
+    }
+
     public class SDFs
     {
         public static float Box(Vector3 test, Vector3 center, Vector3 size)

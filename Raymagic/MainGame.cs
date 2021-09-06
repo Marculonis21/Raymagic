@@ -19,7 +19,7 @@ namespace Raymagic
 
         int winWidth = 1200;
         int winHeight = 900;
-        int detailSize = 8; 
+        int detailSize = 10; 
 
         Map map;
         Player player;
@@ -44,6 +44,7 @@ namespace Raymagic
             _graphics.ApplyChanges();
 
             map = Map.instance;
+            map.LoadMaps();
             map.SetMap("basic", this);
             player = Player.instance;
 
@@ -67,6 +68,47 @@ namespace Raymagic
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) 
+            {
+                detailSize = 1;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) 
+            {
+                detailSize = 2;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) 
+            {
+                detailSize = 3;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) 
+            {
+                detailSize = 4;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) 
+            {
+                detailSize = 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) 
+            {
+                detailSize = 6;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) 
+            {
+                detailSize = 7;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) 
+            {
+                detailSize = 8;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) 
+            {
+                detailSize = 9;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D0)) 
+            {
+                detailSize = 10;
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W)) 
                 player.position += new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
@@ -158,9 +200,9 @@ namespace Raymagic
                 {
                     shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), 
                                          detailSize,detailSize, 
-                                         new Color(colors[x,y].R*55/(lengths[x,y]*lengths[x,y]),
-                                                   colors[x,y].G*55/(lengths[x,y]*lengths[x,y]),
-                                                   colors[x,y].B*55/(lengths[x,y]*lengths[x,y])));
+                                         new Color(colors[x,y].R*30/(lengths[x,y]*lengths[x,y]),
+                                                   colors[x,y].G*30/(lengths[x,y]*lengths[x,y]),
+                                                   colors[x,y].B*30/(lengths[x,y]*lengths[x,y])));
                 }
 
             for(int y = -player.cursorSize; y < player.cursorSize; y++)
@@ -177,6 +219,7 @@ namespace Raymagic
             watch.Stop();
 
             Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
+            Informer.instance.AddInfo("details", $"details: {detailSize}");
 
             Informer.instance.ShowInfo(new Vector2(10,10), this.font, Color.Red);
             base.Draw(gameTime);
@@ -192,7 +235,7 @@ namespace Raymagic
             Vector3 testPos = position;
             float test;
 
-            const int maxSteps = 50;
+            const int maxSteps = 60;
             for (int iter = 0; iter < maxSteps; iter++)
             {
                 float bestDst = length;
@@ -219,10 +262,11 @@ namespace Raymagic
             return false;
         }
 
-        public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit)
+        public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out IObject hitObj)
         {
             hit = position;
             length = 2000;
+            hitObj = null;
 
             dir.Normalize();
 
@@ -238,6 +282,7 @@ namespace Raymagic
                     if(test < bestDst)
                     {
                         bestDst = test;
+                        hitObj = obj;
                     }
                 }
 

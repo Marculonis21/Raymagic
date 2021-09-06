@@ -59,46 +59,49 @@ namespace Raymagic
         {
             FeetCollider(game, gameTime);
             BodyCollider(game, gameTime);
-            /* double angle; */
-            /* Vector3 testDir; */
-            /* double R_azimuth = rotation.X*Math.PI/180f; */
-            /* for (int i = 0; i < 36; i++) */
-            /* { */
-            /*     angle = 2*Math.PI/36 * i; */
-            /*     testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0); */
-            /*     testDir.Normalize(); */
-
-            /*     game.PhysicsRayMarch(this.position, testDir, 10, size.X/2-10, out float width, out Vector3 hit); */ 
-
-            /*     if(width <= size.X/2) */
-            /*     { */
-            /*         float d = size.X/2 - width; */
-            /*         Vector3 pushOffDir = this.position - hit; */
-            /*         pushOffDir.Normalize(); */
-            /*         this.position += pushOffDir*(d); */
-            /*         break; */
-            /*     } */
-            /* } */
 
             this.position += this.velocity;
             Informer.instance.AddInfo("playerPos", this.position.ToString());
+            Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
 
         void BodyCollider(MainGame game, GameTime gameTime)
         {
+            // body side collider
+            double angle;
+            Vector3 testDir;
+            double R_azimuth = rotation.X*Math.PI/180f;
+            for (int i = 0; i < 12; i++)
+            {
+                angle = 2*Math.PI/12 * i;
+                testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0);
+                testDir.Normalize();
+
+                game.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out IObject obj); 
+
+                if(width <= size.X/2)
+                {
+                    Vector3 normal = obj.SDF_normal(hit);
+
+                    this.position += normal*3;
+                    return;
+                }
+            }
+
             // maintain height above ground (stairs/steps) 
-            game.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _);
+            game.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out IObject _);
             if(length < size.Y)
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
+
         }
 
         void FeetCollider(MainGame game, GameTime gameTime)
         {
             // fall
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _);
+            game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out IObject _);
 
             if(length > 0)
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
