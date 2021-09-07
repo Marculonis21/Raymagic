@@ -28,9 +28,6 @@ namespace Raymagic
 
         Stopwatch watch;
 
-        public List<IObject> objectList = new List<IObject>();
-        public List<Light> lightList = new List<Light>();
-
         public MainGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -46,9 +43,11 @@ namespace Raymagic
 
             map = Map.instance;
             map.LoadMaps();
-            map.SetMap("basic", this);
-            player = Player.instance;
 
+            UserInit();
+            /* map.SetMap("basic"); */
+
+            player = Player.instance;
             base.Initialize();
         }
 
@@ -60,6 +59,49 @@ namespace Raymagic
             shapes = new Shapes(this, new Point(0, winHeight), _spriteBatch);
 
             Informer.instance.SetShapes(this.shapes);
+        }
+
+        private void UserInit()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            /* Console.Clear(); */
+
+            Console.CursorLeft = (Console.WindowWidth/2) - 15;
+            Console.WriteLine("-------------------------------");
+            Console.CursorLeft = (Console.WindowWidth/2) - 15;
+            Console.WriteLine("| --- WELCOME TO RAYMAGIC --- |");
+            Console.CursorLeft = (Console.WindowWidth/2) - 15;
+            Console.WriteLine("-------------------------------");
+
+            Console.WriteLine("MAP SELECT:");
+
+            int i = 1;
+            foreach(string key in map.maps.Keys)
+            {
+                Console.CursorLeft = 3;
+                Console.WriteLine($"{i}: {key}");
+                i++;
+            }
+            Console.WriteLine();
+
+            int input;
+            while(true)
+            {
+                if(int.TryParse(Console.ReadLine(), out input))
+                {
+                    if(input > 0 && input < map.maps.Count + 1)
+                    {
+                        i = 1;
+                        foreach(string key in map.maps.Keys)
+                            if(input == i)
+                            {
+                                Console.WriteLine($"Map chosen: {key}");
+                                map.SetMap(key);
+                            }
+                        break;
+                    }
+                }
+            }
         }
 
         int lastMouseX = 200;
@@ -234,48 +276,87 @@ namespace Raymagic
             dir.Normalize();
 
             Vector3 testPos = position;
-            float test;
-
-            const int maxSteps = 60;
+            const int maxSteps = 100;
             for (int iter = 0; iter < maxSteps; iter++)
             {
-                float bestDst = length;
-                Color bestColor = color;
-                IObject bestObj = null;
-                foreach(IObject obj in objectList)
-                {
-                    test = obj.SDF(testPos);
-                    if(test < bestDst)
-                    {
-                        bestDst = test;
-                        bestColor = obj.GetColor();
-                        bestObj = obj;
-                    }
-                }
+                Vector3 cords = testPos - map.mapOrigin;
+                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
+                                            (int)(cords.Y/map.distanceMapDetail),
+                                            (int)(cords.Z/map.distanceMapDetail)];
 
-                if(bestDst < 0.5f)
+                if(dst < 0.1f)
                 {
                     length = (position - testPos).Length();
 
+                    float test;
+                    float bestDst = length;
+                    Color bestColor = color;
+                    IObject bestObj = null; 
+                    foreach(IObject obj in map.staticObjectList)
+                    {
+                        test = obj.SDF(testPos);
+                        if(test < bestDst)
+                        {
+                            bestDst = test;
+                            bestColor = obj.GetColor();
+                            bestObj = obj;
+                        }
+                    }
+
                     Vector3 startPos;
                     float lightIntensity = 0;
-                    foreach(Light light in lightList)
+                    foreach(Light light in map.lightList)
                     {
                         startPos = testPos+bestObj.SDF_normal(testPos)*5;
 
-                        lightIntensity += LightRayMarch(startPos, light);
+                        lightIntensity += LightRayMarchT(startPos, light);
                     }
 
-                    color = new Color((int)(bestColor.R*lightIntensity),
-                                      (int)(bestColor.G*lightIntensity),
-                                      (int)(bestColor.B*lightIntensity));
+                    color = new Color(bestColor.R*lightIntensity,
+                                      bestColor.G*lightIntensity,
+                                      bestColor.B*lightIntensity);
 
                     return true;
                 }
 
-                testPos += dir*bestDst;
+                testPos += dir*dst;
             }
             return false;
+        }
+
+        public float LightRayMarchT(Vector3 position, Light light)
+        {
+            Vector3 dir = (light.position - position);
+            dir.Normalize();
+
+            float length = 0.1f;
+            float test;
+            float intensity = light.intensity;
+            float k = 16f*intensity;
+            while(length < (position - light.position).Length() - 0.1f)
+            {
+                Vector3 cords = position + dir*length - map.mapOrigin;
+                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
+                                            (int)(cords.Y/map.distanceMapDetail),
+                                            (int)(cords.Z/map.distanceMapDetail)];
+
+                test = light.SDF(position + dir*length);
+                if(test < dst)
+                {
+                    break;
+                }
+
+                if( dst<0.01f )
+                    return 0.0f;
+                
+                intensity = Math.Min(intensity, k*dst/length);
+                if(intensity < 0.001f)
+                    return 0.0f;
+
+                length += dst;
+            }
+            length = (position - light.position).Length();
+            return intensity/(length*length);
         }
 
         public float LightRayMarch(Vector3 position, Light light)
@@ -284,9 +365,8 @@ namespace Raymagic
             dir.Normalize();
 
             Vector3 testPos = position;
+            float length = 2000;
             float test;
-
-            float length = 0.1f;
 
             const int maxSteps = 60;
             const float maxOffset = 10;
@@ -299,24 +379,24 @@ namespace Raymagic
                     bestDst = test;
                 }
 
-                foreach(IObject obj in objectList)
+                Vector3 cords = testPos - map.mapOrigin;
+                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
+                                            (int)(cords.Y/map.distanceMapDetail),
+                                            (int)(cords.Z/map.distanceMapDetail)];
+                if(dst < bestDst)
                 {
-                    test = obj.SDF(testPos);
-                    if(test < bestDst)
-                    {
-                        bestDst = test;
-                    }
+                    bestDst = dst;
                 }
 
-                length+=bestDst;
                 testPos += dir*bestDst;
+
                 if((light.position - testPos).Length() < maxOffset)
                 {
                     length = (position - light.position).Length();
                     return light.intensity/(length*length);
                 }
 
-                if(bestDst < 0.01f)
+                if(bestDst < 0.1f)
                 {
                     return 0;
                 }
@@ -338,7 +418,7 @@ namespace Raymagic
             for (int iter = 0; iter < maxSteps; iter++)
             {
                 float bestDst = length;
-                foreach(IObject obj in objectList)
+                foreach(IObject obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos);
                     if(test < bestDst)

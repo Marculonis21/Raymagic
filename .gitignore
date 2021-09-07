@@ -3,6 +3,8 @@
 *.user
 *.sln.docstates
 
+*.dm
+
 # Build results
 
 # [Dd]ebug/

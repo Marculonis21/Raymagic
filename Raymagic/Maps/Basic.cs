@@ -8,6 +8,9 @@ namespace Raymagic
         {
             MapData data = new MapData();
 
+            data.topCorner = new Vector3(800,800,500);
+            data.botCorner = new Vector3(  0,  0,-200);
+
             Box area = new Box(new Vector3(400,400,250),
                                new Vector3(800,800,500),
                                Color.White);
@@ -23,13 +26,13 @@ namespace Raymagic
                                     new Vector3(201,201,400),
                                     Color.Black));
             
-            data.mapObjects.Add(area);
+            data.staticMapObjects.Add(area);
 
             Box pillar = new Box(new Vector3(300,300,250),
                                  new Vector3(30, 30, 500),
                                  Color.Red);
 
-            data.mapObjects.Add(pillar);
+            data.staticMapObjects.Add(pillar);
 
             Box dip = new Box(new Vector3(550,550,-50),
                               new Vector3(300,300,201),
@@ -40,7 +43,7 @@ namespace Raymagic
                                    new Vector3(200,200,200),
                                    Color.Black));
 
-            data.mapObjects.Add(dip);
+            data.staticMapObjects.Add(dip);
 
 
             Box dipStairs = new Box(new Vector3(550,530,-100),
@@ -69,7 +72,7 @@ namespace Raymagic
                                             110,
                                             Color.Black));
 
-            data.mapObjects.Add(dipStairs);
+            data.staticMapObjects.Add(dipStairs);
 
 
             Box tunnel = new Box(new Vector3(550,400,50),
@@ -82,7 +85,7 @@ namespace Raymagic
                                       Color.Black));
 
 
-            data.mapObjects.Add(tunnel);
+            data.staticMapObjects.Add(tunnel);
 
             Box tunnel2 = new Box(new Vector3(400,550,50),
                                   new Vector3(100,400,800),
@@ -93,7 +96,7 @@ namespace Raymagic
                                           80,
                                           Color.Black));
 
-            data.mapObjects.Add(tunnel2);
+            data.staticMapObjects.Add(tunnel2);
 
             Box platform = new Box(new Vector3(200,200,50),
                                    new Vector3(20,100,25),
@@ -115,14 +118,14 @@ namespace Raymagic
                                 new Box(new Vector3(80,0,0),
                                         new Vector3(20,100,125),
                                         Color.Black));
-            data.mapObjects.Add(platform);
+            data.staticMapObjects.Add(platform);
 
             Light light = new Light(new Vector3(600,550,200),
-                                    10000);
+                                    50);
             data.mapLights.Add(light);
 
             Light light2 = new Light(new Vector3(250,200,350),
-                                     10000);
+                                     100);
             data.mapLights.Add(light2);
 
             data.playerSpawn = new Vector3(5,5,1);
