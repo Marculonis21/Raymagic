@@ -93,11 +93,14 @@ namespace Raymagic
                     {
                         i = 1;
                         foreach(string key in map.maps.Keys)
+                        {
                             if(input == i)
                             {
                                 Console.WriteLine($"Map chosen: {key}");
                                 map.SetMap(key);
                             }
+                            i++;
+                        }
                         break;
                     }
                 }
@@ -276,23 +279,42 @@ namespace Raymagic
             dir.Normalize();
 
             Vector3 testPos = position;
+            bool sObj = true;
             const int maxSteps = 100;
             for (int iter = 0; iter < maxSteps; iter++)
             {
                 Vector3 cords = testPos - map.mapOrigin;
-                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
-                                            (int)(cords.Y/map.distanceMapDetail),
-                                            (int)(cords.Z/map.distanceMapDetail)];
+                float dst;
+                try
+                {
+                    dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
+                                          (int)(cords.Y/map.distanceMapDetail),
+                                          (int)(cords.Z/map.distanceMapDetail)];
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    return false;
+                }
+
+                float test;
+                foreach(IObject dObj in map.dynamicObjectList)
+                {
+                    test = dObj.SDF(testPos);
+                    if(test < dst)
+                    {
+                        dst = test;
+                        sObj = false;
+                    }
+                }
 
                 if(dst < 0.1f)
                 {
                     length = (position - testPos).Length();
 
-                    float test;
                     float bestDst = length;
                     Color bestColor = color;
                     IObject bestObj = null; 
-                    foreach(IObject obj in map.staticObjectList)
+                    foreach(IObject obj in sObj ? map.staticObjectList : map.dynamicObjectList)
                     {
                         test = obj.SDF(testPos);
                         if(test < bestDst)
@@ -309,7 +331,7 @@ namespace Raymagic
                     {
                         startPos = testPos+bestObj.SDF_normal(testPos)*5;
 
-                        lightIntensity += LightRayMarchT(startPos, light);
+                        lightIntensity += LightRayMarch(startPos, light);
                     }
 
                     color = new Color(bestColor.R*lightIntensity,
@@ -324,7 +346,7 @@ namespace Raymagic
             return false;
         }
 
-        public float LightRayMarchT(Vector3 position, Light light)
+        public float LightRayMarch(Vector3 position, Light light)
         {
             Vector3 dir = (light.position - position);
             dir.Normalize();
@@ -333,12 +355,20 @@ namespace Raymagic
             float test;
             float intensity = light.intensity;
             float k = 16f*intensity;
+            float ph = 99999999;
             while(length < (position - light.position).Length() - 0.1f)
             {
                 Vector3 cords = position + dir*length - map.mapOrigin;
-                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
-                                            (int)(cords.Y/map.distanceMapDetail),
-                                            (int)(cords.Z/map.distanceMapDetail)];
+                float dst = map.distanceMap[(int)Math.Abs(cords.X/map.distanceMapDetail),
+                                            (int)Math.Abs(cords.Y/map.distanceMapDetail),
+                                            (int)Math.Abs(cords.Z/map.distanceMapDetail)];
+
+                foreach(IObject dObj in map.dynamicObjectList)
+                {
+                    test = dObj.SDF(position + dir*length);
+                    if(test < dst)
+                        dst = test;
+                }
 
                 test = light.SDF(position + dir*length);
                 if(test < dst)
@@ -348,7 +378,11 @@ namespace Raymagic
 
                 if( dst<0.01f )
                     return 0.0f;
+
+                double y = dst*dst/(2f*ph);
+                double d = Math.Sqrt(dst*dst - y*y);
                 
+                /* intensity = Math.Min(intensity, k*dst/length); */
                 intensity = Math.Min(intensity, k*dst/length);
                 if(intensity < 0.001f)
                     return 0.0f;
@@ -357,51 +391,6 @@ namespace Raymagic
             }
             length = (position - light.position).Length();
             return intensity/(length*length);
-        }
-
-        public float LightRayMarch(Vector3 position, Light light)
-        {
-            Vector3 dir = (light.position - position);
-            dir.Normalize();
-
-            Vector3 testPos = position;
-            float length = 2000;
-            float test;
-
-            const int maxSteps = 60;
-            const float maxOffset = 10;
-            for (int iter = 0; iter < maxSteps; iter++)
-            {
-                float bestDst = 9999;
-                test = light.SDF(testPos);
-                if(test < bestDst)
-                {
-                    bestDst = test;
-                }
-
-                Vector3 cords = testPos - map.mapOrigin;
-                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
-                                            (int)(cords.Y/map.distanceMapDetail),
-                                            (int)(cords.Z/map.distanceMapDetail)];
-                if(dst < bestDst)
-                {
-                    bestDst = dst;
-                }
-
-                testPos += dir*bestDst;
-
-                if((light.position - testPos).Length() < maxOffset)
-                {
-                    length = (position - light.position).Length();
-                    return light.intensity/(length*length);
-                }
-
-                if(bestDst < 0.1f)
-                {
-                    return 0;
-                }
-            }
-            return 0;
         }
 
         public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out IObject hitObj)
@@ -414,23 +403,33 @@ namespace Raymagic
 
             Vector3 testPos = position;
             float test;
-
+            float dst;
             for (int iter = 0; iter < maxSteps; iter++)
             {
-                float bestDst = length;
+                dst = 9999;
                 foreach(IObject obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos);
-                    if(test < bestDst)
+                    if(test < dst)
                     {
-                        bestDst = test;
+                        dst = test;
                         hitObj = obj;
                     }
                 }
 
-                if(bestDst <= stepMinSize)
+                foreach(IObject dObj in map.dynamicObjectList)
                 {
-                    if(bestDst < 0)
+                    test = dObj.SDF(position + dir*length);
+                    if(test < dst)
+                    {
+                        dst = test;
+                        hitObj = dObj;
+                    }
+                }
+
+                if(dst <= stepMinSize)
+                {
+                    if(dst < 0)
                         length = -1;
                     else
                         length = (position - testPos).Length(); 
@@ -438,7 +437,7 @@ namespace Raymagic
                     return;
                 }
 
-                testPos += dir*bestDst;
+                testPos += dir*dst;
             }
 
             length = (position - testPos).Length();

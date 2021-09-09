@@ -19,7 +19,7 @@ namespace Raymagic
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
-        public float distanceMapDetail = 2f;
+        public float distanceMapDetail = 1f;
         public float[,,] distanceMap;
 
         private Map()
@@ -37,6 +37,7 @@ namespace Raymagic
         public void LoadMaps()
         {
             new Basic();
+            new TestArea();
         }
 
         public void SetMap(string id)
@@ -53,12 +54,16 @@ namespace Raymagic
                                     (int)(mapSize.Y/distanceMapDetail),
                                     (int)(mapSize.Z/distanceMapDetail)];
 
-            Console.WriteLine("Create/Load - distance map (C/L)?>");
+            Console.WriteLine($"Create/Load - distance map (detail {this.distanceMapDetail}) (C/L)?>");
             string input = Console.ReadLine();
-            if(input == "L")
+            if(input == "L" || input == "l")
             {
                 LoadDistanceMap(id, this.distanceMapDetail);
                 return;
+            }
+            else if(input != "C" && input != "c")
+            {
+                throw new Exception("DM not selected");
             }
 
             Console.WriteLine("baking distance field");
@@ -112,11 +117,11 @@ namespace Raymagic
             saveContainer = new SaveContainer(this.distanceMap);
 
             IFormatter formatter = new BinaryFormatter();  
-            Stream stream = new FileStream($"{name}-{distanceMapDetail}.dm", FileMode.Create, FileAccess.Write, FileShare.None);  
+            Stream stream = new FileStream($"Maps/{name}-{distanceMapDetail}.dm", FileMode.Create, FileAccess.Write, FileShare.None);  
             formatter.Serialize(stream, saveContainer);  
             stream.Close();  
 
-            Console.WriteLine($"DistanceMap {name}-{distanceMapDetail}.dm saved");
+            Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm saved");
         }
 
         public void LoadDistanceMap(string name, float distanceMapDetail)
@@ -124,13 +129,13 @@ namespace Raymagic
             try
             {
                 IFormatter formatter = new BinaryFormatter();  
-                Stream stream = new FileStream($"{name}-{distanceMapDetail}.dm", FileMode.Open, FileAccess.Read, FileShare.Read);  
+                Stream stream = new FileStream($"Maps/{name}-{distanceMapDetail}.dm", FileMode.Open, FileAccess.Read, FileShare.Read);  
                 SaveContainer saveContainer = (SaveContainer)formatter.Deserialize(stream);  
                 stream.Close(); 
 
                 this.distanceMap = saveContainer.distanceMap;
 
-                Console.WriteLine($"DistanceMap {name}-{distanceMapDetail}.dm loaded");
+                Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm loaded");
             }
             catch (FileNotFoundException e)
             {

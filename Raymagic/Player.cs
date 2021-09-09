@@ -47,6 +47,8 @@ namespace Raymagic
 
             lookDir = new Vector3((float)_x,(float)_y,(float)_z);
             lookDir.Normalize();
+
+            Informer.instance.AddInfo("playerRot", lookDir.ToString());
         }
 
         public void Jump(GameTime gameTime)
@@ -104,7 +106,9 @@ namespace Raymagic
             game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out IObject _);
 
             if(length > 0)
+            {
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
+            }
             else if(velocity.Z < 0)
                 this.velocity.Z = 0;
         }

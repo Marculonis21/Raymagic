@@ -39,6 +39,11 @@ namespace Raymagic
             return (center - test).Length() - size;
         }
 
+        public static float Plane(Vector3 test, Vector3 normal, float height)
+        {
+            return Vector3.Dot(test, normal) + height;
+        }
+
         public static float Point(Vector3 test, Vector3 center)
         {
             return (center - test).Length();

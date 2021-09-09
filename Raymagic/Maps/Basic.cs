@@ -69,7 +69,7 @@ namespace Raymagic
 
             dipStairs.AddBoolean(BooleanOP.DIFFERENCE,
                                  new Sphere(new Vector3(0,-125,0),
-                                            110,
+                                            100,
                                             Color.Black));
 
             data.staticMapObjects.Add(dipStairs);
