@@ -38,5 +38,15 @@ namespace Raymagic
 
             return dst;
         }
+
+        public override void ChangePosition(Vector3 position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Translate(Vector3 relativePosition)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

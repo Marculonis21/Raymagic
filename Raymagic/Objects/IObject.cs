@@ -47,5 +47,8 @@ namespace Raymagic
         {
             return color;
         }
+
+        public abstract void ChangePosition(Vector3 position);
+        public abstract void Translate(Vector3 relativePosition);
     }
 }

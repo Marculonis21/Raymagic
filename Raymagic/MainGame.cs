@@ -355,7 +355,6 @@ namespace Raymagic
             float test;
             float intensity = light.intensity;
             float k = 16f*intensity;
-            float ph = 99999999;
             while(length < (position - light.position).Length() - 0.1f)
             {
                 Vector3 cords = position + dir*length - map.mapOrigin;
@@ -379,10 +378,6 @@ namespace Raymagic
                 if( dst<0.01f )
                     return 0.0f;
 
-                double y = dst*dst/(2f*ph);
-                double d = Math.Sqrt(dst*dst - y*y);
-                
-                /* intensity = Math.Min(intensity, k*dst/length); */
                 intensity = Math.Min(intensity, k*dst/length);
                 if(intensity < 0.001f)
                     return 0.0f;
