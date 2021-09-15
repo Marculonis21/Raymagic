@@ -7,16 +7,17 @@ namespace Raymagic
     {
         float size;
 
-        public Sphere(Vector3 position, float size, Color color)
+        public Sphere(Vector3 position, float size, Color color, bool staticObject = true)
         {
             this.position = position;
             this.size = size;
             this.color = color;
+            this.staticObject = staticObject;
         }
 
         public override float SDF(Vector3 testPos)
         {
-            float dst = SDFs.Sphere(testPos, this.position, this.size);
+            float dst = SDFs.Sphere(this.staticObject ? testPos : Transform(testPos), this.position, this.size);
 
             for(int i = 0; i < this.booleanObj.Count; i++)
             {
@@ -37,16 +38,6 @@ namespace Raymagic
             }
 
             return dst;
-        }
-
-        public override void ChangePosition(Vector3 position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Translate(Vector3 relativePosition)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,5 @@
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Raymagic
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Content/Fonts/MainFont.xnb
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Raymagic.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Raymagic.deps.json
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Raymagic.runtimeconfig.json
@@ -189,6 +190,7 @@
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libhostpolicy.so
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libmscordaccore.so
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libmscordbi.so
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/MathNet.Numerics.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/MonoGame.Framework.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libSDL2-2.0.so.0
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libopenal.so.1

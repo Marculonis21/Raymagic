@@ -19,7 +19,7 @@ namespace Raymagic
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
-        public float distanceMapDetail = 1f;
+        public float distanceMapDetail = 5f;
         public float[,,] distanceMap;
 
         private Map()

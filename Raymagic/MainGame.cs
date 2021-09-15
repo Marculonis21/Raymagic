@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -60,7 +61,7 @@ namespace Raymagic
 
             Informer.instance.SetShapes(this.shapes);
         }
-
+        
         private void UserInit()
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -279,12 +280,12 @@ namespace Raymagic
             dir.Normalize();
 
             Vector3 testPos = position;
-            bool sObj = true;
             const int maxSteps = 100;
             for (int iter = 0; iter < maxSteps; iter++)
             {
                 Vector3 cords = testPos - map.mapOrigin;
                 float dst;
+                bool sObj = true;
                 try
                 {
                     dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
@@ -314,7 +315,7 @@ namespace Raymagic
                     float bestDst = length;
                     Color bestColor = color;
                     IObject bestObj = null; 
-                    foreach(IObject obj in sObj ? map.staticObjectList : map.dynamicObjectList)
+                    foreach(IObject obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
                     {
                         test = obj.SDF(testPos);
                         if(test < bestDst)
@@ -414,7 +415,7 @@ namespace Raymagic
 
                 foreach(IObject dObj in map.dynamicObjectList)
                 {
-                    test = dObj.SDF(position + dir*length);
+                    test = dObj.SDF(testPos);
                     if(test < dst)
                     {
                         dst = test;

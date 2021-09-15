@@ -118,7 +118,14 @@ namespace Raymagic
                                 new Box(new Vector3(80,0,0),
                                         new Vector3(20,100,125),
                                         Color.Black));
+
             data.staticMapObjects.Add(platform);
+
+            Box box = new Box(new Vector3(400,200,75),
+                              new Vector3(100,20,50),
+                              Color.Aqua, false);
+
+            data.dynamicMapObjects.Add(box);
 
             Light light = new Light(new Vector3(600,550,200),
                                     50);

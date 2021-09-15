@@ -20,14 +20,5 @@ namespace Raymagic
             return SDFs.Point(testPos, position);
         }
 
-        public void ChangePosition(Vector3 position)
-        {
-            this.position = position;
-        }
-
-        public void Translate(Vector3 relativePosition)
-        {
-            this.position += position;
-        }
     }
 }
