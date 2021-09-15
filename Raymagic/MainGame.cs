@@ -198,6 +198,7 @@ namespace Raymagic
         {
             GraphicsDevice.Clear(Color.Black);
 
+
             watch = new Stopwatch();
             watch.Start();
             Color[,] colors = new Color[winWidth/detailSize,winHeight/detailSize];
@@ -228,8 +229,8 @@ namespace Raymagic
                 int x = i % (winWidth/detailSize);
 
                 // get ray dir from camera through view plane (detailSize) "rectangles"
-                int _x = x - (winWidth /detailSize)/2;
-                int _y = y - (winHeight/detailSize)/2;
+                float _x = x - (winWidth /detailSize)/2 + detailSize/2;
+                float _y = y - (winHeight/detailSize)/2 + detailSize/2;
 
                 Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*_x*detailSize + playerLookPerpenUP*_y*detailSize) - player.position;
 
@@ -238,7 +239,7 @@ namespace Raymagic
                     colors[x,y] = color;
                     lengths[x,y] = length;
                 }
-            });
+            }); //35ms from in front of the blue thingy
             watch.Stop();
             Informer.instance.AddInfo("debug", $"--- DEBUG INFO ---");
             Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
@@ -268,9 +269,11 @@ namespace Raymagic
                 }
             shapes.End();
             watch.Stop();
-
             Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
             Informer.instance.AddInfo("details", $"details: {detailSize}");
+
+
+
 
             Informer.instance.ShowInfo(new Vector2(10,10), this.font, Color.Red);
             base.Draw(gameTime);
