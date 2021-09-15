@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 /* using MathNet.Numerics.LinearAlgebra; */
 /* using MathNet.Numerics.LinearAlgebra.Storage; */
 using Extreme.Mathematics;
-using Extreme.Mathematics.LinearAlgebra;
 using Matrix = Extreme.Mathematics.Matrix;
 
 namespace Raymagic
@@ -18,11 +17,6 @@ namespace Raymagic
 
         protected List<BooleanOP> booleanOp = new List<BooleanOP>();
         protected List<IObject> booleanObj = new List<IObject>();
-
-        /* protected Matrix<float> translateMatrix = Matrix<float>.Build.Dense(4,4,0); */
-        /* protected Matrix<float> rotationMatrix = Matrix<float>.Build.Dense(4,4,0); */
-
-        /* protected Matrix<float> transformInverse = Matrix<float>.Build.Dense(4,4,0); */
 
         protected Matrix<double> translateMatrix = Matrix.Create<double>(4,4);
         protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
@@ -44,7 +38,25 @@ namespace Raymagic
         public void AddBoolean(BooleanOP op, IObject obj)
         {
             booleanOp.Add(op);
-            obj.position += this.position;
+            if(this.staticObject)
+                obj.position += this.position;
+            else
+            {
+                Vector3 origPos = new Vector3((float)this.translateMatrix[3,0],
+                                              (float)this.translateMatrix[3,1],
+                                              (float)this.translateMatrix[3,2]);
+
+                Vector3 objPos = new Vector3((float)obj.translateMatrix[3,0],
+                                             (float)obj.translateMatrix[3,1],
+                                             (float)obj.translateMatrix[3,2]);
+                obj.translateMatrix[3,0] = 0;
+                obj.translateMatrix[3,1] = 0;
+                obj.translateMatrix[3,2] = 0;
+
+                obj.position = objPos;
+                obj.Translate(origPos);
+            }
+            
             booleanObj.Add(obj);
         }
 
@@ -71,15 +83,18 @@ namespace Raymagic
             return normal;
         }
 
-        public void Translate(Vector3 position)
+        public void Translate(Vector3 translation)
         {
-            this.translateMatrix[3,0] += position.X;
-            this.translateMatrix[3,1] += position.Y;
-            this.translateMatrix[3,2] += position.Z;
+            this.translateMatrix[3,0] += translation.X;
+            this.translateMatrix[3,1] += translation.Y;
+            this.translateMatrix[3,2] += translation.Z;
 
             this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
 
-            /* Console.WriteLine(this.translateMatrix.ToString()); */
+            foreach(IObject obj in booleanObj)
+            {
+                obj.Translate(translation);
+            }
         }
 
         public void Rotate(float angle, string axis)
@@ -118,6 +133,11 @@ namespace Raymagic
 
             this.rotationMatrix *= rotM;
             this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
+
+            foreach(IObject obj in booleanObj)
+            {
+                obj.Rotate(angle, axis);
+            }
         }
         
         protected Vector3 Transform(Vector3 orig)
@@ -133,9 +153,17 @@ namespace Raymagic
             /* Matrix<float> _orig = Matrix<float>.Build.Dense(1,4,new float[] {orig.X, orig.Y, orig.Z, 1}); */
             var _orig = Matrix.Create<double>(new double[,]{{orig.X, orig.Y, orig.Z, 1}});
 
-            Matrix<double> output = Matrix.Multiply(_orig, this.transformInverse);
+            /* Matrix<double> output = Matrix.Multiply(_orig, this.transformInverse); */
 
-            return new Vector3((float)output[0,0],(float)output[0,1],(float)output[0,2]);
+            Vector3 _output = new Vector3((float)((_orig[0,0]*this.transformInverse[0,0]) + (_orig[0,1]*this.transformInverse[1,0]) + (_orig[0,2]*this.transformInverse[2,0]) + (_orig[0,3]*this.transformInverse[3,0])),
+                                          (float)((_orig[0,0]*this.transformInverse[0,1]) + (_orig[0,1]*this.transformInverse[1,1]) + (_orig[0,2]*this.transformInverse[2,1]) + (_orig[0,3]*this.transformInverse[3,1])),
+                                          (float)((_orig[0,0]*this.transformInverse[0,2]) + (_orig[0,1]*this.transformInverse[1,2]) + (_orig[0,2]*this.transformInverse[2,2]) + (_orig[0,3]*this.transformInverse[3,2])));
+
+            /* Console.WriteLine($"FIRST: {output}\nSECOND: {_output}"); */
+            
+            return _output;
+
+            /* return new Vector3((float)output[0,0],(float)output[0,1],(float)output[0,2]); */
         }
 
         public Color GetColor()

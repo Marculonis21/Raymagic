@@ -17,7 +17,6 @@ namespace Raymagic
             if(!staticObject)
             {
                 this.Translate(this.position);
-                this.Rotate(45, "z");
                 this.position = new Vector3();
             }
         }

@@ -50,8 +50,7 @@ namespace Raymagic
             Vector3 mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
 
-            distanceMap = new float[(int)(mapSize.X/distanceMapDetail),
-                                    (int)(mapSize.Y/distanceMapDetail),
+            distanceMap = new float[(int)(mapSize.X/distanceMapDetail), (int)(mapSize.Y/distanceMapDetail),
                                     (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine($"Create/Load - distance map (detail {this.distanceMapDetail}) (C/L)?>");
@@ -67,6 +66,7 @@ namespace Raymagic
             }
 
             Console.WriteLine("baking distance field");
+            Console.CursorVisible = false;
             for(int z = 0; z < mapSize.Z/distanceMapDetail; z++)
             {
                 if(z != 0)
@@ -101,6 +101,7 @@ namespace Raymagic
                     distanceMap[x,y,z] = dBest;
                 });
             }
+            Console.CursorVisible = true;
 
             SaveDistanceMap(id, this.distanceMapDetail);
         }

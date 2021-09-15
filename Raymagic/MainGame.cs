@@ -186,7 +186,7 @@ namespace Raymagic
             lastMouseY = 200;
             player.Update(this, gameTime);
 
-            /* map.dynamicObjectList[0].Rotate(2f,"z"); */
+            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
 
             base.Update(gameTime);
         }
