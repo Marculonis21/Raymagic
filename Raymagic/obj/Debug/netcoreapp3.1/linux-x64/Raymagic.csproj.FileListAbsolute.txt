@@ -204,3 +204,6 @@
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/obj/Debug/netcoreapp3.1/linux-x64/Raymagic.genruntimeconfig.cache
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/Content/Fonts/MainFont.xnb
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/MathNet.Numerics.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/Extreme.Numerics.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/Extreme.Numerics.Generic.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/Extreme.Numerics.SinglePrecision.dll

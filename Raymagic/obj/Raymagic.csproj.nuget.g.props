@@ -20,5 +20,6 @@
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgMonoGame_Content_Builder_Task Condition=" '$(PkgMonoGame_Content_Builder_Task)' == '' ">/home/marculonis/.nuget/packages/monogame.content.builder.task/3.8.0.1641</PkgMonoGame_Content_Builder_Task>
+    <PkgExtreme_Numerics Condition=" '$(PkgExtreme_Numerics)' == '' ">/home/marculonis/.nuget/packages/extreme.numerics/8.0.0</PkgExtreme_Numerics>
   </PropertyGroup>
 </Project>

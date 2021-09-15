@@ -190,6 +190,9 @@
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libhostpolicy.so
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libmscordaccore.so
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libmscordbi.so
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Extreme.Numerics.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Extreme.Numerics.Generic.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/Extreme.Numerics.SinglePrecision.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/MathNet.Numerics.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/MonoGame.Framework.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/bin/Debug/netcoreapp3.1/linux-x64/publish/libSDL2-2.0.so.0

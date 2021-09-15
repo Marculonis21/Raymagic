@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using MathNet.Numerics.LinearAlgebra;
+/* using MathNet.Numerics.LinearAlgebra; */
+/* using MathNet.Numerics.LinearAlgebra.Storage; */
+using Extreme.Mathematics;
+using Extreme.Mathematics.LinearAlgebra;
+using Matrix = Extreme.Mathematics.Matrix;
 
 namespace Raymagic
 {
@@ -15,15 +19,26 @@ namespace Raymagic
         protected List<BooleanOP> booleanOp = new List<BooleanOP>();
         protected List<IObject> booleanObj = new List<IObject>();
 
-        protected Matrix<float> translateMatrix = Matrix<float>.Build.Dense(4,4,0);
-        protected Matrix<float> rotationMatrix = Matrix<float>.Build.Dense(4,4,0);
-        protected Matrix<float> testMatrix = Matrix<float>.Build.Dense(1,4,1);
+        /* protected Matrix<float> translateMatrix = Matrix<float>.Build.Dense(4,4,0); */
+        /* protected Matrix<float> rotationMatrix = Matrix<float>.Build.Dense(4,4,0); */
+
+        /* protected Matrix<float> transformInverse = Matrix<float>.Build.Dense(4,4,0); */
+
+        protected Matrix<double> translateMatrix = Matrix.Create<double>(4,4);
+        protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
+        protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
 
         public IObject()
         {
-            Console.WriteLine("you better be there");
-            this.translateMatrix += Matrix<float>.Build.Diagonal(4,4,1);
-            this.rotationMatrix += Matrix<float>.Build.Diagonal(4,4,1);
+            this.translateMatrix[0,0] = 1;
+            this.translateMatrix[1,1] = 1;
+            this.translateMatrix[2,2] = 1;
+            this.translateMatrix[3,3] = 1;
+
+            this.rotationMatrix[0,0] = 1;
+            this.rotationMatrix[1,1] = 1;
+            this.rotationMatrix[2,2] = 1;
+            this.rotationMatrix[3,3] = 1;
         }
 
         public void AddBoolean(BooleanOP op, IObject obj)
@@ -62,6 +77,8 @@ namespace Raymagic
             this.translateMatrix[3,1] += position.Y;
             this.translateMatrix[3,2] += position.Z;
 
+            this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
+
             /* Console.WriteLine(this.translateMatrix.ToString()); */
         }
 
@@ -70,69 +87,55 @@ namespace Raymagic
             float c = (float)Math.Cos(angle*(float)Math.PI/180);
             float s = (float)Math.Sin(angle*(float)Math.PI/180);
 
+            Matrix<double> rotM;
             switch(axis.ToLower())
             {
                 case "x":
-                    this.rotationMatrix[1,1] += c;
-                    this.rotationMatrix[1,2] += s;
-                    this.rotationMatrix[2,1] += -s;
-                    this.rotationMatrix[2,2] += c;
+                    rotM = Matrix.Create<double>(new double [,] {
+                            {1, 0,0,0},
+                            {0, c,s,0},
+                            {0,-s,c,0},
+                            {0, 0,0,1}});
                     break;
                 case "y":
-                    this.rotationMatrix[0,0] += c;
-                    this.rotationMatrix[0,2] += s;
-                    this.rotationMatrix[2,0] += -s;
-                    this.rotationMatrix[2,2] += c;
+                    rotM = Matrix.Create<double>(new double [,] {
+                            { c,0,s,0},
+                            { 0,1,0,0},
+                            {-s,0,c,0},
+                            { 0,0,0,1}});
                     break;
                 case "z":
-                    this.rotationMatrix[0,0] = c;
-                    this.rotationMatrix[0,1] = s;
-                    this.rotationMatrix[1,0] = -s;
-                    this.rotationMatrix[1,1] = c;
+                    rotM = Matrix.Create<double>(new double [,] {
+                            { c,s,0,0},
+                            {-s,c,0,0},
+                            { 0,0,1,0},
+                            { 0,0,0,1}});
                     break;
 
                 default:
                     throw new Exception("Undefined rotation axis");
             }
-            /* Console.WriteLine(this.rotationMatrix.ToString()); */
+
+            this.rotationMatrix *= rotM;
+            this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
         }
         
-        protected Matrix<float> _testMatrix = Matrix<float>.Build.Dense(1,4,1);
-        protected Matrix<float> _translateMatrix = Matrix<float>.Build.Dense(4,4,0);
-        protected Matrix<float> _rotationMatrix = Matrix<float>.Build.Dense(4,4,0);
-
         protected Vector3 Transform(Vector3 orig)
         {
-            //todo transform of dynamic objects
-            this._testMatrix[0,0] = orig.X;
-            this._testMatrix[0,1] = orig.Y;
-            this._testMatrix[0,2] = orig.Z;
-            this._testMatrix[0,3] = 1;
+            /* //todo transform of dynamic objects */
 
-            this._translateMatrix[0,0] = 1;
-            this._translateMatrix[1,1] = 1;
-            this._translateMatrix[2,2] = 1;
-            this._translateMatrix[3,3] = 1;
+            // úplně normálně se v Threadu může přidat orig z jiného vektoru
+            /* this.testMatrix[0,0] = orig.X; */
+            /* this.testMatrix[0,1] = orig.Y; */
+            /* this.testMatrix[0,2] = orig.Z; */
+            /* this.testMatrix[0,3] = 1; */
+            
+            /* Matrix<float> _orig = Matrix<float>.Build.Dense(1,4,new float[] {orig.X, orig.Y, orig.Z, 1}); */
+            var _orig = Matrix.Create<double>(new double[,]{{orig.X, orig.Y, orig.Z, 1}});
 
-            this._translateMatrix[3,0] = 400;
-            this._translateMatrix[3,1] = 200; 
-            this._translateMatrix[3,2] = 75;
+            Matrix<double> output = Matrix.Multiply(_orig, this.transformInverse);
 
-            float c = (float)Math.Cos(45*(float)Math.PI/180);
-            float s = (float)Math.Sin(45*(float)Math.PI/180);
-
-            this._rotationMatrix[0,0] = c;
-            this._rotationMatrix[0,1] = s;
-            this._rotationMatrix[1,0] = -s;
-            this._rotationMatrix[1,1] = c;
-
-            this._rotationMatrix[2,2] = 1;
-            this._rotationMatrix[3,3] = 1;
-
-            Matrix<float> output = this._testMatrix * (this._rotationMatrix * this._translateMatrix).Inverse();
-            Vector3 outV = new Vector3(output[0,0],output[0,1],output[0,2]);
-
-            return outV;
+            return new Vector3((float)output[0,0],(float)output[0,1],(float)output[0,2]);
         }
 
         public Color GetColor()

@@ -9,6 +9,8 @@
     ".NETCoreApp,Version=v3.1/linux-x64": {
       "Raymagic/1.0.0": {
         "dependencies": {
+          "Extreme.Numerics.Generic": "8.0.0",
+          "Extreme.Numerics.SinglePrecision": "8.0.1",
           "MathNet.Numerics": "4.15.0",
           "MonoGame.Content.Builder.Task": "3.8.0.1641",
           "MonoGame.Framework.DesktopGL": "3.8.0.1641",
@@ -747,12 +749,52 @@
           }
         }
       },
+      "Extreme.Numerics/8.0.0": {
+        "dependencies": {
+          "Microsoft.Win32.Registry": "4.5.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Extreme.Numerics.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.21112.0"
+          }
+        }
+      },
+      "Extreme.Numerics.Generic/8.0.0": {
+        "dependencies": {
+          "Extreme.Numerics": "8.0.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Extreme.Numerics.Generic.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.20118.0"
+          }
+        }
+      },
+      "Extreme.Numerics.SinglePrecision/8.0.1": {
+        "dependencies": {
+          "Extreme.Numerics": "8.0.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Extreme.Numerics.SinglePrecision.dll": {
+            "assemblyVersion": "8.0.1.0",
+            "fileVersion": "8.0.21182.0"
+          }
+        }
+      },
       "MathNet.Numerics/4.15.0": {
         "runtime": {
           "lib/netstandard2.0/MathNet.Numerics.dll": {
             "assemblyVersion": "4.15.0.0",
             "fileVersion": "4.15.0.0"
           }
+        }
+      },
+      "Microsoft.NETCore.Platforms/2.0.0": {},
+      "Microsoft.Win32.Registry/4.5.0": {
+        "dependencies": {
+          "System.Security.AccessControl": "4.5.0",
+          "System.Security.Principal.Windows": "4.5.0"
         }
       },
       "MonoGame.Content.Builder.Task/3.8.0.1641": {},
@@ -771,6 +813,17 @@
             "fileVersion": "0.0.0.0"
           }
         }
+      },
+      "System.Security.AccessControl/4.5.0": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "2.0.0",
+          "System.Security.Principal.Windows": "4.5.0"
+        }
+      },
+      "System.Security.Principal.Windows/4.5.0": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "2.0.0"
+        }
       }
     }
   },
@@ -785,12 +838,47 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Extreme.Numerics/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Qdme1iLnQcY9GyPRQpHPJQywF2hfhEOvPb8E4tJ/NISaHQKc26xkvw503ue42AtcRZNHewHOAMBZzv/KAw9iGw==",
+      "path": "extreme.numerics/8.0.0",
+      "hashPath": "extreme.numerics.8.0.0.nupkg.sha512"
+    },
+    "Extreme.Numerics.Generic/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DqOW4YJntJLIQEizAngVKcQmTV7x+BdozcQ6IRgUaF9QSyDi2aIeZOZfDza8LS93zgQuGOcrsl/IxKKst7Ismg==",
+      "path": "extreme.numerics.generic/8.0.0",
+      "hashPath": "extreme.numerics.generic.8.0.0.nupkg.sha512"
+    },
+    "Extreme.Numerics.SinglePrecision/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sG1QUv9fd0SqVTLSjU8BMnXSIaQgBkzA0CGYA/ocJnKn+v8NzOJdEo7i0129Lw2mg9zdpzxYSkD2hgLZ0zOlPw==",
+      "path": "extreme.numerics.singleprecision/8.0.1",
+      "hashPath": "extreme.numerics.singleprecision.8.0.1.nupkg.sha512"
+    },
     "MathNet.Numerics/4.15.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-cP4QgPPiU7boMyL8npvuQyVGVYUd/JQY1AWa+Wl2f//fuJN40qwt9ABRazunZIcDLHg3SSlgD/e+3Lnp69jNTg==",
       "path": "mathnet.numerics/4.15.0",
       "hashPath": "mathnet.numerics.4.15.0.nupkg.sha512"
+    },
+    "Microsoft.NETCore.Platforms/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VdLJOCXhZaEMY7Hm2GKiULmn7IEPFE4XC5LPSfBVCUIA8YLZVh846gtfBJalsPQF2PlzdD7ecX7DZEulJ402ZQ==",
+      "path": "microsoft.netcore.platforms/2.0.0",
+      "hashPath": "microsoft.netcore.platforms.2.0.0.nupkg.sha512"
+    },
+    "Microsoft.Win32.Registry/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+FWlwd//+Tt56316p00hVePBCouXyEzT86Jb3+AuRotTND0IYn0OO3obs1gnQEs/txEnt+rF2JBGLItTG+Be6A==",
+      "path": "microsoft.win32.registry/4.5.0",
+      "hashPath": "microsoft.win32.registry.4.5.0.nupkg.sha512"
     },
     "MonoGame.Content.Builder.Task/3.8.0.1641": {
       "type": "package",
@@ -805,6 +893,20 @@
       "sha512": "sha512-rJQlrlHQbnOECYV6EcQ8GlGRQ2lzPTroXQcyyOZ0ki+BQRSJEN2zVBm9skqLiXya348aGAfTSSGTaSKjAy9NaA==",
       "path": "monogame.framework.desktopgl/3.8.0.1641",
       "hashPath": "monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512"
+    },
+    "System.Security.AccessControl/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vW8Eoq0TMyz5vAG/6ce483x/CP83fgm4SJe5P8Tb1tZaobcvPrbMEL7rhH1DRdrYbbb6F0vq3OlzmK0Pkwks5A==",
+      "path": "system.security.accesscontrol/4.5.0",
+      "hashPath": "system.security.accesscontrol.4.5.0.nupkg.sha512"
+    },
+    "System.Security.Principal.Windows/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-U77HfRXlZlOeIXd//Yoj6Jnk8AXlbeisf1oq1os+hxOGVnuG+lGSfGqTwTZBoORFF6j/0q7HXIl8cqwQ9aUGqQ==",
+      "path": "system.security.principal.windows/4.5.0",
+      "hashPath": "system.security.principal.windows.4.5.0.nupkg.sha512"
     }
   },
   "runtimes": {
