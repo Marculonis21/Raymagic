@@ -149,21 +149,13 @@ namespace Raymagic
             /* this.testMatrix[0,1] = orig.Y; */
             /* this.testMatrix[0,2] = orig.Z; */
             /* this.testMatrix[0,3] = 1; */
-            
-            /* Matrix<float> _orig = Matrix<float>.Build.Dense(1,4,new float[] {orig.X, orig.Y, orig.Z, 1}); */
-            var _orig = Matrix.Create<double>(new double[,]{{orig.X, orig.Y, orig.Z, 1}});
 
-            /* Matrix<double> output = Matrix.Multiply(_orig, this.transformInverse); */
+            Vector3 _output = new Vector3((float)((orig.X*this.transformInverse[0,0]) + (orig.Y*this.transformInverse[1,0]) + (orig.Z*this.transformInverse[2,0]) + (1*this.transformInverse[3,0])),
+                                          (float)((orig.X*this.transformInverse[0,1]) + (orig.Y*this.transformInverse[1,1]) + (orig.Z*this.transformInverse[2,1]) + (1*this.transformInverse[3,1])),
+                                          (float)((orig.X*this.transformInverse[0,2]) + (orig.Y*this.transformInverse[1,2]) + (orig.Z*this.transformInverse[2,2]) + (1*this.transformInverse[3,2])));
 
-            Vector3 _output = new Vector3((float)((_orig[0,0]*this.transformInverse[0,0]) + (_orig[0,1]*this.transformInverse[1,0]) + (_orig[0,2]*this.transformInverse[2,0]) + (_orig[0,3]*this.transformInverse[3,0])),
-                                          (float)((_orig[0,0]*this.transformInverse[0,1]) + (_orig[0,1]*this.transformInverse[1,1]) + (_orig[0,2]*this.transformInverse[2,1]) + (_orig[0,3]*this.transformInverse[3,1])),
-                                          (float)((_orig[0,0]*this.transformInverse[0,2]) + (_orig[0,1]*this.transformInverse[1,2]) + (_orig[0,2]*this.transformInverse[2,2]) + (_orig[0,3]*this.transformInverse[3,2])));
-
-            /* Console.WriteLine($"FIRST: {output}\nSECOND: {_output}"); */
-            
             return _output;
 
-            /* return new Vector3((float)output[0,0],(float)output[0,1],(float)output[0,2]); */
         }
 
         public Color GetColor()

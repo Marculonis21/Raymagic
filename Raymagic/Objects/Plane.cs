@@ -7,7 +7,7 @@ namespace Raymagic
     {
         Vector3 normal;
 
-        public Plane(Vector3 position, Vector3 normal, Color color)
+        public Plane(Vector3 position, Vector3 normal, Color color) : base()
         {
             this.position = position;
             this.normal = normal;

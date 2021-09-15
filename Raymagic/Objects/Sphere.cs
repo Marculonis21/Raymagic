@@ -7,12 +7,18 @@ namespace Raymagic
     {
         float size;
 
-        public Sphere(Vector3 position, float size, Color color, bool staticObject = true)
+        public Sphere(Vector3 position, float size, Color color, bool staticObject = true) : base()
         {
             this.position = position;
             this.size = size;
             this.color = color;
             this.staticObject = staticObject;
+
+            if(!staticObject)
+            {
+                this.Translate(this.position);
+                this.position = new Vector3();
+            }
         }
 
         public override float SDF(Vector3 testPos)

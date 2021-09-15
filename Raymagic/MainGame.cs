@@ -186,7 +186,10 @@ namespace Raymagic
             lastMouseY = 200;
             player.Update(this, gameTime);
 
-            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
+            map.dynamicObjectList[0].Rotate(1f,"z");
+
+            float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
+            map.dynamicObjectList[1].Translate(new Vector3(0,0,z));
 
             base.Update(gameTime);
         }

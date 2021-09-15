@@ -127,6 +127,12 @@ namespace Raymagic
 
             data.dynamicMapObjects.Add(box);
 
+            Sphere sphere = new Sphere(new Vector3(200,400,150),
+                                       50,
+                                       Color.Lime, false);
+
+            data.dynamicMapObjects.Add(sphere);
+
             Light light = new Light(new Vector3(600,550,200),
                                     50);
             data.mapLights.Add(light);
