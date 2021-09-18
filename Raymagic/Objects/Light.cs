@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace Raymagic
@@ -7,6 +8,8 @@ namespace Raymagic
         public Vector3 position {get; private set;}
         public float intensity {get; private set;}
         /* public Color color {get; private set;} */
+
+        public List<IObject> dObjVisible = new List<IObject>();
 
         public Light(Vector3 position, float intensity)
         {
@@ -19,6 +22,5 @@ namespace Raymagic
         {
             return SDFs.Point(testPos, position);
         }
-
     }
 }

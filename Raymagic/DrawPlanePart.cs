@@ -18,9 +18,11 @@ namespace Raymagic
         public bool safe = false;
 
         public float dst;
+        public int id;
 
         public DrawPlanePart(Point centerPartPos, int sizeWH, DrawPlanePart parent=null)
         {
+            this.id = MainGame.random.Next(0, 99999);
             this.centerPartPos = centerPartPos;
             this.sizeWH = sizeWH;
             this.parent = parent;
@@ -28,13 +30,14 @@ namespace Raymagic
 
         public DrawPlanePart[] Subdivide()
         {
-            this.subs = new DrawPlanePart[] { // OMG HOPE THIS WORKS (and CPU, do not ruin it for me!!!)
+            DrawPlanePart[] _subs = new DrawPlanePart[] { // OMG HOPE THIS WORKS (and CPU, do not ruin it for me!!!)
                 new DrawPlanePart(new Point(this.centerPartPos.X - sizeWH/4, this.centerPartPos.Y - sizeWH/4), (int)Math.Ceiling((double)sizeWH/2), this), //NE
                 new DrawPlanePart(new Point(this.centerPartPos.X + sizeWH/4, this.centerPartPos.Y - sizeWH/4), (int)Math.Ceiling((double)sizeWH/2), this), //NW
                 new DrawPlanePart(new Point(this.centerPartPos.X - sizeWH/4, this.centerPartPos.Y + sizeWH/4), (int)Math.Ceiling((double)sizeWH/2), this), //SE
                 new DrawPlanePart(new Point(this.centerPartPos.X + sizeWH/4, this.centerPartPos.Y + sizeWH/4), (int)Math.Ceiling((double)sizeWH/2), this)  //SW      
             };
-            isLeaf = false;
+            this.subs = _subs;
+            this.isLeaf = false;
             return this.subs;
         }
 

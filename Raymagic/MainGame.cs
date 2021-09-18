@@ -49,7 +49,7 @@ namespace Raymagic
             map = Map.instance;
             map.LoadMaps();
             UserInit();
-            /* map.SetMap("basic"); */
+            map.UpdateLightDynamicObjectList(this);
 
             player = Player.instance;
             base.Initialize();
@@ -114,6 +114,7 @@ namespace Raymagic
         int lastMouseX = 200;
         int lastMouseY = 200;
 
+        bool mPressed = false;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -184,13 +185,37 @@ namespace Raymagic
             if(lastMouseX != -1)
                 player.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                mPressed = true;
+            }
+            if (mouse.LeftButton == ButtonState.Released && mPressed)
+            {
+                mPressed = false;
+                PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out IObject hitObj);
+                foreach(IObject dObj in map.dynamicObjectList)
+                {
+                    if(hitObj == dObj)
+                    {
+                        dObj.AddBoolean(BooleanOP.UNION, new Sphere(hit - dObj.GetPosition(), 
+                                                                    10, 
+                                                                    Color.Black, 
+                                                                    false));
+
+                        map.UpdateLightDynamicObjectList(this);
+                    }
+                }
+            }
+
             Mouse.SetPosition(200,200);
             lastMouseX = 200;
             lastMouseY = 200;
+
+
             player.Update(this, gameTime);
 
+            // test dobj movement
             map.dynamicObjectList[0].Rotate(1f,"z");
-
             float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
             map.dynamicObjectList[1].Translate(new Vector3(0,0,z));
 
@@ -227,323 +252,56 @@ namespace Raymagic
             playerLookPerpenSIDE.Normalize();
 
             // Parallel RAYMARCHING!!!
-            /* Parallel.For(0, (winHeight/detailSize) * (winWidth/detailSize),new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i => */
-            /* { */
-            /*     int y = i / (winWidth/detailSize); */
-            /*     int x = i % (winWidth/detailSize); */
+            Parallel.For(0, (winHeight/detailSize) * (winWidth/detailSize),new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i =>
+            {
+                int y = i / (winWidth/detailSize);
+                int x = i % (winWidth/detailSize);
 
-            /*     // get ray dir from camera through view plane (detailSize) "rectangles" */
-            /*     float _x = x - (winWidth /detailSize)/2 + detailSize/2; */
-            /*     float _y = y - (winHeight/detailSize)/2 + detailSize/2; */
+                // get ray dir from camera through view plane (detailSize) "rectangles"
+                float _x = x - (winWidth /detailSize)/2 + detailSize/2;
+                float _y = y - (winHeight/detailSize)/2 + detailSize/2;
 
-            /*     Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*_x*detailSize + playerLookPerpenUP*_y*detailSize) - player.position; */
+                Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*_x*detailSize + playerLookPerpenUP*_y*detailSize) - player.position;
 
-            /*     if(RayMarch(player.position, rayDir, out float length, out Color color)) */
-            /*     { */
-            /*         colors[x,y] = color; */
-            /*         lengths[x,y] = length; */
-            /*     } */
-            /* }); //35ms from in front of the blue thingy */
+                if(RayMarch(player.position, rayDir, out float length, out Color color))
+                {
+                    colors[x,y] = color;
+                    lengths[x,y] = length;
+                }
+            }); //35ms from in front of the blue thingy
             watch.Stop();
             Informer.instance.AddInfo("debug", $"--- DEBUG INFO ---");
             Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
 
-            /* watch = new Stopwatch(); */
-            /* watch.Start(); */
-            /* shapes.Begin(); */
-            /* for(int y = 0; y < (winHeight/detailSize); y++) */
-            /*     for(int x = 0; x < (winWidth/detailSize); x++) */
-            /*     { */
-            /*         shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), */ 
-            /*                              detailSize,detailSize, */ 
-            /*                              new Color(colors[x,y].R, */
-            /*                                        colors[x,y].G, */
-            /*                                        colors[x,y].B)); */
-            /*     } */
-
-            /* for(int y = -player.cursorSize; y < player.cursorSize; y++) */
-            /*     for(int x = -player.cursorSize; x < player.cursorSize; x++) */
-            /*     { */
-            /*         if(x*x + y*y < player.cursorSize+3 && x*x + y*y > player.cursorSize-3) */
-            /*         { */
-            /*             shapes.DrawRectangle(new Point(winWidth/2 + x*detailSize,winHeight/2 + y*detailSize), */ 
-            /*                                  detailSize,detailSize, */ 
-            /*                                  Color.Gold); */
-            /*         } */
-            /*     } */
-            /* shapes.End(); */
-            /* watch.Stop(); */
-            /* Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}"); */
-            /* Informer.instance.AddInfo("details", $"details: {detailSize}"); */
-
-
-            ////////////////////////////////////////////////////
-
-
-            /* DrawPlanePart DPP; */
-            /* Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*DPP.centerPartPos.X + playerLookPerpenUP*DPP.centerPartPos.Y) - player.position; */
-
-            watch = new Stopwatch();
-            watch.Start();
-            const int SUBHARDLIMIT = 5;
-            DPPList.Clear();
-
-            DrawPlanePart parent = new DrawPlanePart(new Point(0,0),winWidth);
-            DrawPlanePart[] subs = parent.Subdivide();
-            for(int i = 0; i < subs.Length; i++)
-            {
-                DrawPlanePart[] subs2 = subs[i].Subdivide();
-
-                for(int i2 = 0; i2 < subs2.Length; i2++)
-                {
-                    DrawPlanePart[] subs3 = subs2[i2].Subdivide();
-
-                    for(int i3 = 0; i3 < subs3.Length; i3++)
-                    {
-                        DrawPlanePart[] subs4 = subs3[i3].Subdivide();
-
-                        for(int i4 = 0; i4 < subs4.Length; i4++)
-                        {
-                            DrawPlanePart[] subs5 = subs4[i4].Subdivide();
-
-                            for(int i5 = 0; i5 < subs5.Length; i5++)
-                            {
-                                DrawPlanePart[] subs6 = subs5[i5].Subdivide();
-                                DPPList.AddRange(subs6);
-
-                                for(int i6 = 0; i6 < subs6.Length; i6++)
-                                {
-                                    DrawPlanePart[] subs7 = subs6[i6].Subdivide();
-                                    DPPList.AddRange(subs7);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Parallel.For(0, DPPList.Count, i => 
-            {
-                var part = DPPList[i];
-                if(part.isLeaf)
-                {
-                    Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*part.centerPartPos.X + playerLookPerpenUP*part.centerPartPos.Y) - player.position;
-
-                    if(RayMarch(player.position, rayDir, out float length, out Color color))
-                    {
-                        part.color = color;
-                    }
-                }
-            });
-
-            List<DrawPlanePart> update = new List<DrawPlanePart>();
-            int iterCount = DPPList.Count;
-            Parallel.For(0, iterCount, i => 
-            {
-                var part = DPPList[i];
-
-                List<DrawPlanePart> neighborsList = new List<DrawPlanePart>();
-                bool allColor = true;
-
-                List<DrawPlanePart> wNeighb = part.GetNeighbors("w");
-                foreach(var wPart in wNeighb)
-                {
-                    if(wPart.color != Color.Black)
-                        neighborsList.Add(wPart);
-                }
-                List<DrawPlanePart> sNeighb = part.GetNeighbors("s");
-                foreach(var sPart in sNeighb)
-                {
-                    if(sPart.color != Color.Black)
-                        neighborsList.Add(sPart);
-                }
-                List<DrawPlanePart> aNeighb = part.GetNeighbors("a");
-                foreach(var aPart in aNeighb)
-                {
-                    if(aPart.color != Color.Black)
-                        neighborsList.Add(aPart);
-                }
-                List<DrawPlanePart> dNeighb = part.GetNeighbors("d");
-                foreach(var dPart in dNeighb)
-                {
-                    if(dPart.color != Color.Black)
-                        neighborsList.Add(dPart);
-                }
-
-                if(neighborsList.Count > 0)
-                {
-                    Vector3 colorAvg = new Vector3();
-                    foreach(var neighb in neighborsList)
-                    {
-                        colorAvg += new Vector3(neighb.color.R,
-                                                neighb.color.G,
-                                                neighb.color.B);
-                    }
-                    colorAvg /= neighborsList.Count;
-
-                    float avgDist = (Math.Abs(colorAvg.X-part.color.R) + Math.Abs(colorAvg.Y-part.color.G) + Math.Abs(colorAvg.Z-part.color.B)) / 3f;
-                    part.dst = avgDist;
-
-                    if(avgDist < 0.25f || part.sizeWH < 4)
-                    {
-                        part.safe = true;
-                        part.color = new Color((int)colorAvg.X, (int)colorAvg.Y, (int)colorAvg.Z);
-                    }
-                    else
-                    {
-                        lock(lockObj)
-                            update.AddRange(part.Subdivide());
-                    }
-                }
-                else // black = fully in shadow
-                {
-                    part.dst = 0;
-                    part.safe = true;
-                }
-            });
-
-            DPPList.AddRange(update);
-
-            Parallel.For(0, DPPList.Count, i => 
-            {
-                var part = DPPList[i];
-                if(part.isLeaf && !part.safe)
-                {
-                    Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*part.centerPartPos.X + playerLookPerpenUP*part.centerPartPos.Y) - player.position;
-
-                    if(RayMarch(player.position, rayDir, out float length, out Color color))
-                    {
-                        part.color = color;
-                    }
-                }
-            });
-
-            update = new List<DrawPlanePart>();
-            iterCount = DPPList.Count;
-            Parallel.For(0, iterCount, i => 
-            {
-                var part = DPPList[i];
-                if(part.isLeaf)
-                {
-
-                    List<DrawPlanePart> neighborsList = new List<DrawPlanePart>();
-                    Color NULLCOLOR = new Color(-1,-1,-1);
-                    bool allColor = true;
-
-                    List<DrawPlanePart> wNeighb = part.GetNeighbors("w");
-                    foreach(var wPart in wNeighb)
-                    {
-                        if(wPart.color != NULLCOLOR)
-                            neighborsList.Add(wPart);
-                    }
-                    List<DrawPlanePart> sNeighb = part.GetNeighbors("s");
-                    foreach(var sPart in sNeighb)
-                    {
-                        if(sPart.color != NULLCOLOR)
-                            neighborsList.Add(sPart);
-                    }
-                    List<DrawPlanePart> aNeighb = part.GetNeighbors("a");
-                    foreach(var aPart in aNeighb)
-                    {
-                        if(aPart.color != NULLCOLOR)
-                            neighborsList.Add(aPart);
-                    }
-                    List<DrawPlanePart> dNeighb = part.GetNeighbors("d");
-                    foreach(var dPart in dNeighb)
-                    {
-                        if(dPart.color != NULLCOLOR)
-                            neighborsList.Add(dPart);
-                    }
-
-                    if(neighborsList.Count > 0)
-                    {
-                        Vector3 colorAvg = new Vector3();
-                        foreach(var neighb in neighborsList)
-                        {
-                            colorAvg += new Vector3(neighb.color.R,
-                                                    neighb.color.G,
-                                                    neighb.color.B);
-                        }
-                        colorAvg /= neighborsList.Count;
-
-                        float avgDist = (Math.Abs(colorAvg.X-part.color.R) + Math.Abs(colorAvg.Y-part.color.G) + Math.Abs(colorAvg.Z-part.color.B)) / 3f;
-                        part.dst = avgDist;
-
-                        if(avgDist < 0.25f || part.sizeWH < 4)
-                        {
-                            part.safe = true;
-                            part.color = new Color((int)colorAvg.X, (int)colorAvg.Y, (int)colorAvg.Z);
-                        }
-                        else
-                        {
-                            /* lock(lockObj) */
-                            /*     update.AddRange(part.Subdivide()); */
-                        }
-                    }
-                    else // black = fully in shadow
-                    {
-                        part.dst = 0;
-                        part.safe = true;
-                    }
-                }
-            });
-
-            watch.Stop();
-            Informer.instance.AddInfo("debug quadtree", $" quadtree phase: {watch.ElapsedMilliseconds}");
-
             watch = new Stopwatch();
             watch.Start();
             shapes.Begin();
-
-            foreach(var part in DPPList)
-            {
-                if(part.isLeaf)
+            for(int y = 0; y < (winHeight/detailSize); y++)
+                for(int x = 0; x < (winWidth/detailSize); x++)
                 {
-                    shapes.DrawRectangle(new Point(winWidth/2 + part.centerPartPos.X - part.sizeWH/2, winHeight/2+part.centerPartPos.Y - part.sizeWH/2), 
-                                         part.sizeWH,part.sizeWH, 
-                                         part.color);
+                    shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), 
+                                         detailSize,detailSize, 
+                                         new Color(colors[x,y].R,
+                                                   colors[x,y].G,
+                                                   colors[x,y].B));
                 }
-            }
 
-            /* List<DrawPlanePart> N = new List<DrawPlanePart>(); */
-            /* N.AddRange(chosen.GetNeighbors("w")); */
-            /* N.AddRange(chosen.GetNeighbors("s")); */
-            /* N.AddRange(chosen.GetNeighbors("d")); */
-            /* N.AddRange(chosen.GetNeighbors("a")); */
-            /* Console.WriteLine("START"); */
-            /* Console.WriteLine(chosen.color); */
-            /* Vector3 colorAVG = new Vector3(); */
-            /* foreach(var part in N) */
-            /* { */
-            /*     if(part.isLeaf) */
-            /*     { */
-            /*         Console.WriteLine(part.color); */
-            /*         colorAVG += new Vector3(part.color.R, part.color.G, part.color.B); */
-            /*         Console.WriteLine(colorAVG); */
-            /*     } */
-            /* } */
-            /* colorAVG /= N.Count; */
-            /* Console.WriteLine(colorAVG); */
-            /* float AVGdist = (Math.Abs(colorAVG.X-chosen.color.R) + Math.Abs(colorAVG.Y-chosen.color.G) + Math.Abs(colorAVG.Z-chosen.color.B)) / 3f; */
-            /* Console.WriteLine(AVGdist); */
-            /* Console.WriteLine(chosen.dst); */
-            /* Console.WriteLine("END"); */
+            for(int y = -player.cursorSize; y < player.cursorSize; y++)
+                for(int x = -player.cursorSize; x < player.cursorSize; x++)
+                {
+                    if(x*x + y*y < player.cursorSize+3 && x*x + y*y > player.cursorSize-3)
+                    {
+                        shapes.DrawRectangle(new Point(winWidth/2 + x*detailSize,winHeight/2 + y*detailSize), 
+                                             detailSize,detailSize, 
+                                             Color.Gold);
+                    }
+                }
 
             shapes.End();
-            foreach(var part in DPPList)
-            {
-                if(part.safe)
-                    shapes.DrawText(".", this.font, new Vector2(winWidth/2 + part.centerPartPos.X,winHeight/2+part.centerPartPos.Y), Color.Red);
-
-                if(part.isLeaf && !part.safe)
-                {
-                    /* shapes.DrawText(Math.Round(part.dst,3).ToString(), this.font, new Vector2(winWidth/2 + part.centerPartPos.X,winHeight/2+part.centerPartPos.Y), Color.Red); */
-                }
-            }
             watch.Stop();
-            Informer.instance.AddInfo("debug quadtree draw", $" quadtree draw phase: {watch.ElapsedMilliseconds}");
+            Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
+            Informer.instance.AddInfo("details", $"details: {detailSize}");
 
-            Informer.instance.AddInfo("count", DPPList.Count.ToString());
             Informer.instance.ShowInfo(new Vector2(10,10), this.font, Color.Red);
             base.Draw(gameTime);
         }
@@ -569,11 +327,14 @@ namespace Raymagic
                 float test;
                 foreach(IObject dObj in map.dynamicObjectList)
                 {
-                    test = dObj.SDF(testPos);
-                    if(test < dst)
+                    if(player.DynamicObjectOcclusionCulling(dObj))
                     {
-                        dst = test;
-                        sObj = false;
+                        test = dObj.SDF(testPos);
+                        if(test < dst)
+                        {
+                            dst = test;
+                            sObj = false;
+                        }
                     }
                 }
 
@@ -631,7 +392,7 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                foreach(IObject dObj in map.dynamicObjectList)
+                foreach(IObject dObj in light.dObjVisible) // check only dynamic objects visible to light
                 {
                     test = dObj.SDF(position + dir*length);
                     if(test < dst)

@@ -162,5 +162,16 @@ namespace Raymagic
         {
             return color;
         }
+
+        public Vector3 GetPosition()
+        {
+            if(this.staticObject)
+                return this.position;
+            else
+                return new Vector3((float)this.translateMatrix[3,0], 
+                                   (float)this.translateMatrix[3,1], 
+                                   (float)this.translateMatrix[3,2]);
+
+        }
     }
 }

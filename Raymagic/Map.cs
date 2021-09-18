@@ -16,6 +16,7 @@ namespace Raymagic
 
         public List<IObject> staticObjectList = new List<IObject>();
         public List<IObject> dynamicObjectList = new List<IObject>();
+        public List<IObject> visDynamicObjectList = new List<IObject>();
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
@@ -25,7 +26,7 @@ namespace Raymagic
         private Map()
         {
             maps = new Dictionary<string, MapData>();
-        }
+        } 
 
         public static readonly Map instance = new Map();
 
@@ -104,6 +105,27 @@ namespace Raymagic
             Console.CursorVisible = true;
 
             SaveDistanceMap(id, this.distanceMapDetail);
+        }
+
+        public void UpdateLightDynamicObjectList(MainGame game)
+        {
+            foreach(Light light in this.lightList)
+            {
+                light.dObjVisible.Clear();
+
+                Vector3 start = light.position;
+                foreach(IObject dObj in this.dynamicObjectList)
+                {
+                    Vector3 dir = dObj.GetPosition() - start;
+                    dir.Normalize();
+                    game.PhysicsRayMarch(start, dir, 500, 0, out float length, out Vector3 hit, out IObject hitObj);
+
+                    if(hitObj == dObj)
+                    {
+                        light.dObjVisible.Add(dObj);
+                    }
+                }
+            }
         }
 
         public Vector3 GetPlayerStart()

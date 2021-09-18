@@ -67,6 +67,14 @@ namespace Raymagic
             Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
 
+        public bool DynamicObjectOcclusionCulling(IObject dObj)
+        {
+            Vector3 dir = dObj.GetPosition() - this.position;
+            dir.Normalize();
+
+            return ((this.lookDir - dir).Length() < 1.5f);
+        }
+
         void BodyCollider(MainGame game, GameTime gameTime)
         {
             // body side collider

@@ -125,11 +125,17 @@ namespace Raymagic
                               new Vector3(100,20,50),
                               Color.Aqua, false);
 
+            box.AddBoolean(BooleanOP.INTERSECT, new Sphere(new Vector3(0,0,-30), 
+                                                       50, 
+                                                       Color.Black, 
+                                                       false));
+
             data.dynamicMapObjects.Add(box);
 
             Sphere sphere = new Sphere(new Vector3(200,400,150),
                                        50,
                                        Color.Lime, false);
+
 
             data.dynamicMapObjects.Add(sphere);
 
