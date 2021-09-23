@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj": {}
+  },
+  "projects": {
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj",
+        "projectName": "ConsoleRay",
+        "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj",
+        "packagesPath": "/home/marculonis/.nuget/packages/",
+        "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/marculonis/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "Extreme.Numerics.Generic": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Extreme.Numerics.SinglePrecision": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "MonoGame.Framework.DesktopGL": {
+              "target": "Package",
+              "version": "[3.8.0.1641, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
