@@ -125,7 +125,7 @@ namespace Raymagic
                               new Vector3(100,20,50),
                               Color.Aqua, false);
 
-            box.AddBoolean(BooleanOP.INTERSECT, new Sphere(new Vector3(0,0,-30), 
+            box.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,0,-30), 
                                                        50, 
                                                        Color.Black, 
                                                        false));

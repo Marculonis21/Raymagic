@@ -31,8 +31,6 @@ namespace Raymagic
 
         Stopwatch watch;
 
-        List<DrawPlanePart> DPPList = new List<DrawPlanePart>();
-
         public MainGame()
         {
             _graphics = new GraphicsDeviceManager(this);
