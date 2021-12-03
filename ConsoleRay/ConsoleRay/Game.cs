@@ -43,28 +43,89 @@ namespace ConsoleRay
 
         private void Prep()
         {
-            Sphere sphere = new Sphere(player.position + player.lookDir*300,
+            //interesting
+            /* Sphere sphere = new Sphere(player.position + player.lookDir*300, */ 
+            /*                           0, */
+            /*                           Color.White, */
+            /*                           false); */
+
+            /* Box pillar = new Box(new Vector3(0,100,0), */
+            /*                      new Vector3(50,50,100), */
+            /*                      Color.White, */
+            /*                      false); */
+            /* pillar.Rotate(50,"x"); */
+
+            /* Box pillar2 = new Box(new Vector3(-100,0,0), */
+            /*                      new Vector3(50,50,100), */
+            /*                      Color.White, */
+            /*                      false); */
+            /* pillar2.Rotate(-50,"x"); */
+            /* sphere.AddBoolean(BooleanOP.UNION, pillar); */
+            /* sphere.AddBoolean(BooleanOP.UNION, pillar2); */
+
+            Sphere sphere = new Sphere(player.position + player.lookDir*300, 
                                       0,
                                       Color.White,
                                       false);
 
-            sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(30,30,0),
-                                                          50,
-                                                          Color.White,
-                                                          false));
-            sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(-40,-20,-20),
-                                                          30,
-                                                          Color.White,
-                                                          false));
+            Box pillar = new Box(new Vector3(0,-75,0),
+                                 new Vector3(50,50,120),
+                                 Color.White,
+                                 false);
+            pillar.Rotate(60,"x");
 
-            sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(-50,-40,40),
-                                                          20,
-                                                          Color.White,
-                                                          false));
+            Box pillar2 = new Box(new Vector3(0,75,0),
+                                 new Vector3(50,50,120),
+                                 Color.White,
+                                 false);
+            pillar2.Rotate(-60,"x");
+
+            Box pillar3 = new Box(new Vector3(0,-100,-75),
+                                 new Vector3(50,50,120),
+                                 Color.White,
+                                 false);
+
+            Box pillar4 = new Box(new Vector3(0,100,-75),
+                                 new Vector3(50,50,120),
+                                 Color.White,
+                                 false);
+
+            sphere.AddBoolean(BooleanOP.UNION, pillar);
+            sphere.AddBoolean(BooleanOP.UNION, pillar2);
+            sphere.AddBoolean(BooleanOP.UNION, pillar3);
+            sphere.AddBoolean(BooleanOP.UNION, pillar4);
+
+            sphere.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,150,-50),
+                                                               50,
+                                                               Color.White,
+                                                               false));
+
+            sphere.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,-250,-100),
+                                                               150,
+                                                               Color.White,
+                                                               false));
+
+            sphere.Translate(new Vector3(0,0,75));
+            /* mainBox.AddBoolean(BooleanOP.INTERSECT) */
+
+
+            /* sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(30,30,0), */
+            /*                                               50, */
+            /*                                               Color.White, */
+            /*                                               false)); */
+            /* sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(-40,-20,-20), */
+            /*                                               30, */
+            /*                                               Color.White, */
+            /*                                               false)); */
+
+            /* sphere.AddBoolean(BooleanOP.UNION, new Box(new Vector3(-50,-40,40), */
+            /*                                            new Vector3(50,50,50), */
+            /*                                            Color.White, */
+            /*                                            false)); */
 
             objectList.Add(sphere);
 
-            lightList.Add(new Light(player.position + player.lookDir*200 + new Vector3(0,300,300),
+            lightList.Add(new Light(player.position + new Vector3(0,300,300),
                                     500));
         }
 
@@ -94,7 +155,7 @@ namespace ConsoleRay
             /* float z = (float)Math.Sin(gameWatch.Elapsed.TotalMilliseconds / 1000f); */
             /* objectList[0].Translate(new Vector3(0,0,z)); */
 
-            objectList[0].Rotate(5f,"z");
+            objectList[0].Rotate(2.5f,"z");
 
 
             Vector3 playerLookDir = player.lookDir;
