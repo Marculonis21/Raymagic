@@ -7,7 +7,7 @@ namespace ConsoleRay
     {
         float size;
 
-        public Sphere(Vector3 position, float size, Color color, bool staticObject = true) : base()
+        public Sphere(Vector3 position, float size, ConsoleColor color, bool staticObject = true) : base()
         {
             this.position = position;
             this.size = size;

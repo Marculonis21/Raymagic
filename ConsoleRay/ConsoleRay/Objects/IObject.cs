@@ -9,7 +9,7 @@ namespace ConsoleRay
     public abstract class IObject
     {
         protected Vector3 position;
-        protected Color color;
+        protected ConsoleColor color;
 
         protected bool staticObject;
 
@@ -148,9 +148,14 @@ namespace ConsoleRay
 
         }
 
-        public Color GetColor()
+
+        public ConsoleColor GetColor()
         {
             return color;
+        }
+        public void SetColor(ConsoleColor color)
+        {
+            this.color = color;
         }
 
         public Vector3 GetPosition()

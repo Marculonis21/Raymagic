@@ -7,7 +7,7 @@ namespace ConsoleRay
     {
         Vector3 size;
 
-        public Box(Vector3 position, Vector3 size, Color color, bool staticObject = true) : base()
+        public Box(Vector3 position, Vector3 size, ConsoleColor color, bool staticObject = true) : base()
         {
             this.position = position;
             this.size = size;

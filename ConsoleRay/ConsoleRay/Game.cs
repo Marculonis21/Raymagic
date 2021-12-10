@@ -41,6 +41,7 @@ namespace ConsoleRay
             Run();
         }
 
+        Sphere[] centerSphere;
         private void Prep()
         {
             //interesting
@@ -63,67 +64,64 @@ namespace ConsoleRay
             /* sphere.AddBoolean(BooleanOP.UNION, pillar); */
             /* sphere.AddBoolean(BooleanOP.UNION, pillar2); */
 
-            Sphere sphere = new Sphere(player.position + player.lookDir*300, 
-                                      0,
-                                      Color.White,
-                                      false);
+            centerSphere = new Sphere[5];
+            for (int i = 0; i < centerSphere.Length; i++)
+            {
+                centerSphere[i] = new Sphere(player.position + player.lookDir*300, 
+                                             0,
+                                             ConsoleColor.White,
+                                             false);
+                
+            }
+
+            Box planeBox = new Box(new Vector3(0,0,-185),
+                                   new Vector3(320,320,100),
+                                   ConsoleColor.White,
+                                   false);
+
+            planeBox.AddBoolean(BooleanOP.INTERSECT, new Sphere(new Vector3(0,0,300),
+                                                                290,
+                                                                ConsoleColor.White,
+                                                                false));
+
+            centerSphere[0].AddBoolean(BooleanOP.UNION, planeBox);
 
             Box pillar = new Box(new Vector3(0,-75,0),
                                  new Vector3(50,50,120),
-                                 Color.White,
+                                 ConsoleColor.Red,
                                  false);
             pillar.Rotate(60,"x");
+            centerSphere[1].AddBoolean(BooleanOP.UNION, pillar);
 
             Box pillar2 = new Box(new Vector3(0,75,0),
                                  new Vector3(50,50,120),
-                                 Color.White,
+                                 ConsoleColor.White,
                                  false);
             pillar2.Rotate(-60,"x");
+            centerSphere[2].AddBoolean(BooleanOP.UNION, pillar2);
 
             Box pillar3 = new Box(new Vector3(0,-100,-75),
                                  new Vector3(50,50,120),
-                                 Color.White,
+                                 ConsoleColor.White,
                                  false);
+            centerSphere[3].AddBoolean(BooleanOP.UNION, pillar3);
 
             Box pillar4 = new Box(new Vector3(0,100,-75),
                                  new Vector3(50,50,120),
-                                 Color.White,
+                                 ConsoleColor.White,
                                  false);
-
-            sphere.AddBoolean(BooleanOP.UNION, pillar);
-            sphere.AddBoolean(BooleanOP.UNION, pillar2);
-            sphere.AddBoolean(BooleanOP.UNION, pillar3);
-            sphere.AddBoolean(BooleanOP.UNION, pillar4);
-
-            sphere.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,150,-50),
-                                                               50,
-                                                               Color.White,
-                                                               false));
-
-            sphere.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,-250,-100),
-                                                               150,
-                                                               Color.White,
-                                                               false));
-
-            sphere.Translate(new Vector3(0,0,75));
-            /* mainBox.AddBoolean(BooleanOP.INTERSECT) */
+            centerSphere[4].AddBoolean(BooleanOP.UNION, pillar4);
+            for (int i = 1; i < 5; i++)
+            {
+                centerSphere[i].SetColor(ConsoleColor.Red);
+            }
 
 
-            /* sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(30,30,0), */
-            /*                                               50, */
-            /*                                               Color.White, */
-            /*                                               false)); */
-            /* sphere.AddBoolean(BooleanOP.UNION, new Sphere(new Vector3(-40,-20,-20), */
-            /*                                               30, */
-            /*                                               Color.White, */
-            /*                                               false)); */
-
-            /* sphere.AddBoolean(BooleanOP.UNION, new Box(new Vector3(-50,-40,40), */
-            /*                                            new Vector3(50,50,50), */
-            /*                                            Color.White, */
-            /*                                            false)); */
-
-            objectList.Add(sphere);
+            for (int i = 0; i < centerSphere.Length; i++)
+            {
+                centerSphere[i].Translate(new Vector3(0,0,75));
+                objectList.Add(centerSphere[i]);
+            }
 
             lightList.Add(new Light(player.position + new Vector3(0,300,300),
                                     500));
@@ -155,7 +153,11 @@ namespace ConsoleRay
             /* float z = (float)Math.Sin(gameWatch.Elapsed.TotalMilliseconds / 1000f); */
             /* objectList[0].Translate(new Vector3(0,0,z)); */
 
-            objectList[0].Rotate(2.5f,"z");
+            for (int i = 0; i < centerSphere.Length; i++)
+            {
+                
+                centerSphere[i].Rotate(2.5f, "z");
+            }
 
 
             Vector3 playerLookDir = player.lookDir;
@@ -177,6 +179,7 @@ namespace ConsoleRay
 
 
             Color[,] colors = new Color[(int)(winWidth/detailSize),(int)(winHeight/detailSize)];
+            ConsoleColor[,] textColor = new ConsoleColor[(int)(winWidth/detailSize),(int)(winHeight/detailSize)];
             Parallel.For(0, (int)(winHeight/detailSize) * (int)(winWidth/detailSize),new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i =>
             { 
             /* for(int y = 0; y < winHeight/detailSize; y++) */
@@ -192,9 +195,10 @@ namespace ConsoleRay
 
                 Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*X*detailSize + playerLookPerpenUP*Y*detailSize) - player.position;
 
-                if(RayMarch(player.position, rayDir, out float length, out Color color))
+                if(RayMarch(player.position, rayDir, out float length, out Color color, out ConsoleColor tColor))
                 {
                     colors[x,y] = color;
+                    textColor[x,y] = tColor;
                 }
             });
 
@@ -211,6 +215,7 @@ namespace ConsoleRay
 
                     int intensity = colors[x,y].R;
 
+                    Console.ForegroundColor = textColor[x,y];
                     if(intensity <= 21)
                     {
                         Console.Write(lumimanceValue[0]);
@@ -265,9 +270,10 @@ namespace ConsoleRay
             Console.CursorVisible = true;
         }
 
-        public bool RayMarch(Vector3 position, Vector3 dir, out float length, out Color color)
+        public bool RayMarch(Vector3 position, Vector3 dir, out float length, out Color color, out ConsoleColor tColor)
         {
             color = Color.Pink;
+            tColor = ConsoleColor.Magenta;
             length = 2000;
 
             dir.Normalize();
@@ -290,7 +296,7 @@ namespace ConsoleRay
                 if(dst < 0.1f)
                 {
                     float bestDst = 9999;
-                    Color bestColor = color;
+                    ConsoleColor bestColor = tColor;
                     IObject bestObj = null; 
                     foreach(IObject obj in this.objectList)
                     {
@@ -313,9 +319,10 @@ namespace ConsoleRay
                         lightIntensity += LightRayMarch(startPos, light);
                     }
 
-                    color = new Color(bestColor.R*lightIntensity,
-                                      bestColor.G*lightIntensity,
-                                      bestColor.B*lightIntensity);
+                    color = new Color(255*lightIntensity,
+                                      255*lightIntensity,
+                                      255*lightIntensity);
+                    tColor = bestColor;
 
                     return true;
                 }

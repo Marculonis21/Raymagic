@@ -7,7 +7,7 @@ namespace ConsoleRay
     {
         Vector3 normal;
 
-        public Plane(Vector3 position, Vector3 normal, Color color) : base()
+        public Plane(Vector3 position, Vector3 normal, ConsoleColor color) : base()
         {
             this.position = position;
             this.normal = normal;
