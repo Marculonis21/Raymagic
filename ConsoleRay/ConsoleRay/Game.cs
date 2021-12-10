@@ -13,7 +13,7 @@ namespace ConsoleRay
 
         Player player;
 
-        int winWidth = 35;
+        int winWidth = 36;
         int winHeight = 20;
         float detailSize = 0.5f; 
 
@@ -64,10 +64,10 @@ namespace ConsoleRay
             /* sphere.AddBoolean(BooleanOP.UNION, pillar); */
             /* sphere.AddBoolean(BooleanOP.UNION, pillar2); */
 
-            centerSphere = new Sphere[5];
+            centerSphere = new Sphere[2];
             for (int i = 0; i < centerSphere.Length; i++)
             {
-                centerSphere[i] = new Sphere(player.position + player.lookDir*300, 
+                centerSphere[i] = new Sphere(player.position + player.lookDir*320, 
                                              0,
                                              ConsoleColor.White,
                                              false);
@@ -88,7 +88,7 @@ namespace ConsoleRay
 
             Box pillar = new Box(new Vector3(0,-75,0),
                                  new Vector3(50,50,120),
-                                 ConsoleColor.Red,
+                                 ConsoleColor.White,
                                  false);
             pillar.Rotate(60,"x");
             centerSphere[1].AddBoolean(BooleanOP.UNION, pillar);
@@ -98,24 +98,21 @@ namespace ConsoleRay
                                  ConsoleColor.White,
                                  false);
             pillar2.Rotate(-60,"x");
-            centerSphere[2].AddBoolean(BooleanOP.UNION, pillar2);
+            centerSphere[1].AddBoolean(BooleanOP.UNION, pillar2);
 
             Box pillar3 = new Box(new Vector3(0,-100,-75),
                                  new Vector3(50,50,120),
                                  ConsoleColor.White,
                                  false);
-            centerSphere[3].AddBoolean(BooleanOP.UNION, pillar3);
+            centerSphere[1].AddBoolean(BooleanOP.UNION, pillar3);
 
             Box pillar4 = new Box(new Vector3(0,100,-75),
                                  new Vector3(50,50,120),
                                  ConsoleColor.White,
                                  false);
-            centerSphere[4].AddBoolean(BooleanOP.UNION, pillar4);
-            for (int i = 1; i < 5; i++)
-            {
-                centerSphere[i].SetColor(ConsoleColor.Red);
-            }
+            centerSphere[1].AddBoolean(BooleanOP.UNION, pillar4);
 
+            centerSphere[1].SetColor(ConsoleColor.DarkRed);
 
             for (int i = 0; i < centerSphere.Length; i++)
             {
@@ -264,8 +261,9 @@ namespace ConsoleRay
                     {
                         Console.Write(lumimanceValue[11]);
                     }
+                    Console.ResetColor();
                 }
-                Console.Write("|\n");
+                Console.Write("\n");
             }
             Console.CursorVisible = true;
         }
