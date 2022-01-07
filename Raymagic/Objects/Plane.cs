@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public class Plane : IObject
+    public class Plane : Object
     {
         Vector3 normal;
 

@@ -8,7 +8,7 @@ using Matrix = Extreme.Mathematics.Matrix;
 
 namespace Raymagic
 {
-    public abstract class IObject
+    public abstract class Object
     {
         protected Vector3 position;
         protected Color color;
@@ -16,13 +16,13 @@ namespace Raymagic
         protected bool staticObject;
 
         protected List<BooleanOP> booleanOp = new List<BooleanOP>();
-        protected List<IObject> booleanObj = new List<IObject>();
+        protected List<Object> booleanObj = new List<Object>();
 
         protected Matrix<double> translateMatrix = Matrix.Create<double>(4,4);
         protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
         protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
 
-        public IObject()
+        public Object()
         {
             this.translateMatrix[0,0] = 1;
             this.translateMatrix[1,1] = 1;
@@ -35,7 +35,7 @@ namespace Raymagic
             this.rotationMatrix[3,3] = 1;
         }
 
-        public void AddBoolean(BooleanOP op, IObject obj)
+        public void AddBoolean(BooleanOP op, Object obj)
         {
             booleanOp.Add(op);
             if(this.staticObject)
@@ -91,7 +91,7 @@ namespace Raymagic
 
             this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
 
-            foreach(IObject obj in booleanObj)
+            foreach(Object obj in booleanObj)
             {
                 obj.Translate(translation);
             }
@@ -134,7 +134,7 @@ namespace Raymagic
             this.rotationMatrix *= rotM;
             this.transformInverse = (this.rotationMatrix * this.translateMatrix).GetInverse();
 
-            foreach(IObject obj in booleanObj)
+            foreach(Object obj in booleanObj)
             {
                 obj.Rotate(angle, axis);
             }

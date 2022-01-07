@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public class Sphere : IObject
+    public class Sphere : Object
     {
         float size;
 

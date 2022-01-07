@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -190,8 +188,8 @@ namespace Raymagic
             if (mouse.LeftButton == ButtonState.Released && mPressed)
             {
                 mPressed = false;
-                PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out IObject hitObj);
-                foreach(IObject dObj in map.dynamicObjectList)
+                PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj);
+                foreach(Object dObj in map.dynamicObjectList)
                 {
                     if(hitObj == dObj)
                     {
@@ -323,7 +321,7 @@ namespace Raymagic
                                             (int)(cords.Z/map.distanceMapDetail)];
 
                 float test;
-                foreach(IObject dObj in map.dynamicObjectList)
+                foreach(Object dObj in map.dynamicObjectList)
                 {
                     if(player.DynamicObjectOcclusionCulling(dObj))
                     {
@@ -340,8 +338,8 @@ namespace Raymagic
                 {
                     float bestDst = 9999;
                     Color bestColor = color;
-                    IObject bestObj = null; 
-                    foreach(IObject obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
+                    Object bestObj = null; 
+                    foreach(Object obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
                     {
                         test = obj.SDF(testPos);
                         if(test < bestDst)
@@ -390,7 +388,7 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                foreach(IObject dObj in light.dObjVisible) // check only dynamic objects visible to light
+                foreach(Object dObj in light.dObjVisible) // check only dynamic objects visible to light
                 {
                     test = dObj.SDF(position + dir*length);
                     if(test < dst)
@@ -416,7 +414,7 @@ namespace Raymagic
             return intensity/(length*length);
         }
 
-        public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out IObject hitObj)
+        public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)
         {
             hit = position;
             length = 2000;
@@ -430,7 +428,7 @@ namespace Raymagic
             for (int iter = 0; iter < maxSteps; iter++)
             {
                 dst = 9999;
-                foreach(IObject obj in map.staticObjectList)
+                foreach(Object obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos);
                     if(test < dst)
@@ -440,7 +438,7 @@ namespace Raymagic
                     }
                 }
 
-                foreach(IObject dObj in map.dynamicObjectList)
+                foreach(Object dObj in map.dynamicObjectList)
                 {
                     test = dObj.SDF(testPos);
                     if(test < dst)

@@ -5,8 +5,8 @@ namespace Raymagic
 {
     public class MapData
     {
-        public List<IObject> staticMapObjects = new List<IObject>();
-        public List<IObject> dynamicMapObjects = new List<IObject>();
+        public List<Object> staticMapObjects = new List<Object>();
+        public List<Object> dynamicMapObjects = new List<Object>();
         public List<Light> mapLights = new List<Light>();
         public Vector3 playerSpawn;
 

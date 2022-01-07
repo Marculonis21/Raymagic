@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public class Box : IObject
+    public class Box : Object
     {
         Vector3 size;
 

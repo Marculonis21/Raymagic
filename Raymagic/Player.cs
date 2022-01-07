@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Raymagic
 {
@@ -67,7 +66,7 @@ namespace Raymagic
             Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
 
-        public bool DynamicObjectOcclusionCulling(IObject dObj)
+        public bool DynamicObjectOcclusionCulling(Object dObj)
         {
             Vector3 dir = dObj.GetPosition() - this.position;
             dir.Normalize();
@@ -87,7 +86,7 @@ namespace Raymagic
                 testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0);
                 testDir.Normalize();
 
-                game.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out IObject obj); 
+                game.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out Object obj); 
 
                 if(width <= size.X/2)
                 {
@@ -99,7 +98,7 @@ namespace Raymagic
             }
 
             // maintain height above ground (stairs/steps) 
-            game.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out IObject _);
+            game.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out Object _);
             if(length < size.Y)
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
@@ -111,7 +110,7 @@ namespace Raymagic
         {
             // fall
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out IObject _);
+            game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out Object _);
 
             if(length > 0)
             {

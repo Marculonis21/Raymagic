@@ -14,9 +14,8 @@ namespace Raymagic
         public Dictionary<string, MapData> maps {get; private set;}
         MapData data;
 
-        public List<IObject> staticObjectList = new List<IObject>();
-        public List<IObject> dynamicObjectList = new List<IObject>();
-        public List<IObject> visDynamicObjectList = new List<IObject>();
+        public List<Object> staticObjectList = new List<Object>();
+        public List<Object> dynamicObjectList = new List<Object>();
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
@@ -90,7 +89,7 @@ namespace Raymagic
 
                     float d;
                     float dBest = 9999;
-                    foreach(IObject obj in this.staticObjectList)
+                    foreach(Object obj in this.staticObjectList)
                     {
                         d = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
                                                             y*distanceMapDetail, 
@@ -114,11 +113,11 @@ namespace Raymagic
                 light.dObjVisible.Clear();
 
                 Vector3 start = light.position;
-                foreach(IObject dObj in this.dynamicObjectList)
+                foreach(Object dObj in this.dynamicObjectList)
                 {
                     Vector3 dir = dObj.GetPosition() - start;
                     dir.Normalize();
-                    game.PhysicsRayMarch(start, dir, 500, 0, out float length, out Vector3 hit, out IObject hitObj);
+                    game.PhysicsRayMarch(start, dir, 500, 0, out float length, out Vector3 hit, out Object hitObj);
 
                     if(hitObj == dObj)
                     {
@@ -160,7 +159,7 @@ namespace Raymagic
 
                 Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm loaded");
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("unable to load");
             }

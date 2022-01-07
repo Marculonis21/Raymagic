@@ -9,7 +9,7 @@ namespace Raymagic
         public float intensity {get; private set;}
         /* public Color color {get; private set;} */
 
-        public List<IObject> dObjVisible = new List<IObject>();
+        public List<Object> dObjVisible = new List<Object>();
 
         public Light(Vector3 position, float intensity)
         {
