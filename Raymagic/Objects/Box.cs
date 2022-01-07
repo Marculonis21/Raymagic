@@ -7,36 +7,31 @@ namespace Raymagic
     {
         Vector3 size;
 
-        public Box(Vector3 position, Vector3 size, Color color, bool staticObject = true) : base()
+        public Box(Vector3 position, Vector3 size, Color color, bool staticObject = true, float boundingSize = 0, string info="") : base(position, color, staticObject, boundingSize, info)
         {
-            this.position = position;
             this.size = size;
-            this.color = color;
-            this.staticObject = staticObject;
-
-            if(!staticObject)
-            {
-                this.Translate(this.position);
-                this.position = new Vector3();
-            }
         }
 
-        public override float SDF(Vector3 testPos)
+        public override float SDF(Vector3 testPos, float minDist, bool physics)
         {
-            float dst = SDFs.Box(this.staticObject ? testPos : Transform(testPos), this.position, this.size);
+            Vector3 tPos = this.staticObject ? testPos : Transform(testPos);
+            if(!this.staticObject && !physics)
+                if(minDist <= SDFs.Sphere(tPos, this.position, this.boundingSize)) return minDist + 1;
+
+            float dst = SDFs.Box(tPos, this.position, this.size);
 
             for(int i = 0; i < this.booleanObj.Count; i++)
             {
                 switch(this.booleanOp[i])
                 {
                     case BooleanOP.DIFFERENCE:
-                        dst = SDFs.BooleanDifference(dst, this.booleanObj[i].SDF(testPos));
+                        dst = SDFs.BooleanDifference(dst, this.booleanObj[i].SDF(testPos,minDist));
                         break;
                     case BooleanOP.INTERSECT:
-                        dst = SDFs.BooleanIntersect(dst, this.booleanObj[i].SDF(testPos));
+                        dst = SDFs.BooleanIntersect(dst, this.booleanObj[i].SDF(testPos,minDist));
                         break;
                     case BooleanOP.UNION:
-                        dst = SDFs.BooleanUnion(dst, this.booleanObj[i].SDF(testPos));
+                        dst = SDFs.BooleanUnion(dst, this.booleanObj[i].SDF(testPos,minDist));
                         break;
                     default: 
                         throw new Exception("Unknown boolean operation!");

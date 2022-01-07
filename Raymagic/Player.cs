@@ -68,7 +68,7 @@ namespace Raymagic
 
         public bool DynamicObjectOcclusionCulling(Object dObj)
         {
-            Vector3 dir = dObj.GetPosition() - this.position;
+            Vector3 dir = dObj.Position - this.position;
             dir.Normalize();
 
             return ((this.lookDir - dir).Length() < 1.5f);

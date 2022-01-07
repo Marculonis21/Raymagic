@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-/* using MathNet.Numerics.LinearAlgebra; */
-/* using MathNet.Numerics.LinearAlgebra.Storage; */
 using Extreme.Mathematics;
 using Matrix = Extreme.Mathematics.Matrix;
 
@@ -12,7 +10,9 @@ namespace Raymagic
     {
         protected Vector3 position;
         protected Color color;
+        protected string info;
 
+        protected float boundingSize;
         protected bool staticObject;
 
         protected List<BooleanOP> booleanOp = new List<BooleanOP>();
@@ -22,7 +22,7 @@ namespace Raymagic
         protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
         protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
 
-        public Object()
+        public Object(Vector3 position, Color color, bool staticObject, float boundingSize, string info)
         {
             this.translateMatrix[0,0] = 1;
             this.translateMatrix[1,1] = 1;
@@ -33,6 +33,18 @@ namespace Raymagic
             this.rotationMatrix[1,1] = 1;
             this.rotationMatrix[2,2] = 1;
             this.rotationMatrix[3,3] = 1;
+
+            this.position = position;
+            this.color = color;
+            this.staticObject = staticObject;
+            this.boundingSize = boundingSize;
+            this.info = info;
+
+            if(!staticObject)
+            {
+                this.Translate(this.position);
+                this.position = new Vector3();
+            }
         }
 
         public void AddBoolean(BooleanOP op, Object obj)
@@ -60,7 +72,7 @@ namespace Raymagic
             booleanObj.Add(obj);
         }
 
-        public abstract float SDF(Vector3 testPos);
+        public abstract float SDF(Vector3 testPos, float minDist, bool physics=false);
 
         public Vector3 SDF_normal(Vector3 testPos)
         {
@@ -75,9 +87,9 @@ namespace Raymagic
             Vector3 pZ = new Vector3(p.X, p.Y, p.Z + EPS);
             Vector3 mZ = new Vector3(p.X, p.Y, p.Z - EPS);
 
-            Vector3 normal = new Vector3(SDF(pX) - SDF(mX),
-                                         SDF(pY) - SDF(mY),
-                                         SDF(pZ) - SDF(mZ)); 
+            Vector3 normal = new Vector3(SDF(pX,float.MaxValue) - SDF(mX,float.MaxValue),
+                                         SDF(pY,float.MaxValue) - SDF(mY,float.MaxValue),
+                                         SDF(pZ,float.MaxValue) - SDF(mZ,float.MaxValue)); 
             normal.Normalize();
 
             return normal;
@@ -158,20 +170,21 @@ namespace Raymagic
 
         }
 
-        public Color GetColor()
+        public Color Color { get => color; }
+        public Vector3 Position
         {
-            return color;
+            get 
+            {
+                if(this.staticObject)
+                    return this.position;
+                else
+                    return new Vector3((float)this.translateMatrix[3,0], 
+                                       (float)this.translateMatrix[3,1], 
+                                       (float)this.translateMatrix[3,2]);
+            }
         }
 
-        public Vector3 GetPosition()
-        {
-            if(this.staticObject)
-                return this.position;
-            else
-                return new Vector3((float)this.translateMatrix[3,0], 
-                                   (float)this.translateMatrix[3,1], 
-                                   (float)this.translateMatrix[3,2]);
-
-        }
+        public string Info { get => info; }
+        public bool Static { get => staticObject; }
     }
 }

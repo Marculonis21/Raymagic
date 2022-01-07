@@ -93,7 +93,7 @@ namespace Raymagic
                     {
                         d = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
                                                             y*distanceMapDetail, 
-                                                            z*distanceMapDetail));
+                                                            z*distanceMapDetail),dBest);
                         if(d < dBest)
                             dBest = d;
                     }
@@ -115,7 +115,7 @@ namespace Raymagic
                 Vector3 start = light.position;
                 foreach(Object dObj in this.dynamicObjectList)
                 {
-                    Vector3 dir = dObj.GetPosition() - start;
+                    Vector3 dir = dObj.Position - start;
                     dir.Normalize();
                     game.PhysicsRayMarch(start, dir, 500, 0, out float length, out Vector3 hit, out Object hitObj);
 

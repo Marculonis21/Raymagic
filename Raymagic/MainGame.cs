@@ -116,46 +116,16 @@ namespace Raymagic
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D1)) 
-            {
-                detailSize = 1;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D2)) 
-            {
-                detailSize = 2;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D3)) 
-            {
-                detailSize = 3;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D4)) 
-            {
-                detailSize = 4;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D5)) 
-            {
-                detailSize = 5;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D6)) 
-            {
-                detailSize = 6;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D7)) 
-            {
-                detailSize = 7;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D8)) 
-            {
-                detailSize = 8;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D9)) 
-            {
-                detailSize = 9;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D0)) 
-            {
-                detailSize = 10;
-            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) detailSize = 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) detailSize = 2; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) detailSize = 3; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) detailSize = 4; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) detailSize = 5; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) detailSize = 6; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) detailSize = 7; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) detailSize = 8; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) detailSize = 9; 
+            if (Keyboard.GetState().IsKeyDown(Keys.D0)) detailSize = 10;
 
             if (Keyboard.GetState().IsKeyDown(Keys.W)) 
                 player.position += new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
@@ -193,7 +163,7 @@ namespace Raymagic
                 {
                     if(hitObj == dObj)
                     {
-                        dObj.AddBoolean(BooleanOP.UNION, new Sphere(hit - dObj.GetPosition(), 
+                        dObj.AddBoolean(BooleanOP.UNION, new Sphere(hit - dObj.Position, 
                                                                     10, 
                                                                     Color.Black, 
                                                                     false));
@@ -292,8 +262,8 @@ namespace Raymagic
                                              Color.Gold);
                     }
                 }
-
             shapes.End();
+
             watch.Stop();
             Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
             Informer.instance.AddInfo("details", $"details: {detailSize}");
@@ -325,7 +295,7 @@ namespace Raymagic
                 {
                     if(player.DynamicObjectOcclusionCulling(dObj))
                     {
-                        test = dObj.SDF(testPos);
+                        test = dObj.SDF(testPos, dst);
                         if(test < dst)
                         {
                             dst = test;
@@ -341,11 +311,11 @@ namespace Raymagic
                     Object bestObj = null; 
                     foreach(Object obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
                     {
-                        test = obj.SDF(testPos);
+                        test = obj.SDF(testPos, dst);
                         if(test < bestDst)
                         {
                             bestDst = test;
-                            bestColor = obj.GetColor();
+                            bestColor = obj.Color;
                             bestObj = obj;
                         }
                     }
@@ -388,9 +358,10 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                foreach(Object dObj in light.dObjVisible) // check only dynamic objects visible to light
+                /* foreach(Object dObj in light.dObjVisible) // check only dynamic objects visible to light */
+                foreach(Object dObj in map.dynamicObjectList) 
                 {
-                    test = dObj.SDF(position + dir*length);
+                    test = dObj.SDF(position + dir*length, dst);
                     if(test < dst)
                         dst = test;
                 }
@@ -430,7 +401,7 @@ namespace Raymagic
                 dst = 9999;
                 foreach(Object obj in map.staticObjectList)
                 {
-                    test = obj.SDF(testPos);
+                    test = obj.SDF(testPos, dst);
                     if(test < dst)
                     {
                         dst = test;
@@ -440,7 +411,7 @@ namespace Raymagic
 
                 foreach(Object dObj in map.dynamicObjectList)
                 {
-                    test = dObj.SDF(testPos);
+                    test = dObj.SDF(testPos, dst, physics:true);
                     if(test < dst)
                     {
                         dst = test;
