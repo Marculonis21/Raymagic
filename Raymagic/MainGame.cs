@@ -16,8 +16,6 @@ namespace Raymagic
 
         Shapes shapes;
 
-        /* int winWidth = 1200; */
-        /* int winHeight = 900; */
         int winWidth = 1024;
         int winHeight = 1024;
         int detailSize = 10; 
@@ -106,8 +104,7 @@ namespace Raymagic
                 }
             }
         }
-
-        int lastMouseX = 200;
+int lastMouseX = 200;
         int lastMouseY = 200;
 
         bool mPressed = false;
@@ -177,19 +174,16 @@ namespace Raymagic
             lastMouseX = 200;
             lastMouseY = 200;
 
-
             player.Update(this, gameTime);
 
             // test dobj movement
-            map.dynamicObjectList[0].Rotate(1f,"z");
+            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
             float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
-            map.dynamicObjectList[1].Translate(new Vector3(0,0,z));
+            /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
 
             base.Update(gameTime);
         }
         
-        private readonly object lockObj = new object();
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Pink);
