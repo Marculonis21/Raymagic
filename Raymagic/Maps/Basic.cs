@@ -122,23 +122,23 @@ namespace Raymagic
 
             data.staticMapObjects.Add(platform);
 
-            /* Box box = new Box(new Vector3(400,200,75), */
-            /*                   new Vector3(100,20,50), */
-            /*                   Color.Aqua, false, 60); */
+            Box box = new Box(new Vector3(400,200,75),
+                              new Vector3(100,20,50),
+                              Color.Aqua, false, 60);
 
-            /* box.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,0,-30), */ 
-            /*                                            50, */ 
-            /*                                            Color.Black, */ 
-            /*                                            false, */ 
-            /*                                            60)); */
+            box.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,0,-30), 
+                                                       50, 
+                                                       Color.Black, 
+                                                       false, 
+                                                       60));
 
-            /* data.dynamicMapObjects.Add(box); */
+            data.dynamicMapObjects.Add(box);
 
             Sphere sphere = new Sphere(new Vector3(200,400,150),
                                        50,
                                        Color.Lime, false, 60);
 
-            /* data.dynamicMapObjects.Add(sphere); */
+            data.dynamicMapObjects.Add(sphere);
 
             Light light = new Light(new Vector3(600,550,200),
                                     50);

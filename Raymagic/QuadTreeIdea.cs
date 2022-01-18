@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-
 namespace Raymagic
 {
     //copy from main game draw function

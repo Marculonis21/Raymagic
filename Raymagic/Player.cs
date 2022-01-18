@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Raymagic
 {
@@ -14,7 +15,7 @@ namespace Raymagic
 
         float gravity = 0.05f;
 
-        public int cursorSize = 8;
+        public int cursorSize = 10;
 
         public Vector3 lookDir {get; private set;}
 
@@ -28,6 +29,33 @@ namespace Raymagic
         }
 
         public static readonly Player instance = new Player();
+
+        int lastMouseX = 200;
+        int lastMouseY = 200;
+        public void Controlls(GameTime gameTime, MouseState mouse)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.W)) 
+                this.position += new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,(float)Math.Sin(this.rotation.X*Math.PI/180)*2,0);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) 
+                this.position -= new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,(float)Math.Sin(this.rotation.X*Math.PI/180)*2,0);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+                this.position -= new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,0);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.D)) 
+                this.position += new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,0);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)) 
+                this.Jump(gameTime);
+
+            if(lastMouseX != -1)
+                this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
+
+            Mouse.SetPosition(200,200);
+            lastMouseX = 200;
+            lastMouseY = 200;
+        }
 
         public void Rotate(Vector2 rot)
         {

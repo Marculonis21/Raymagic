@@ -23,6 +23,7 @@ namespace Raymagic
         Map map;
         Player player;
         int zoom = 450;
+
         SpriteFont font;
 
         Stopwatch watch;
@@ -104,8 +105,6 @@ namespace Raymagic
                 }
             }
         }
-int lastMouseX = 200;
-        int lastMouseY = 200;
 
         bool mPressed = false;
         protected override void Update(GameTime gameTime)
@@ -124,62 +123,37 @@ int lastMouseX = 200;
             if (Keyboard.GetState().IsKeyDown(Keys.D9)) detailSize = 9; 
             if (Keyboard.GetState().IsKeyDown(Keys.D0)) detailSize = 10;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.W)) 
-                player.position += new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) 
-                player.position -= new Vector3((float)Math.Cos(player.rotation.X*Math.PI/180)*2,(float)Math.Sin(player.rotation.X*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-                player.position -= new Vector3((float)Math.Cos((90+player.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+player.rotation.X)*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D)) 
-                player.position += new Vector3((float)Math.Cos((90+player.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+player.rotation.X)*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space)) 
-                player.Jump(gameTime);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.PageUp)) 
-                zoom+=10;
-            if (Keyboard.GetState().IsKeyDown(Keys.PageDown)) 
-                zoom-=10;
-
             MouseState mouse = Mouse.GetState(this.Window);
-            if(lastMouseX != -1)
-                player.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
+            player.Controlls(gameTime, mouse);
 
-            if (mouse.LeftButton == ButtonState.Pressed)
-            {
-                mPressed = true;
-            }
-            if (mouse.LeftButton == ButtonState.Released && mPressed)
-            {
-                mPressed = false;
-                PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj);
-                foreach(Object dObj in map.dynamicObjectList)
-                {
-                    if(hitObj == dObj)
-                    {
-                        dObj.AddBoolean(BooleanOP.UNION, new Sphere(hit - dObj.Position, 
-                                                                    10, 
-                                                                    Color.Black, 
-                                                                    false));
+            /* if (mouse.LeftButton == ButtonState.Pressed) */
+            /* { */
+            /*     mPressed = true; */
+            /* } */
+            /* if (mouse.LeftButton == ButtonState.Released && mPressed) */
+            /* { */
+            /*     mPressed = false; */
+            /*     PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj); */
+            /*     foreach(Object dObj in map.dynamicObjectList) */
+            /*     { */
+            /*         if(hitObj == dObj) */
+            /*         { */
+            /*             dObj.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(hit - dObj.Position, */ 
+            /*                                                         10, */ 
+            /*                                                         Color.Black, */ 
+            /*                                                         false)); */
 
-                        map.UpdateLightDynamicObjectList(this);
-                    }
-                }
-            }
-
-            Mouse.SetPosition(200,200);
-            lastMouseX = 200;
-            lastMouseY = 200;
+            /*             map.UpdateLightDynamicObjectList(this); */
+            /*         } */
+            /*     } */
+            /* } */
 
             player.Update(this, gameTime);
 
             // test dobj movement
-            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
+            map.dynamicObjectList[0].Rotate(1f,"z");
             float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
-            /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
+            map.dynamicObjectList[1].Translate(new Vector3(0,0,z));
 
             base.Update(gameTime);
         }
@@ -228,7 +202,7 @@ int lastMouseX = 200;
                     colors[x,y] = color;
                     lengths[x,y] = length;
                 }
-            }); //35ms from in front of the blue thingy
+            }); 
             watch.Stop();
             Informer.instance.AddInfo("debug", $"--- DEBUG INFO ---");
             Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
@@ -236,6 +210,7 @@ int lastMouseX = 200;
             watch = new Stopwatch();
             watch.Start();
             shapes.Begin();
+            // Draw phase
             for(int y = 0; y < (winHeight/detailSize); y++)
                 for(int x = 0; x < (winWidth/detailSize); x++)
                 {
@@ -246,16 +221,16 @@ int lastMouseX = 200;
                                                    colors[x,y].B));
                 }
 
-            for(int y = -player.cursorSize; y < player.cursorSize; y++)
-                for(int x = -player.cursorSize; x < player.cursorSize; x++)
-                {
-                    if(x*x + y*y < player.cursorSize+3 && x*x + y*y > player.cursorSize-3)
-                    {
-                        shapes.DrawRectangle(new Point(winWidth/2 + x*detailSize,winHeight/2 + y*detailSize), 
-                                             detailSize,detailSize, 
-                                             Color.Gold);
-                    }
-                }
+            // Cursor
+            shapes.DrawLine(new Point(winWidth/2,winHeight/2-player.cursorSize), 
+                            new Point(winWidth/2,winWidth/2+player.cursorSize), 
+                            5, 
+                            Color.Gold);
+            shapes.DrawLine(new Point(winWidth/2-player.cursorSize,winHeight/2), 
+                            new Point(winWidth/2+player.cursorSize,winWidth/2), 
+                            5, 
+                            Color.Gold);
+
             shapes.End();
 
             watch.Stop();
