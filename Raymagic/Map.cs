@@ -19,6 +19,7 @@ namespace Raymagic
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
+        public Vector3 mapTopCorner;
         public float distanceMapDetail = 2;
         public float[,,] distanceMap;
 
@@ -49,6 +50,7 @@ namespace Raymagic
 
             Vector3 mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
+            mapOrigin = data.topCorner;
 
             distanceMap = new float[(int)(mapSize.X/distanceMapDetail), (int)(mapSize.Y/distanceMapDetail),
                                     (int)(mapSize.Z/distanceMapDetail)];
