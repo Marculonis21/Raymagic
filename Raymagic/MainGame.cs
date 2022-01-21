@@ -274,7 +274,14 @@ namespace Raymagic
                                             (int)(cords.Y/map.distanceMapDetail),
                                             (int)(cords.Z/map.distanceMapDetail)];
 
-                float test;
+                Object bestDObj = null;
+                float test = map.BVH.Test(testPos, dst, physics:false, out Object dObj);
+                if(test < dst)
+                {
+                    dst = test;
+                    bestDObj = dObj;
+                    sObj = false;
+                }
                 /* foreach(Object dObj in map.dynamicObjectList) */
                 /* { */
                 /*     test = dObj.SDF(testPos, dst); */
@@ -304,17 +311,27 @@ namespace Raymagic
                     float bestDst = 9999;
                     Color bestColor = color;
                     Object bestObj = null; 
-                    foreach(Object obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
+                    if(sObj)
                     {
-                        test = obj.SDF(testPos, dst);
-                        if(test < bestDst)
+                        foreach(Object obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
                         {
-                            bestDst = test;
-                            bestColor = obj.Color;
-                            bestObj = obj;
+                            test = obj.SDF(testPos, dst);
+                            if(test < bestDst)
+                            {
+                                bestDst = test;
+                                bestColor = obj.Color;
+                                bestObj = obj;
+                            }
                         }
                     }
-                    length = (position - testPos).Length();
+                    else
+                    {
+                        bestDst = dst;
+                        bestColor = bestDObj.Color;
+                        bestObj = bestDObj;
+                    }
+
+                    /* length = (position - testPos).Length(); */
 
                     Vector3 startPos;
                     float lightIntensity = 0;
@@ -353,12 +370,17 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                foreach(Object dObj in map.dynamicObjectList) 
+                test = map.BVH.Test(position + dir*length, dst, physics:false, out Object dObj);
+                if(test < dst)
                 {
-                    test = dObj.SDF(position + dir*length, dst);
-                    if(test < dst)
-                        dst = test;
+                    dst = test;
                 }
+                /* foreach(Object dObj in map.dynamicObjectList) */ 
+                /* { */
+                /*     test = dObj.SDF(position + dir*length, dst); */
+                /*     if(test < dst) */
+                /*         dst = test; */
+                /* } */
 
                 test = light.SDF(position + dir*length);
                 if(test < dst)

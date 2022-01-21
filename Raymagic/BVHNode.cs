@@ -9,7 +9,7 @@ namespace Raymagic
         BVHNode LEFT = null;
         BVHNode RIGHT = null;
 
-        Box boundingBox;
+        public Box boundingBox {get; private set;}
         Vector3 boundingBoxSize;
         public Vector3 boundingBoxPosition {get; private set;} // needed for BVH building
 
@@ -34,9 +34,9 @@ namespace Raymagic
 
             this.isLeaf = false;
 
-            this.boundingBoxPosition = new Vector3(Math.Abs((LEFT.boundingBoxPosition.X - RIGHT.boundingBoxPosition.X)/2),
-                                                   Math.Abs((LEFT.boundingBoxPosition.Y - RIGHT.boundingBoxPosition.Y)/2),
-                                                   Math.Abs((LEFT.boundingBoxPosition.Z - RIGHT.boundingBoxPosition.Z)/2));
+            this.boundingBoxPosition = new Vector3(Math.Abs((LEFT.boundingBoxPosition.X + RIGHT.boundingBoxPosition.X)/2),
+                                                   Math.Abs((LEFT.boundingBoxPosition.Y + RIGHT.boundingBoxPosition.Y)/2),
+                                                   Math.Abs((LEFT.boundingBoxPosition.Z + RIGHT.boundingBoxPosition.Z)/2));
 
             this.boundingBoxSize = Vector3.One*(LEFT.boundingBoxPosition - RIGHT.boundingBoxPosition).Length();
             this.boundingBoxSize +=  new Vector3(LEFT.boundingBoxSize.X/2 + RIGHT.boundingBoxSize.X/2, 
@@ -107,6 +107,27 @@ namespace Raymagic
             }
 
             return float.MaxValue;
+        }
+        
+        public void Print(int depth)
+        {
+            if(isLeaf)
+            {
+                for (int i = 0; i < depth; i++)
+                    Console.Write(" ");
+
+                Console.WriteLine($"pos: {this.boundingBoxPosition}, size: {this.boundingBoxSize}");
+            }
+            else
+            {
+                for (int i = 0; i < depth; i++)
+                    Console.Write(" ");
+
+                Console.WriteLine($"pos: {this.boundingBoxPosition}, size: {this.boundingBoxSize}");
+
+                LEFT.Print(depth+2);
+                RIGHT.Print(depth+2);
+            }
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Raymagic
 
             if(boundingBoxSize.X != 0)
             {
-                this.boundingBox = new Box(this.position, 
+                this.boundingBox = new Box(position, 
                                            boundingBoxSize, 
                                            Color.Black);
 

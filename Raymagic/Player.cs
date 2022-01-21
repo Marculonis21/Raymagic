@@ -95,7 +95,6 @@ namespace Raymagic
 
         public void Update(MainGame game, GameTime gameTime)
         {
-            Console.WriteLine(GodMode);
             if(!GodMode)
             {
                 FeetCollider(game, gameTime);

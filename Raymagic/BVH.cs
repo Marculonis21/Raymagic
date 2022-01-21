@@ -13,6 +13,11 @@ namespace Raymagic
         {
         }
 
+        public void InfoPrint()
+        {
+            root.Print(0);
+        }
+
         public void BuildBVHDownUp()
         {
             Console.WriteLine("Building BVH");
@@ -29,9 +34,17 @@ namespace Raymagic
 
                 if(dList.Count == 0)
                 {
+                    tmpNodes.Add(new BVHNode(obj1));
                 }
                 else if(dList.Count == 1)
                 {
+                    Object obj2 = dList[0];
+                    dList.Remove(obj2);
+
+                    BVHNode n1 = new BVHNode(obj1);
+                    BVHNode n2 = new BVHNode(obj2);
+
+                    tmpNodes.Add(new BVHNode(n1,n2));
                 }
                 else
                 {
@@ -84,6 +97,8 @@ namespace Raymagic
 
                 tmpNodes.Add(new BVHNode(bestN1,bestN2));
             }
+
+            this.root = tmpNodes[0];
 
             sw.Stop();
             Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");

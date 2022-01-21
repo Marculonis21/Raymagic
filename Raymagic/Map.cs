@@ -16,6 +16,7 @@ namespace Raymagic
 
         public List<Object> staticObjectList = new List<Object>();
         public List<Object> dynamicObjectList = new List<Object>();
+        public BVH BVH = new BVH();
         public List<Object> infoObjectList = new List<Object>();
         public List<Light> lightList = new List<Light>();
 
@@ -48,6 +49,9 @@ namespace Raymagic
             this.staticObjectList = data.staticMapObjects;
             this.dynamicObjectList = data.dynamicMapObjects;
             this.lightList = data.mapLights;
+
+            BVH.BuildBVHDownUp();
+            BVH.InfoPrint();
 
             Vector3 mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
