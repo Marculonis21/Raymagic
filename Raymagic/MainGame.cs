@@ -289,6 +289,7 @@ namespace Raymagic
                 /*     { */
                 /*         dst = test; */
                 /*         sObj = false; */
+                /*         bestDObj = dobj; */
                 /*     } */
                 /* } */
 
