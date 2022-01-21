@@ -34,6 +34,18 @@ namespace Raymagic
             return d;
         }
 
+/*         public static float BoxFrame(Vector3 test, Vector3 center, Vector3 size, float frameSize) */
+/*         { */
+/*             test = new Vector3(Math.Abs(test.X), Math.Abs(test.Y), Math.Abs(test.Z)) - size; */
+/*             Vector3 q = new Vector3(Math.Abs(test.X + frameSize),Math.Abs(test.X + frameSize),Math.Abs(test.X + frameSize)) - Vector3.One * frameSize; */
+
+/*             Vector3.Max(new Vector3(test.X,q.Y,q.Z), Vector3.Zero)) + Vector3.Min(Vector3.Max(test.X,Max(q.Y,q.Z))) */
+/*             float d = x; */
+/*             d = Math.Max(d,y); */
+/*             d = Math.Max(d,z); */
+/*             return d; */
+/*         } */
+
         public static float Sphere(Vector3 test, Vector3 center, float size)
         {
             return (center - test).Length() - size;

@@ -63,7 +63,6 @@ namespace Raymagic
         private void UserInit()
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            /* Console.Clear(); */
 
             Console.CursorLeft = (Console.WindowWidth/2) - 15;
             Console.WriteLine("-------------------------------");
@@ -106,7 +105,8 @@ namespace Raymagic
             }
         }
 
-        bool mPressed = false;
+        bool lPressed = false;
+        bool rPressed = false;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -123,30 +123,45 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(Keys.D9)) detailSize = 9; 
             if (Keyboard.GetState().IsKeyDown(Keys.D0)) detailSize = 10;
 
+            if (Keyboard.GetState().IsKeyDown(Keys.G)) player.GodMode = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift&Keys.G)) player.GodMode = false;
+
             MouseState mouse = Mouse.GetState(this.Window);
             player.Controlls(gameTime, mouse);
 
-            /* if (mouse.LeftButton == ButtonState.Pressed) */
-            /* { */
-            /*     mPressed = true; */
-            /* } */
-            /* if (mouse.LeftButton == ButtonState.Released && mPressed) */
-            /* { */
-            /*     mPressed = false; */
-            /*     PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj); */
-            /*     foreach(Object dObj in map.dynamicObjectList) */
-            /*     { */
-            /*         if(hitObj == dObj) */
-            /*         { */
-            /*             dObj.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(hit - dObj.Position, */ 
-            /*                                                         10, */ 
-            /*                                                         Color.Black, */ 
-            /*                                                         false)); */
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                lPressed = true;
+            }
 
-            /*             map.UpdateLightDynamicObjectList(this); */
-            /*         } */
-            /*     } */
-            /* } */
+            if (mouse.RightButton == ButtonState.Pressed)
+            {
+                rPressed = true;
+            }
+
+
+            Object outObj = null;
+            if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
+            {
+                PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj);
+                foreach(Object dObj in map.dynamicObjectList)
+                {
+                    if(hitObj == dObj)
+                    {
+                        outObj = hitObj;
+                        Console.WriteLine(outObj.Info);
+                    }
+                }
+
+                if(outObj != null)
+                {
+                    if(lPressed)
+                        outObj.DisplayBoundingBox();
+                    if(rPressed)
+                        outObj.HideBoundingBox();
+                }
+                lPressed = rPressed = false;
+            }
 
             player.Update(this, gameTime);
 
@@ -260,15 +275,26 @@ namespace Raymagic
                                             (int)(cords.Z/map.distanceMapDetail)];
 
                 float test;
-                foreach(Object dObj in map.dynamicObjectList)
+                /* foreach(Object dObj in map.dynamicObjectList) */
+                /* { */
+                /*     test = dObj.SDF(testPos, dst); */
+                /*     if(test < dst) */
+                /*     { */
+                /*         dst = test; */
+                /*         sObj = false; */
+                /*     } */
+                /* } */
+
+                foreach(Object iObj in map.infoObjectList)
                 {
-                    if(player.DynamicObjectOcclusionCulling(dObj))
+                    test = iObj.SDF(testPos, dst);
+                    if(test < dst)
                     {
-                        test = dObj.SDF(testPos, dst);
-                        if(test < dst)
+                        dst = test;
+                        if(dst < 0.1f)
                         {
-                            dst = test;
-                            sObj = false;
+                            color = Color.Red;
+                            return true;
                         }
                     }
                 }
@@ -327,7 +353,6 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                /* foreach(Object dObj in light.dObjVisible) // check only dynamic objects visible to light */
                 foreach(Object dObj in map.dynamicObjectList) 
                 {
                     test = dObj.SDF(position + dir*length, dst);

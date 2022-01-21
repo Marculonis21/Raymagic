@@ -19,6 +19,8 @@ namespace Raymagic
 
         public Vector3 lookDir {get; private set;}
 
+        public bool GodMode = false;
+
         Map map = Map.instance;
 
         private Player()
@@ -48,6 +50,12 @@ namespace Raymagic
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space)) 
                 this.Jump(gameTime);
+
+            if(GodMode)
+                if(Keyboard.GetState().IsKeyDown(Keys.LeftControl))
+                    this.position.Z -= 2f;
+                if(Keyboard.GetState().IsKeyDown(Keys.Space))
+                    this.position.Z += 2f;
 
             if(lastMouseX != -1)
                 this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
@@ -80,26 +88,23 @@ namespace Raymagic
 
         public void Jump(GameTime gameTime)
         {
+            if(GodMode) return; // disable jumping in godmode - GODS FLY
             if(this.velocity.Z == 0)
                 this.velocity.Z += 0.5f*gameTime.ElapsedGameTime.Milliseconds;
         }
 
         public void Update(MainGame game, GameTime gameTime)
         {
-            FeetCollider(game, gameTime);
-            BodyCollider(game, gameTime);
+            Console.WriteLine(GodMode);
+            if(!GodMode)
+            {
+                FeetCollider(game, gameTime);
+                BodyCollider(game, gameTime);
+            }
 
             this.position += this.velocity;
             Informer.instance.AddInfo("playerPos", this.position.ToString());
             Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
-        }
-
-        public bool DynamicObjectOcclusionCulling(Object dObj)
-        {
-            Vector3 dir = dObj.Position - this.position;
-            dir.Normalize();
-
-            return ((this.lookDir - dir).Length() < 1.5f);
         }
 
         void BodyCollider(MainGame game, GameTime gameTime)

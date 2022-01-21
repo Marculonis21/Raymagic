@@ -119,24 +119,24 @@ namespace Raymagic
                                         new Vector3(20,100,125),
                                         Color.Black));
 
-
             data.staticMapObjects.Add(platform);
 
             Box box = new Box(new Vector3(400,200,75),
                               new Vector3(100,20,50),
-                              Color.Aqua, false, 60);
+                              Color.Aqua, false, 
+                              new Vector3(100,100,60),info:"rotator");
 
             box.AddBoolean(BooleanOP.DIFFERENCE, new Sphere(new Vector3(0,0,-30), 
                                                        50, 
                                                        Color.Black, 
-                                                       false, 
-                                                       60));
+                                                       false));
 
             data.dynamicMapObjects.Add(box);
 
             Sphere sphere = new Sphere(new Vector3(200,400,150),
                                        50,
-                                       Color.Lime, false, 60);
+                                       Color.Lime, false, 
+                                       new Vector3(110,110,320),info:"sphere");
 
             data.dynamicMapObjects.Add(sphere);
 

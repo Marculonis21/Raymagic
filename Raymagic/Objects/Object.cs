@@ -12,7 +12,10 @@ namespace Raymagic
         protected Color color;
         protected string info;
 
-        protected float boundingSize;
+        protected Box boundingBox;
+        protected Vector3 boundingBoxSize;
+        protected bool boundingBoxVisible = false;
+
         protected bool staticObject;
 
         protected List<BooleanOP> booleanOp = new List<BooleanOP>();
@@ -22,7 +25,7 @@ namespace Raymagic
         protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
         protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
 
-        public Object(Vector3 position, Color color, bool staticObject, float boundingSize, string info)
+        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info)
         {
             this.translateMatrix[0,0] = 1;
             this.translateMatrix[1,1] = 1;
@@ -37,13 +40,21 @@ namespace Raymagic
             this.position = position;
             this.color = color;
             this.staticObject = staticObject;
-            this.boundingSize = boundingSize;
             this.info = info;
 
             if(!staticObject)
             {
                 this.Translate(this.position);
                 this.position = new Vector3();
+            }
+
+            if(boundingBoxSize.X != 0)
+            {
+                this.boundingBox = new Box(this.position, 
+                                           boundingBoxSize, 
+                                           Color.Black);
+
+                this.boundingBoxSize = boundingBoxSize;
             }
         }
 
@@ -61,9 +72,12 @@ namespace Raymagic
                 Vector3 objPos = new Vector3((float)obj.translateMatrix[3,0],
                                              (float)obj.translateMatrix[3,1],
                                              (float)obj.translateMatrix[3,2]);
+
                 obj.translateMatrix[3,0] = 0;
                 obj.translateMatrix[3,1] = 0;
                 obj.translateMatrix[3,2] = 0;
+
+                obj.rotationMatrix = this.rotationMatrix;
 
                 obj.position = objPos;
                 obj.Translate(origPos);
@@ -72,7 +86,58 @@ namespace Raymagic
             booleanObj.Add(obj);
         }
 
-        public abstract float SDF(Vector3 testPos, float minDist, bool physics=false);
+        public float SDF(Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
+        {
+            float dst = float.MaxValue;
+            Vector3 tPos = this.staticObject ? testPos : Transform(testPos);
+
+            /* if(!SDFBoundCheck(tPos,minDist,useBounding,physics, out dst)) return dst; */
+
+            dst = SDFDistance(tPos);
+            dst = SDFBooleans(dst, testPos, minDist, useBounding, physics);
+
+            return dst;
+        }
+
+        private bool SDFBoundCheck(Vector3 testPos, float minDist, bool useBounding, bool physics, out float dst)
+        {
+            dst = 0;
+            if(useBounding && !this.staticObject && !physics)
+            {
+                if(minDist <= SDFs.Box(testPos, this.position, this.boundingBoxSize))
+                {
+                    dst = minDist + 1;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public abstract float SDFDistance(Vector3 testPos);
+
+        private float SDFBooleans(float dst, Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
+        {
+            for(int i = 0; i < this.booleanObj.Count; i++)
+            {
+                switch(this.booleanOp[i])
+                {
+                    case BooleanOP.DIFFERENCE:
+                        dst = SDFs.BooleanDifference(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics));
+                        break;
+                    case BooleanOP.INTERSECT:
+                        dst = SDFs.BooleanIntersect(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics));
+                        break;
+                    case BooleanOP.UNION:
+                        dst = SDFs.BooleanUnion(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics));
+                        break;
+                    default: 
+                        throw new Exception("Unknown boolean operation!");
+                }
+            }
+
+            return dst;
+        }
 
         public Vector3 SDF_normal(Vector3 testPos)
         {
@@ -93,6 +158,25 @@ namespace Raymagic
             normal.Normalize();
 
             return normal;
+        }
+
+        public void DisplayBoundingBox()
+        {
+            if(this.boundingBoxVisible) return;
+            if(this.boundingBoxSize.X == 0) return;
+
+            this.boundingBoxVisible = true;
+
+            Map.instance.infoObjectList.Add(this.boundingBox);
+        }
+
+        public void HideBoundingBox()
+        {
+            if(!this.boundingBoxVisible) return;
+            if(this.boundingBoxSize.X == 0) return;
+
+            this.boundingBoxVisible = false;
+            Map.instance.infoObjectList.Remove(this.boundingBox);
         }
 
         public void Translate(Vector3 translation)
@@ -154,14 +238,6 @@ namespace Raymagic
         
         protected Vector3 Transform(Vector3 orig)
         {
-            /* //todo transform of dynamic objects */
-
-            // úplně normálně se v Threadu může přidat orig z jiného vektoru
-            /* this.testMatrix[0,0] = orig.X; */
-            /* this.testMatrix[0,1] = orig.Y; */
-            /* this.testMatrix[0,2] = orig.Z; */
-            /* this.testMatrix[0,3] = 1; */
-
             Vector3 _output = new Vector3((float)((orig.X*this.transformInverse[0,0]) + (orig.Y*this.transformInverse[1,0]) + (orig.Z*this.transformInverse[2,0]) + (1*this.transformInverse[3,0])),
                                           (float)((orig.X*this.transformInverse[0,1]) + (orig.Y*this.transformInverse[1,1]) + (orig.Z*this.transformInverse[2,1]) + (1*this.transformInverse[3,1])),
                                           (float)((orig.X*this.transformInverse[0,2]) + (orig.Y*this.transformInverse[1,2]) + (orig.Z*this.transformInverse[2,2]) + (1*this.transformInverse[3,2])));
@@ -185,6 +261,9 @@ namespace Raymagic
         }
 
         public string Info { get => info; }
-        public bool Static { get => staticObject; }
+        public bool IsStatic { get => staticObject; }
+
+        public Box BoundingBox { get => boundingBox; } 
+        public Vector3 BoundingBoxSize { get => boundingBoxSize; }
     }
 }

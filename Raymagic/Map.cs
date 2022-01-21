@@ -16,6 +16,7 @@ namespace Raymagic
 
         public List<Object> staticObjectList = new List<Object>();
         public List<Object> dynamicObjectList = new List<Object>();
+        public List<Object> infoObjectList = new List<Object>();
         public List<Light> lightList = new List<Light>();
 
         public Vector3 mapOrigin;
@@ -50,7 +51,7 @@ namespace Raymagic
 
             Vector3 mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
-            mapOrigin = data.topCorner;
+            mapTopCorner = data.topCorner;
 
             distanceMap = new float[(int)(mapSize.X/distanceMapDetail), (int)(mapSize.Y/distanceMapDetail),
                                     (int)(mapSize.Z/distanceMapDetail)];
