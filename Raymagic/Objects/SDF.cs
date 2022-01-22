@@ -7,7 +7,10 @@ namespace Raymagic
     {
         DIFFERENCE,
         INTERSECT,
-        UNION
+        UNION,
+        SDIFFERENCE,
+        SINTERSECT,
+        SUNION
     }
 
     public class SDFs
@@ -72,6 +75,24 @@ namespace Raymagic
         public static float BooleanUnion(float OBJ1, float OBJ2)
         {
             return Math.Min(OBJ1, OBJ2);
+        }
+
+        public static float opSmoothUnion(float OBJ1, float OBJ2, float k)
+        {
+            float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
+            return (float)(Math.Min(OBJ1, OBJ2) - h*h*0.25/k);
+        }
+
+        public static float opSmoothSubtraction(float OBJ1, float OBJ2, float k)
+        {
+            float h = Math.Max(k-Math.Abs(-OBJ1-OBJ2),0.0f);
+            return (float)(Math.Max(-OBJ1, OBJ2) + h*h*0.25f/k);
+        }
+
+        public static float opSmoothIntersection(float OBJ1, float OBJ2, float k)
+        {
+            float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
+            return (float)(Math.Max(OBJ1, OBJ2) + h*h*0.25f/k);
         }
     }
 }

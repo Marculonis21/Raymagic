@@ -99,20 +99,20 @@ namespace Raymagic
             return dst;
         }
 
-        private bool SDFBoundCheck(Vector3 testPos, float minDist, bool useBounding, bool physics, out float dst)
-        {
-            dst = 0;
-            if(useBounding && !this.staticObject && !physics)
-            {
-                if(minDist <= SDFs.Box(testPos, this.position, this.boundingBoxSize))
-                {
-                    dst = minDist + 1;
-                    return false;
-                }
-            }
+        /* private bool SDFBoundCheck(Vector3 testPos, float minDist, bool useBounding, bool physics, out float dst) */
+        /* { */
+        /*     dst = 0; */
+        /*     if(useBounding && !this.staticObject && !physics) */
+        /*     { */
+        /*         if(minDist <= SDFs.Box(testPos, this.position, this.boundingBoxSize)) */
+        /*         { */
+        /*             dst = minDist + 1; */
+        /*             return false; */
+        /*         } */
+        /*     } */
 
-            return true;
-        }
+        /*     return true; */
+        /* } */
 
         public abstract float SDFDistance(Vector3 testPos);
 
@@ -130,6 +130,15 @@ namespace Raymagic
                         break;
                     case BooleanOP.UNION:
                         dst = SDFs.BooleanUnion(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics));
+                        break;
+                    case BooleanOP.SDIFFERENCE:
+                        dst = SDFs.opSmoothSubtraction(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics), k:0.2f);
+                        break;
+                    case BooleanOP.SINTERSECT:
+                        dst = SDFs.opSmoothIntersection(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics), k:0.2f);
+                        break;
+                    case BooleanOP.SUNION:
+                        dst = SDFs.opSmoothUnion(dst, this.booleanObj[i].SDF(testPos,minDist,false,physics), k:20f);
                         break;
                     default: 
                         throw new Exception("Unknown boolean operation!");

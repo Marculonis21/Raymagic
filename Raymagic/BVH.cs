@@ -15,17 +15,20 @@ namespace Raymagic
 
         public void InfoPrint()
         {
-            root.Print(0);
+            if(root != null)
+                root.Print(0);
         }
 
         public void BuildBVHDownUp()
         {
+            List<Object> dList = new List<Object>(Map.instance.dynamicObjectList);
+            if(dList.Count == 0) return;
+
+            List<BVHNode> tmpNodes = new List<BVHNode>();
+
             Console.WriteLine("Building BVH");
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-            List<Object> dList = new List<Object>(Map.instance.dynamicObjectList);
-            List<BVHNode> tmpNodes = new List<BVHNode>();
 
             while(dList.Count != 0)
             {
@@ -104,9 +107,15 @@ namespace Raymagic
             Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");
         }
 
-        public float Test(Vector3 testPos, float minDist, bool physics, out Object obj)
+        public float Test(Vector3 testPos, float minDist, out Object obj)
         {
-            return root.Test(testPos, minDist, physics, out obj);
+            if(root != null)
+                return root.Test(testPos, minDist, out obj);
+            else
+            {
+                obj = null;
+                return float.MaxValue;
+            }
         }
     }
 }

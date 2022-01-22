@@ -46,19 +46,19 @@ namespace Raymagic
             this.boundingBox = new Box(this.boundingBoxPosition, this.boundingBoxSize, Color.Red);
         }
 
-        public float Test(Vector3 testPos, float minDist, bool physics, out Object obj)
+        public float Test(Vector3 testPos, float minDist, out Object obj)
         {
             obj = null;
 
             float test;
             if(this.isLeaf)
             {
-                test = this.boundingBox.SDF(testPos, minDist, false, physics);
+                test = this.boundingBox.SDF(testPos, minDist, false, false);
                 // test the object bounding box
                 if(test < minDist)
                 {
                     // if bounding box collided try the actuall object SDF
-                    float objTest = this.obj.SDF(testPos, minDist, false, physics);
+                    float objTest = this.obj.SDF(testPos, minDist, false, false);
 
                     if(objTest < minDist)
                     {
@@ -69,11 +69,11 @@ namespace Raymagic
             }
             else
             {
-                test = this.boundingBox.SDF(testPos, minDist, false, physics);
+                test = this.boundingBox.SDF(testPos, minDist, false, false);
                 if(minDist > test)
                 {
-                    float lTest = LEFT.Test(testPos, minDist, physics, out Object lObj);
-                    float rTest = RIGHT.Test(testPos, minDist, physics, out Object rObj);
+                    float lTest = LEFT.Test(testPos, minDist, out Object lObj);
+                    float rTest = RIGHT.Test(testPos, minDist, out Object rObj);
 
                     // both of them will improve MIN - choose the best one
                     if(lTest < minDist && rTest < minDist)

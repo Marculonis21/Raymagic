@@ -166,9 +166,11 @@ namespace Raymagic
             player.Update(this, gameTime);
 
             // test dobj movement
-            map.dynamicObjectList[0].Rotate(1f,"z");
-            float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
-            map.dynamicObjectList[1].Translate(new Vector3(0,0,z));
+            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
+            /* float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
+            /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
+            map.dynamicObjectList[0].Rotate(1f, "z");
+            /* map.dynamicObjectList[1].Rotate(2f, "z"); */
 
             base.Update(gameTime);
         }
@@ -270,28 +272,30 @@ namespace Raymagic
                 bool sObj = true;
 
                 Vector3 cords = testPos - map.mapOrigin;
+
+                if((int)(cords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
+                   (int)(cords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
+                   (int)(cords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
+                   (int)(cords.X/map.distanceMapDetail) < 0 ||
+                   (int)(cords.Y/map.distanceMapDetail) < 0 ||
+                   (int)(cords.Z/map.distanceMapDetail) < 0)
+                {
+                    color = Color.Pink;
+                    return true;
+                }
+
                 float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
                                             (int)(cords.Y/map.distanceMapDetail),
                                             (int)(cords.Z/map.distanceMapDetail)];
 
                 Object bestDObj = null;
-                float test = map.BVH.Test(testPos, dst, physics:false, out Object dObj);
+                float test = map.BVH.Test(testPos, dst, out Object dObj);
                 if(test < dst)
                 {
                     dst = test;
                     bestDObj = dObj;
                     sObj = false;
                 }
-                /* foreach(Object dObj in map.dynamicObjectList) */
-                /* { */
-                /*     test = dObj.SDF(testPos, dst); */
-                /*     if(test < dst) */
-                /*     { */
-                /*         dst = test; */
-                /*         sObj = false; */
-                /*         bestDObj = dobj; */
-                /*     } */
-                /* } */
 
                 foreach(Object iObj in map.infoObjectList)
                 {
@@ -332,17 +336,16 @@ namespace Raymagic
                         bestObj = bestDObj;
                     }
 
-                    /* length = (position - testPos).Length(); */
-
                     Vector3 startPos;
                     float lightIntensity = 0;
                     foreach(Light light in map.lightList)
                     {
                         startPos = testPos+bestObj.SDF_normal(testPos)*2;
-
+                        
                         lightIntensity += LightRayMarch(startPos, light);
                     }
 
+                    lightIntensity = Math.Max(lightIntensity, 0.0001f); // try around something
                     color = new Color(bestColor.R*lightIntensity,
                                       bestColor.G*lightIntensity,
                                       bestColor.B*lightIntensity);
@@ -371,17 +374,11 @@ namespace Raymagic
                                             (int)Math.Abs(cords.Y/map.distanceMapDetail),
                                             (int)Math.Abs(cords.Z/map.distanceMapDetail)];
 
-                test = map.BVH.Test(position + dir*length, dst, physics:false, out Object dObj);
+                test = map.BVH.Test(position + dir*length, dst, out Object dObj);
                 if(test < dst)
                 {
                     dst = test;
                 }
-                /* foreach(Object dObj in map.dynamicObjectList) */ 
-                /* { */
-                /*     test = dObj.SDF(position + dir*length, dst); */
-                /*     if(test < dst) */
-                /*         dst = test; */
-                /* } */
 
                 test = light.SDF(position + dir*length);
                 if(test < dst)
