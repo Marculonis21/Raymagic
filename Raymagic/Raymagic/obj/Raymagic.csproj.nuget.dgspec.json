@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj": {}
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj": {}
   },
   "projects": {
-    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj": {
+    "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj",
-        "projectName": "ConsoleRay",
-        "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/ConsoleRay.csproj",
+        "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
+        "projectName": "Raymagic",
+        "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
         "packagesPath": "/home/marculonis/.nuget/packages/",
-        "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/",
+        "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/marculonis/.nuget/NuGet/NuGet.Config"
@@ -45,6 +45,14 @@
             "Extreme.Numerics.SinglePrecision": {
               "target": "Package",
               "version": "[8.0.1, )"
+            },
+            "MathNet.Numerics": {
+              "target": "Package",
+              "version": "[4.15.0, )"
+            },
+            "MonoGame.Content.Builder.Task": {
+              "target": "Package",
+              "version": "[3.8.0.1641, )"
             },
             "MonoGame.Framework.DesktopGL": {
               "target": "Package",
