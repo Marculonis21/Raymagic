@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Raymagic
 {
-    public class Shapes : IDisposable
+    public class Graphics : IDisposable
     {
         MainGame game;
 
@@ -26,7 +26,7 @@ namespace Raymagic
         //text drawing
         SpriteBatch spriteBatch;
 
-        public Shapes(MainGame game, Point originTranslate, SpriteBatch spriteBatch)
+        public Graphics(MainGame game, Point originTranslate, SpriteBatch spriteBatch)
         {
             this.game = game;
             this.origin = originTranslate;
