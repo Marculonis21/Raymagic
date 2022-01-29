@@ -51,13 +51,14 @@ namespace Raymagic
             this.lightList = data.mapLights;
 
             BVH.BuildBVHDownUp();
-            BVH.InfoPrint();
+            /* BdH.InfoPrint(); */
 
-            Vector3 mapSize = data.topCorner - data.botCorner;
+            Vector3  mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
             mapTopCorner = data.topCorner;
 
-            distanceMap = new float[(int)(mapSize.X/distanceMapDetail), (int)(mapSize.Y/distanceMapDetail),
+            distanceMap = new float[(int)(mapSize.X/distanceMapDetail), 
+                                    (int)(mapSize.Y/distanceMapDetail),
                                     (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine($"Create/Load - distance map (detail {this.distanceMapDetail}) (C/L)?>");
@@ -113,37 +114,15 @@ namespace Raymagic
             SaveDistanceMap(id, this.distanceMapDetail);
         }
 
-        public void UpdateLightDynamicObjectList(MainGame game)
-        {
-            foreach(Light light in this.lightList)
-            {
-                light.dObjVisible.Clear();
-
-                Vector3 start = light.position;
-                foreach(Object dObj in this.dynamicObjectList)
-                {
-                    Vector3 dir = dObj.Position - start;
-                    dir.Normalize();
-                    game.PhysicsRayMarch(start, dir, 500, 0, out float length, out Vector3 hit, out Object hitObj);
-
-                    if(hitObj == dObj)
-                    {
-                        light.dObjVisible.Add(dObj);
-                    }
-                }
-            }
-        }
-
         public Vector3 GetPlayerStart()
         {
             Vector3 spawn = data.playerSpawn;
             return new Vector3(spawn.X*100, spawn.Y*100, spawn.Z*100);
         }
 
-        SaveContainer saveContainer;
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {
-            saveContainer = new SaveContainer(this.distanceMap);
+            SaveContainer saveContainer = new SaveContainer(this.distanceMap);
 
             IFormatter formatter = new BinaryFormatter();  
             Stream stream = new FileStream($"Maps/{name}-{distanceMapDetail}.dm", FileMode.Create, FileAccess.Write, FileShare.None);  

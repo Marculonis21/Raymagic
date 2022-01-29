@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
@@ -8,11 +9,12 @@ namespace Raymagic
     {
         //SINGLETON
         Graphics graphics;
+        Player player = Player.instance;
 
         Point screenDimensions;
         int detailSize;
 
-        Player player = Player.instance;
+        Stopwatch watch;
 
         private Screen() {} 
 
@@ -23,6 +25,8 @@ namespace Raymagic
             this.graphics = graphics;
             this.screenDimensions = screenDimensions;
             this.detailSize = detailSize;
+
+            this.watch = new Stopwatch();
         }
 
         public void SetDetailSize(int detailSize)
@@ -31,19 +35,25 @@ namespace Raymagic
         }
 
         Color[,] colors;
-        public void DrawGame()
+        public void DrawGame(MainGame game)
         {
-            RayMarchingPhase();
+            RayMarchingPhase(game);
+            Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
+            watch.Reset();
 
-            graphics.Begin();
             TileDrawPhase();
+            watch.Reset();
+            Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
 
             CursorDrawPhase();
-            graphics.End();
+
+            Informer.instance.AddInfo("details", $"details: {detailSize}");
         }
 
-        private void RayMarchingPhase()
+        private void RayMarchingPhase(MainGame game)
         {
+            watch.Start();
+
             int zoom = 450;
 
             colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
@@ -58,17 +68,24 @@ namespace Raymagic
                 int x = i % (screenDimensions.X/detailSize);
 
                 // get ray dir from camera through view plane (detailSize) "rectangles"
-                float _x = x - (screenDimensions.X/detailSize)/2 + detailSize/2;
-                float _y = y - (screenDimensions.Y/detailSize)/2 + detailSize/2;
+                float _x = x - (screenDimensions.X/detailSize)/2;
+                float _y = y - (screenDimensions.Y/detailSize)/2;
 
                 Vector3 rayDir = (player.position + player.lookDir*zoom + viewPlaneRight*_x*detailSize + viewPlaneUp*_y*detailSize) - player.position;
 
-                colors[x,y] = RayMarching.Rendering(new Ray(player.position, rayDir), maxSteps:100);
+                /* colors[x,y] = RayMarching.Rendering(new Ray(player.position, rayDir), maxSteps:100); */
+
+                game.RayMarch(player.position, rayDir, out float length, out Color Color);
+                colors[x,y] = Color;
             }); 
+
+            watch.Stop();
         }
 
         private void TileDrawPhase()
         {
+            graphics.Begin();
+
             for(int y = 0; y < (screenDimensions.Y/detailSize); y++)
                 for(int x = 0; x < (screenDimensions.X/detailSize); x++)
                 {
@@ -89,7 +106,8 @@ namespace Raymagic
                               new Point(screenDimensions.X/2+player.cursorSize,screenDimensions.Y/2), 
                               5, 
                               Color.Gold);
-        }
 
+            graphics.End();
+        }
     }
 }

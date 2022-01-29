@@ -6,7 +6,7 @@ namespace Raymagic
 {
     public class Informer
     {
-        Shapes shapes;
+        Graphics graphics;
         Dictionary<string, string> infoList = new Dictionary<string, string>();
         const int heightOffset = 15;
 
@@ -16,9 +16,9 @@ namespace Raymagic
 
         public static readonly Informer instance = new Informer();
 
-        public void SetShapes(Shapes shapes)
+        public void SetGraphics(Graphics graphics)
         {
-            this.shapes = shapes;
+            this.graphics = graphics;
         }
 
         public void AddInfo(string key, string info)
@@ -35,7 +35,7 @@ namespace Raymagic
             int count = 0;
             foreach(string s in infoList.Values)
             {
-                shapes.DrawText(s, font, origin + new Vector2(0,1)*heightOffset*count, color, 0,0);
+                graphics.DrawText(s, font, origin + new Vector2(0,1)*heightOffset*count, color, 0,0);
                 count++;
             }
             infoList.Clear();

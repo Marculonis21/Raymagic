@@ -32,8 +32,8 @@ namespace Raymagic
 
         public static readonly Player instance = new Player();
 
-        int lastMouseX = 200;
-        int lastMouseY = 200;
+        int lastMouseX = 100;
+        int lastMouseY = 100;
         public void Controlls(GameTime gameTime, MouseState mouse)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.W)) 
@@ -48,6 +48,11 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(Keys.D)) 
                 this.position += new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,0);
 
+            if (Keyboard.GetState().IsKeyDown(Keys.G)) 
+                GodMode = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift&Keys.G)) 
+                GodMode = false;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Space)) 
                 this.Jump(gameTime);
 
@@ -57,12 +62,10 @@ namespace Raymagic
                 if(Keyboard.GetState().IsKeyDown(Keys.Space))
                     this.position.Z += 2f;
 
-            if(lastMouseX != -1)
-                this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
-            Mouse.SetPosition(200,200);
-            lastMouseX = 200;
-            lastMouseY = 200;
+            this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
+
+            Mouse.SetPosition(100, 100);
         }
 
         public void Rotate(Vector2 rot)
@@ -150,6 +153,27 @@ namespace Raymagic
             }
             else if(velocity.Z < 0)
                 this.velocity.Z = 0;
+        }
+
+        public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)
+        {
+            // Get player look dir vector
+            Vector3 playerLookDir = lookDir;
+
+            // Get one of player look dir perpendicular vectors (UP)
+            double R_inclinPerpen = (rotation.Y+90)*Math.PI/180f;
+            double R_azimPerpen = (rotation.X)*Math.PI/180f;
+            double _x = Math.Cos(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
+            double _y = Math.Sin(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
+            double _z = Math.Cos(R_inclinPerpen);
+            Vector3 playerLookPerpenUP = new Vector3((float)_x,(float)_y,(float)_z);
+
+            // Cross product look dir with perpen to get normal of a plane ->
+            // side perpen to the view dir
+            Vector3 playerLookPerpenSIDE = Vector3.Cross(playerLookDir, playerLookPerpenUP);
+
+            viewPlaneUp = Vector3.Normalize(playerLookPerpenUP);
+            viewPlaneRight = Vector3.Normalize(playerLookPerpenSIDE);
         }
     }
 }

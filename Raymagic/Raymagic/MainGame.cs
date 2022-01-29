@@ -14,7 +14,7 @@ namespace Raymagic
 
         public static Random random = new Random();
 
-        Shapes shapes;
+        Graphics graphics;
 
         int winWidth = 1024;
         int winHeight = 1024;
@@ -26,7 +26,7 @@ namespace Raymagic
 
         SpriteFont font;
 
-        Stopwatch watch;
+        Screen screen;
 
         public MainGame()
         {
@@ -44,7 +44,6 @@ namespace Raymagic
             map = Map.instance;
             map.LoadMaps();
             UserInit();
-            map.UpdateLightDynamicObjectList(this);
 
             player = Player.instance;
             base.Initialize();
@@ -55,9 +54,12 @@ namespace Raymagic
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("Fonts/MainFont");
 
-            shapes = new Shapes(this, new Point(0, winHeight), _spriteBatch);
+            graphics = new Graphics(this, new Point(0, winHeight), _spriteBatch);
 
-            Informer.instance.SetShapes(this.shapes);
+            screen = Screen.instance;
+            screen.Init(graphics, new Point(winWidth, winHeight), detailSize);
+
+            Informer.instance.SetGraphics(this.graphics);
         }
         
         private void UserInit()
@@ -123,8 +125,7 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(Keys.D9)) detailSize = 9; 
             if (Keyboard.GetState().IsKeyDown(Keys.D0)) detailSize = 10;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.G)) player.GodMode = true;
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift&Keys.G)) player.GodMode = false;
+            screen.SetDetailSize(detailSize);
 
             MouseState mouse = Mouse.GetState(this.Window);
             player.Controlls(gameTime, mouse);
@@ -152,6 +153,7 @@ namespace Raymagic
                         Console.WriteLine(outObj.Info);
                     }
                 }
+                map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false, new Vector3(20,20,20)));
 
                 if(outObj != null)
                 {
@@ -179,89 +181,18 @@ namespace Raymagic
         {
             GraphicsDevice.Clear(Color.Pink);
 
-            watch = new Stopwatch();
-            watch.Start();
-            Color[,] colors = new Color[winWidth/detailSize,winHeight/detailSize];
-            float[,] lengths = new float[winWidth/detailSize,winHeight/detailSize];
-
-            // Get player look dir vector
-            Vector3 playerLookDir = player.lookDir;
-
-            // Get one of player look dir perpendicular vectors (UP)
-            double R_inclinPerpen = (player.rotation.Y+90)*Math.PI/180f;
-            double R_azimPerpen = (player.rotation.X)*Math.PI/180f;
-            double _x = Math.Cos(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
-            double _y = Math.Sin(R_azimPerpen)*Math.Sin(R_inclinPerpen); 
-            double _z = Math.Cos(R_inclinPerpen);
-            Vector3 playerLookPerpenUP = new Vector3((float)_x,(float)_y,(float)_z);
-
-            // Cross product look dir with perpen to get normal of a plane ->
-            // side perpen to the view dir
-            Vector3 playerLookPerpenSIDE = Vector3.Cross(playerLookDir, playerLookPerpenUP);
-
-            playerLookPerpenUP.Normalize();
-            playerLookPerpenSIDE.Normalize();
-
-            // Parallel RAYMARCHING!!!
-            Parallel.For(0, (winHeight/detailSize) * (winWidth/detailSize),new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i =>
-            {
-                int y = i / (winWidth/detailSize);
-                int x = i % (winWidth/detailSize);
-
-                // get ray dir from camera through view plane (detailSize) "rectangles"
-                float _x = x - (winWidth /detailSize)/2 + detailSize/2;
-                float _y = y - (winHeight/detailSize)/2 + detailSize/2;
-
-                Vector3 rayDir = (player.position + playerLookDir*zoom + playerLookPerpenSIDE*_x*detailSize + playerLookPerpenUP*_y*detailSize) - player.position;
-
-                if(RayMarch(player.position, rayDir, out float length, out Color color))
-                {
-                    colors[x,y] = color;
-                    lengths[x,y] = length;
-                }
-            }); 
-            watch.Stop();
             Informer.instance.AddInfo("debug", $"--- DEBUG INFO ---");
-            Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
+            screen.DrawGame(this);
 
-            watch = new Stopwatch();
-            watch.Start();
-            shapes.Begin();
-            // Draw phase
-            for(int y = 0; y < (winHeight/detailSize); y++)
-                for(int x = 0; x < (winWidth/detailSize); x++)
-                {
-                    shapes.DrawRectangle(new Point(x*detailSize,y*detailSize), 
-                                         detailSize,detailSize, 
-                                         new Color(colors[x,y].R,
-                                                   colors[x,y].G,
-                                                   colors[x,y].B));
-                }
-
-            // Cursor
-            shapes.DrawLine(new Point(winWidth/2,winHeight/2-player.cursorSize), 
-                            new Point(winWidth/2,winWidth/2+player.cursorSize), 
-                            5, 
-                            Color.Gold);
-            shapes.DrawLine(new Point(winWidth/2-player.cursorSize,winHeight/2), 
-                            new Point(winWidth/2+player.cursorSize,winWidth/2), 
-                            5, 
-                            Color.Gold);
-
-            shapes.End();
-
-            watch.Stop();
-            Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
-            Informer.instance.AddInfo("details", $"details: {detailSize}");
 
             Informer.instance.ShowInfo(new Vector2(10,10), this.font, Color.Red);
             base.Draw(gameTime);
         }
 
-        public bool RayMarch(Vector3 position, Vector3 dir, out float length, out Color color)
+        public void RayMarch(Vector3 position, Vector3 dir, out float length, out Color color)
         {
-            color = Color.Pink;
-            length = 2000;
+            color = Color.Black;
+            length = float.MaxValue;
 
             dir.Normalize();
 
@@ -271,22 +202,21 @@ namespace Raymagic
             {
                 bool sObj = true;
 
-                Vector3 cords = testPos - map.mapOrigin;
+                Vector3 coords = testPos - map.mapOrigin;
 
-                if((int)(cords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
-                   (int)(cords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
-                   (int)(cords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
-                   (int)(cords.X/map.distanceMapDetail) < 0 ||
-                   (int)(cords.Y/map.distanceMapDetail) < 0 ||
-                   (int)(cords.Z/map.distanceMapDetail) < 0)
+                if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
+                   (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
+                   (int)(coords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
+                   (int)(coords.X/map.distanceMapDetail) < 0 ||
+                   (int)(coords.Y/map.distanceMapDetail) < 0 ||
+                   (int)(coords.Z/map.distanceMapDetail) < 0)
                 {
-                    color = Color.Pink;
-                    return true;
+                    return;
                 }
 
-                float dst = map.distanceMap[(int)(cords.X/map.distanceMapDetail),
-                                            (int)(cords.Y/map.distanceMapDetail),
-                                            (int)(cords.Z/map.distanceMapDetail)];
+                float dst = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                            (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                            (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
                 Object bestDObj = null;
                 float test = map.BVH.Test(testPos, dst, out Object dObj);
@@ -306,22 +236,23 @@ namespace Raymagic
                         if(dst < 0.1f)
                         {
                             color = Color.Red;
-                            return true;
+                            return;
                         }
                     }
                 }
 
                 if(dst < 0.1f)
                 {
-                    float bestDst = 9999;
+                    float bestDst = float.MaxValue;
                     Color bestColor = color;
                     Object bestObj = null; 
+
                     if(sObj)
                     {
-                        foreach(Object obj in (sObj ? map.staticObjectList : map.dynamicObjectList))
+                        foreach(Object obj in map.staticObjectList)
                         {
                             test = obj.SDF(testPos, dst);
-                            if(test < bestDst)
+                            if(test <= bestDst)
                             {
                                 bestDst = test;
                                 bestColor = obj.Color;
@@ -350,12 +281,11 @@ namespace Raymagic
                                       bestColor.G*lightIntensity,
                                       bestColor.B*lightIntensity);
 
-                    return true;
+                    return;
                 }
 
                 testPos += dir*dst;
             }
-            return false;
         }
 
         public float LightRayMarch(Vector3 position, Light light)
@@ -369,10 +299,11 @@ namespace Raymagic
             float k = 16f*intensity;
             while(length < (position - light.position).Length() - 0.1f)
             {
-                Vector3 cords = position + dir*length - map.mapOrigin;
-                float dst = map.distanceMap[(int)Math.Abs(cords.X/map.distanceMapDetail),
-                                            (int)Math.Abs(cords.Y/map.distanceMapDetail),
-                                            (int)Math.Abs(cords.Z/map.distanceMapDetail)];
+                Vector3 coords = position + dir*length - map.mapOrigin;
+
+                float dst = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                            (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                            (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
                 test = map.BVH.Test(position + dir*length, dst, out Object dObj);
                 if(test < dst)
@@ -402,7 +333,7 @@ namespace Raymagic
         public void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)
         {
             hit = position;
-            length = 2000;
+            length = float.MaxValue;
             hitObj = null;
 
             dir.Normalize();
@@ -412,7 +343,7 @@ namespace Raymagic
             float dst;
             for (int iter = 0; iter < maxSteps; iter++)
             {
-                dst = 9999;
+                dst = float.MaxValue;
                 foreach(Object obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos, dst);
