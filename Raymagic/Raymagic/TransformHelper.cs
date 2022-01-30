@@ -7,6 +7,15 @@ namespace Raymagic
 {
     public class TransformHelper
     {
+        public static Matrix<double> Translate(Matrix<double> matrix, Vector3 translation)
+        {
+            matrix[3,0] += translation.X;
+            matrix[3,1] += translation.Y;
+            matrix[3,2] += translation.Z;
+
+            return matrix;
+        }
+
         public static Matrix<double> Rotate(Matrix<double> matrix, float angle, string axis)
         {
             float c = (float)Math.Cos(angle*(float)Math.PI/180);
@@ -45,13 +54,16 @@ namespace Raymagic
             return matrix;
         }
 
-        public static Matrix<double> Translate(Matrix<double> matrix, Vector3 translation)
+        public static Matrix<double> GetInverse(Matrix<double> translationMatrix, Matrix<double> rotationMatrix)
         {
-            matrix[3,0] += translation.X;
-            matrix[3,1] += translation.Y;
-            matrix[3,2] += translation.Z;
+            return (rotationMatrix * translationMatrix).GetInverse();
+        }
 
-            return matrix;
+        public static Vector3 Transform(Vector3 orig, Matrix<double> transformInverse)
+        {
+            return new Vector3((float)((orig.X*transformInverse[0,0]) + (orig.Y*transformInverse[1,0]) + (orig.Z*transformInverse[2,0]) + (1*transformInverse[3,0])),
+                               (float)((orig.X*transformInverse[0,1]) + (orig.Y*transformInverse[1,1]) + (orig.Z*transformInverse[2,1]) + (1*transformInverse[3,1])),
+                               (float)((orig.X*transformInverse[0,2]) + (orig.Y*transformInverse[1,2]) + (orig.Z*transformInverse[2,2]) + (1*transformInverse[3,2])));
         }
     }
 }

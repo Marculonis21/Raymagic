@@ -5,6 +5,7 @@ namespace Raymagic
 {
     public enum BooleanOP
     {
+        NONE,
         DIFFERENCE,
         INTERSECT,
         UNION,
@@ -13,8 +14,74 @@ namespace Raymagic
         SUNION
     }
 
+    public struct SDFout
+    {
+        public float distance {get; private set;}
+        public Color color {get; private set;}
+
+        public SDFout(float distance, Color color)
+        {
+            this.distance = distance;
+            this.color = color;
+        }
+    }
+
     public class SDFs
     {
+        public static SDFout Combine(float objA, float objB, Color colorA, Color colorB, BooleanOP op, float opStrength)
+        {
+            float dst = objA;
+            Color color = colorA;
+
+            switch (op)
+            {
+                case BooleanOP.NONE:
+                    if(objB < objA)
+                    {
+                        dst = objB;
+                        color = colorB;
+                    }
+                    break;
+
+                case BooleanOP.DIFFERENCE:
+                    dst = Difference(objA, objB);
+                    break;
+
+                case BooleanOP.INTERSECT:
+                    dst = Intersect(objA, objB);
+                    break;
+
+                case BooleanOP.UNION:
+                    dst = Union(objA, objB);
+
+                    if(dst == objB)
+                    {
+                        color = colorB;
+                    }
+                    break;
+
+                case BooleanOP.SDIFFERENCE:
+                    dst = SmoothDifference(objA, objB, opStrength);
+                    break;
+
+                case BooleanOP.SINTERSECT:
+                    dst = SmoothIntersect(objA, objB, opStrength);
+                    break;
+
+                case BooleanOP.SUNION:
+                    SDFout output = SmoothUnion(objA, objB, colorA, colorB, opStrength);
+                    dst = output.distance;
+                    color = output.color;
+
+                    break;
+
+                default:
+                    throw new NotImplementedException("Unknown boolean operation wanted!");
+            }
+
+            return new SDFout(dst, color);
+        }
+
         public static float Box(Vector3 test, Vector3 center, Vector3 size)
         {
             float x = Math.Max
@@ -46,9 +113,9 @@ namespace Raymagic
             float boxDiff2 = Box(test, center, new Vector3(size.X - frameSize,size.Y + 10,       size.Z - frameSize));
             float boxDiff3 = Box(test, center, new Vector3(size.X - frameSize,size.Y - frameSize,size.Z + 10));
 
-            box = BooleanDifference(box, boxDiff1);
-            box = BooleanDifference(box, boxDiff2);
-            box = BooleanDifference(box, boxDiff3);
+            box = Difference(box, boxDiff1);
+            box = Difference(box, boxDiff2);
+            box = Difference(box, boxDiff3);
 
             return box;
         }
@@ -68,35 +135,38 @@ namespace Raymagic
             return (center - test).Length();
         }
 
-        public static float BooleanDifference(float ORIG, float DIFF)
+        public static float Difference(float ORIG, float DIFF)
         {
             return Math.Max(ORIG, -DIFF);
         }
-        public static float BooleanIntersect(float OBJ1, float OBJ2)
+        public static float Intersect(float OBJ1, float OBJ2)
         {
             return Math.Max(OBJ1, OBJ2);
         }
-        public static float BooleanUnion(float OBJ1, float OBJ2)
+        public static float Union(float OBJ1, float OBJ2)
         {
             return Math.Min(OBJ1, OBJ2);
         }
 
-        public static float opSmoothUnion(float OBJ1, float OBJ2, float k)
-        {
-            float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
-            return (float)(Math.Min(OBJ1, OBJ2) - h*h*0.25/k);
-        }
-
-        public static float opSmoothSubtraction(float OBJ1, float OBJ2, float k)
+        public static float SmoothDifference(float OBJ1, float OBJ2, float k)
         {
             float h = Math.Max(k-Math.Abs(-OBJ1-OBJ2),0.0f);
             return (float)(Math.Max(-OBJ1, OBJ2) + h*h*0.25f/k);
         }
 
-        public static float opSmoothIntersection(float OBJ1, float OBJ2, float k)
+        public static float SmoothIntersect(float OBJ1, float OBJ2, float k)
         {
             float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
             return (float)(Math.Max(OBJ1, OBJ2) + h*h*0.25f/k);
+        }
+
+        // needs to work with color too
+        public static SDFout SmoothUnion(float OBJ1, float OBJ2, Color color1, Color color2, float k)
+        {
+            float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
+            float dst = (float)(Math.Min(OBJ1, OBJ2) - h*h*0.25/k);
+            Color color = Color.Lerp(color1, color2, k);
+            return new SDFout(dst, color);
         }
     }
 }
