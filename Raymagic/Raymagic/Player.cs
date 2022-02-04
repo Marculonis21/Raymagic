@@ -72,10 +72,10 @@ namespace Raymagic
         {
             rot /= 3;
             this.rotation += rot;
-            if(this.rotation.Y < 40)
-                this.rotation.Y = 40;
-            if(this.rotation.Y > 140)
-                this.rotation.Y = 140;
+            if(this.rotation.Y < 25)
+                this.rotation.Y = 25;
+            if(this.rotation.Y > 160)
+                this.rotation.Y = 160;
 
             double R_inclination = rotation.Y*Math.PI/180f;
             double R_azimuth = rotation.X*Math.PI/180f;
@@ -96,12 +96,12 @@ namespace Raymagic
                 this.velocity.Z += 0.5f*gameTime.ElapsedGameTime.Milliseconds;
         }
 
-        public void Update(MainGame game, GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if(!GodMode)
             {
-                FeetCollider(game, gameTime);
-                BodyCollider(game, gameTime);
+                FeetCollider(gameTime);
+                BodyCollider(gameTime);
             }
 
             this.position += this.velocity;
@@ -109,7 +109,7 @@ namespace Raymagic
             Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
 
-        void BodyCollider(MainGame game, GameTime gameTime)
+        void BodyCollider(GameTime gameTime)
         {
             // body side collider
             double angle;
@@ -121,7 +121,7 @@ namespace Raymagic
                 testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0);
                 testDir.Normalize();
 
-                game.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out Object obj); 
+                RayMarchingHelper.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out Object obj); 
 
                 if(width <= size.X/2)
                 {
@@ -133,7 +133,7 @@ namespace Raymagic
             }
 
             // maintain height above ground (stairs/steps) 
-            game.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out Object _);
+            RayMarchingHelper.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out Object _);
             if(length < size.Y)
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
@@ -141,11 +141,11 @@ namespace Raymagic
 
         }
 
-        void FeetCollider(MainGame game, GameTime gameTime)
+        void FeetCollider(GameTime gameTime)
         {
             // fall
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            game.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out Object _);
+            RayMarchingHelper.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out Object _);
 
             if(length > 0)
             {

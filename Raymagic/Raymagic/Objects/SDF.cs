@@ -82,21 +82,21 @@ namespace Raymagic
             return new SDFout(dst, color);
         }
 
-        public static float Box(Vector3 test, Vector3 center, Vector3 size)
+        public static float Box(Vector3 test, Vector3 size)
         {
             float x = Math.Max
             (   
-                test.X - center.X - new Vector3(size.X / 2.0f, 0, 0).Length(),
-                center.X - test.X - new Vector3(size.X / 2.0f, 0, 0).Length()
+                test.X - new Vector3(size.X / 2.0f, 0, 0).Length(),
+                - test.X - new Vector3(size.X / 2.0f, 0, 0).Length()
             );
             float y = Math.Max
-            (   test.Y - center.Y - new Vector3(size.Y / 2.0f, 0, 0).Length(),
-                center.Y - test.Y - new Vector3(size.Y / 2.0f, 0, 0).Length()
+            (   test.Y - new Vector3(size.Y / 2.0f, 0, 0).Length(),
+                - test.Y - new Vector3(size.Y / 2.0f, 0, 0).Length()
             );
             
             float z = Math.Max
-            (   test.Z - center.Z - new Vector3(size.Z / 2.0f, 0, 0).Length(),
-                center.Z - test.Z - new Vector3(size.Z / 2.0f, 0, 0).Length()
+            (   test.Z - new Vector3(size.Z / 2.0f, 0, 0).Length(),
+                - test.Z - new Vector3(size.Z / 2.0f, 0, 0).Length()
             );
             float d = x;
             d = Math.Max(d,y);
@@ -104,14 +104,14 @@ namespace Raymagic
             return d;
         }
 
-        public static float BoxFrame(Vector3 test, Vector3 center, Vector3 size, float frameSize)
+        public static float BoxFrame(Vector3 test, Vector3 size, float frameSize)
         {
             //not tested
-            float box = Box(test, center, size);
+            float box = Box(test, size);
 
-            float boxDiff1 = Box(test, center, new Vector3(size.X + 10,       size.Y - frameSize,size.Z - frameSize));
-            float boxDiff2 = Box(test, center, new Vector3(size.X - frameSize,size.Y + 10,       size.Z - frameSize));
-            float boxDiff3 = Box(test, center, new Vector3(size.X - frameSize,size.Y - frameSize,size.Z + 10));
+            float boxDiff1 = Box(test, new Vector3(size.X + 10,       size.Y - frameSize,size.Z - frameSize));
+            float boxDiff2 = Box(test, new Vector3(size.X - frameSize,size.Y + 10,       size.Z - frameSize));
+            float boxDiff3 = Box(test, new Vector3(size.X - frameSize,size.Y - frameSize,size.Z + 10));
 
             box = Difference(box, boxDiff1);
             box = Difference(box, boxDiff2);
@@ -120,14 +120,15 @@ namespace Raymagic
             return box;
         }
 
-        public static float Sphere(Vector3 test, Vector3 center, float size)
+        public static float Sphere(Vector3 test, float size)
         {
-            return (center - test).Length() - size;
+            /* return (center - test).Length() - size; */
+            return (test).Length() - size;
         }
 
-        public static float Plane(Vector3 test, Vector3 normal, float height)
+        public static float Plane(Vector3 test, Vector3 normal)
         {
-            return Vector3.Dot(test, normal) + height;
+            return Vector3.Dot(test, normal);
         }
 
         public static float Point(Vector3 test, Vector3 center)

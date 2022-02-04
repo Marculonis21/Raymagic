@@ -28,7 +28,7 @@ namespace Raymagic
         protected BooleanOP booleanOP;
         protected float booleanStrength;
 
-        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info)
+        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float strength)
         {
             this.translationMatrix[0,0] = 1;
             this.translationMatrix[1,1] = 1;
@@ -46,6 +46,8 @@ namespace Raymagic
             this.info = info;
 
             this.Translate(position);
+            this.booleanOP = booleanOP;
+            this.booleanStrength = strength;
 
             /* if(!staticObject) */
             /* { */

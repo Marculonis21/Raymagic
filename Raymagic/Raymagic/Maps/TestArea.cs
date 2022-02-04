@@ -37,16 +37,16 @@ namespace Raymagic
 
             data.staticMapObjects.Add(roofPlane);
 
-            Plane plane1 = new Plane(new Vector3(5,0,0),
+            Plane plane1 = new Plane(new Vector3(2,0,0),
                                      new Vector3(1,0,0),
                                      Color.Red);
-            Plane plane2 = new Plane(new Vector3(495,0,0),
+            Plane plane2 = new Plane(new Vector3(498,0,0),
                                      new Vector3(-1,0,0),
                                      Color.Red);
-            Plane plane3 = new Plane(new Vector3(0,5,0),
+            Plane plane3 = new Plane(new Vector3(0,2,0),
                                      new Vector3(0,1,0),
                                      Color.Blue);
-            Plane plane4 = new Plane(new Vector3(0,495,0),
+            Plane plane4 = new Plane(new Vector3(0,498,0),
                                      new Vector3(0,-1,0),
                                      Color.Blue);
 
@@ -66,7 +66,7 @@ namespace Raymagic
                                    25,
                                    Color.Purple,
                                    false,
-                                   new Vector3(50,50,50));
+                                   boundingBoxSize: new Vector3(50,50,50));
             
 
             /* data.dynamicMapObjects.Add(S1); */
@@ -75,7 +75,7 @@ namespace Raymagic
                                    15,
                                    Color.DarkRed,
                                    false,
-                                   new Vector3(40,40,40),
+                                   boundingBoxSize: new Vector3(40,40,40),
                                    info:"center");
 
 
@@ -83,7 +83,7 @@ namespace Raymagic
                             new Vector3(100,100,20),
                             Color.Gray,
                             false,
-                            new Vector3(110,110,200));
+                            boundingBoxSize: new Vector3(110,110,200));
 
             /* b.AddBoolean(BooleanOP.SUNION, */
             /*              new Sphere(new Vector3(0,0,20), */
@@ -91,9 +91,16 @@ namespace Raymagic
             /*                         Color.Black, */
             /*                         false)); */
 
-            /* data.dynamicMapObjects.Add(b); */
+            b.AddChildObject(new Sphere(new Vector3(0,0,40),
+                                        35,
+                                        Color.Green,
+                                        false,
+                                        BooleanOP.SUNION,
+                                        20), true);
+            data.dynamicMapObjects.Add(b);
 
             /* data.dynamicMapObjects.Add(S2); */
+
 
             Map.instance.AddMap("testArea", data);
         }

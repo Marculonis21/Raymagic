@@ -26,38 +26,41 @@ namespace Raymagic
             this.screenDimensions = screenDimensions;
             this.detailSize = detailSize;
 
+            this.colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
+            /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
+
             this.watch = new Stopwatch();
         }
 
         public void SetDetailSize(int detailSize)
         {
+            if(detailSize != this.detailSize)
+            {
+                this.colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
+                /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
+            }
+
             this.detailSize = detailSize;
         }
 
         Color[,] colors;
-        public void DrawGame(MainGame game)
+        public void DrawGame()
         {
-            RayMarchingPhase(game);
-            Informer.instance.AddInfo("debug rays", $" ray phase: {watch.ElapsedMilliseconds}");
-            watch.Reset();
+            RayMarchingPhase();
+            Informer.instance.AddInfo("debug raysPhase", $" ray phase: {watch.ElapsedMilliseconds}");
 
             TileDrawPhase();
-            watch.Reset();
-            Informer.instance.AddInfo("debug draw", $" draw phase: {watch.ElapsedMilliseconds}");
-
             CursorDrawPhase();
+            Informer.instance.AddInfo("debug drawPhase", $" draw phase: {watch.ElapsedMilliseconds}");
 
             Informer.instance.AddInfo("details", $"details: {detailSize}");
         }
 
-        private void RayMarchingPhase(MainGame game)
+        private void RayMarchingPhase()
         {
-            watch.Start();
-
+            watch.Restart();
             int zoom = 450;
 
-            colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
-            /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
 
             player.GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight);
             
@@ -73,9 +76,7 @@ namespace Raymagic
 
                 Vector3 rayDir = (player.position + player.lookDir*zoom + viewPlaneRight*_x*detailSize + viewPlaneUp*_y*detailSize) - player.position;
 
-                /* colors[x,y] = RayMarching.Rendering(new Ray(player.position, rayDir), maxSteps:100); */
-
-                game.RayMarch(player.position, rayDir, out float length, out Color Color);
+                RayMarchingHelper.RayMarch(player.position, rayDir, out float length, out Color Color);
                 colors[x,y] = Color;
             }); 
 
@@ -84,6 +85,8 @@ namespace Raymagic
 
         private void TileDrawPhase()
         {
+            watch.Restart();
+
             graphics.Begin();
 
             for(int y = 0; y < (screenDimensions.Y/detailSize); y++)
@@ -108,6 +111,8 @@ namespace Raymagic
                               Color.Gold);
 
             graphics.End();
+
+            watch.Stop();
         }
     }
 }
