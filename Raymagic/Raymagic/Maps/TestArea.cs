@@ -37,18 +37,18 @@ namespace Raymagic
 
             data.staticMapObjects.Add(roofPlane);
 
-            Plane plane1 = new Plane(new Vector3(0,0,495),
-                                     new Vector3(-1,0,0),
-                                     Color.Black);
-            Plane plane2 = new Plane(new Vector3(0,0,495),
-                                     new Vector3(0,-1,0),
-                                     Color.Black);
-            Plane plane3 = new Plane(new Vector3(0,495,0),
-                                     new Vector3(0,1,0),
-                                     Color.Black);
-            Plane plane4 = new Plane(new Vector3(0,495,0),
+            Plane plane1 = new Plane(new Vector3(5,0,0),
                                      new Vector3(1,0,0),
-                                     Color.Black);
+                                     Color.Red);
+            Plane plane2 = new Plane(new Vector3(495,0,0),
+                                     new Vector3(-1,0,0),
+                                     Color.Red);
+            Plane plane3 = new Plane(new Vector3(0,5,0),
+                                     new Vector3(0,1,0),
+                                     Color.Blue);
+            Plane plane4 = new Plane(new Vector3(0,495,0),
+                                     new Vector3(0,-1,0),
+                                     Color.Blue);
 
             data.staticMapObjects.Add(plane1);
             data.staticMapObjects.Add(plane2);
@@ -69,7 +69,7 @@ namespace Raymagic
                                    new Vector3(50,50,50));
             
 
-            data.dynamicMapObjects.Add(S1);
+            /* data.dynamicMapObjects.Add(S1); */
 
             Sphere S2 = new Sphere(new Vector3(210,290,35),
                                    15,
@@ -85,15 +85,15 @@ namespace Raymagic
                             false,
                             new Vector3(110,110,200));
 
-            b.AddBoolean(BooleanOP.SUNION,
-                         new Sphere(new Vector3(0,0,20),
-                                    40,
-                                    Color.Black,
-                                    false));
+            /* b.AddBoolean(BooleanOP.SUNION, */
+            /*              new Sphere(new Vector3(0,0,20), */
+            /*                         40, */
+            /*                         Color.Black, */
+            /*                         false)); */
 
-            data.dynamicMapObjects.Add(b);
+            /* data.dynamicMapObjects.Add(b); */
 
-            data.dynamicMapObjects.Add(S2);
+            /* data.dynamicMapObjects.Add(S2); */
 
             Map.instance.AddMap("testArea", data);
         }

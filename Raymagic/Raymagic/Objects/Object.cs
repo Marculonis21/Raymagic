@@ -8,7 +8,10 @@ namespace Raymagic
 {
     public abstract class Object
     {
-        protected Vector3 position;
+        protected Matrix<double> translationMatrix = Matrix.Create<double>(4,4);
+        protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
+        protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
+
         protected Color color;
         protected string info;
 
@@ -18,12 +21,12 @@ namespace Raymagic
 
         protected bool staticObject;
 
-        protected List<BooleanOP> booleanOp = new List<BooleanOP>();
-        protected List<Object> booleanObj = new List<Object>();
+        /* protected List<BooleanOP> booleanOp = new List<BooleanOP>(); */
+        /* protected List<Object> booleanObj = new List<Object>(); */
 
-        protected Matrix<double> translationMatrix = Matrix.Create<double>(4,4);
-        protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
-        protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
+        protected List<Object> childObjects = new List<Object>();
+        protected BooleanOP booleanOP;
+        protected float booleanStrength;
 
         public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info)
         {
@@ -37,16 +40,18 @@ namespace Raymagic
             this.rotationMatrix[2,2] = 1;
             this.rotationMatrix[3,3] = 1;
 
-            this.position = position;
+            /* this.position = position; */
             this.color = color;
             this.staticObject = staticObject;
             this.info = info;
 
-            if(!staticObject)
-            {
-                this.Translate(this.position);
-                this.position = new Vector3();
-            }
+            this.Translate(position);
+
+            /* if(!staticObject) */
+            /* { */
+            /*     this.Translate(this.position); */
+                /* this.position = new Vector3(); */
+            /* } */
 
             if(boundingBoxSize.X != 0)
             {
@@ -58,40 +63,62 @@ namespace Raymagic
             }
         }
 
-        public void AddBoolean(BooleanOP op, Object obj)
-        {
-            booleanOp.Add(op);
-            if(this.staticObject)
-                obj.position += this.position;
-            else
-            {
-                Vector3 origPos = new Vector3((float)this.translationMatrix[3,0],
-                                              (float)this.translationMatrix[3,1],
-                                              (float)this.translationMatrix[3,2]);
+        /* public void AddBoolean(BooleanOP op, Object obj) */
+        /* { */
+        /*     booleanOp.Add(op); */
+        /*     if(this.staticObject) */
+        /*         obj.position += this.position; */
+        /*     else */
+        /*     { */
+        /*         Vector3 origPos = new Vector3((float)this.translationMatrix[3,0], */
+        /*                                       (float)this.translationMatrix[3,1], */
+        /*                                       (float)this.translationMatrix[3,2]); */
 
-                Vector3 objPos = new Vector3((float)obj.translationMatrix[3,0],
-                                             (float)obj.translationMatrix[3,1],
-                                             (float)obj.translationMatrix[3,2]);
+        /*         Vector3 objPos = new Vector3((float)obj.translationMatrix[3,0], */
+        /*                                      (float)obj.translationMatrix[3,1], */
+        /*                                      (float)obj.translationMatrix[3,2]); */
 
-                obj.translationMatrix[3,0] = 0;
-                obj.translationMatrix[3,1] = 0;
-                obj.translationMatrix[3,2] = 0;
+        /*         obj.translationMatrix[3,0] = 0; */
+        /*         obj.translationMatrix[3,1] = 0; */
+        /*         obj.translationMatrix[3,2] = 0; */
 
-                obj.rotationMatrix = this.rotationMatrix;
+        /*         obj.rotationMatrix = this.rotationMatrix; */
 
-                obj.position = objPos;
-                obj.Translate(origPos);
-            }
+        /*         obj.position = objPos; */
+        /*         obj.Translate(origPos); */
+        /*     } */
             
-            booleanObj.Add(obj);
+        /*     booleanObj.Add(obj); */
+        /* } */
+
+        public void AddChildObject(Object child, bool relativeTransform=false)
+        {
+            if(relativeTransform)
+            {
+                child.Translate(this.Position);
+                child.rotationMatrix = this.rotationMatrix;
+            }
+
+            childObjects.Add(child);
         }
 
         public float SDF(Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
         {
             float dst = float.MaxValue;
-            Vector3 tPos = this.staticObject ? testPos : Transform(testPos);
 
-            dst = SDFDistance(tPos);
+            dst = SDFDistance(Transform(testPos));
+
+            float chDst;
+            foreach (Object child in childObjects)
+            {
+                // need to pass the original (not transformed) testPos
+                chDst = child.SDF(testPos, minDist, useBounding, physics);
+                var _out = SDFs.Combine(dst, chDst, this.color, child.color, child.booleanOP, child.booleanStrength);
+
+                dst = _out.distance;
+                //return color as well SDFout
+                // currColor = _out.color;
+            }
             /* dst = SDFBooleans(dst, testPos, minDist, useBounding, physics); */
 
             return dst;
@@ -159,7 +186,7 @@ namespace Raymagic
             this.translationMatrix = TransformHelper.Translate(translationMatrix, translation);
             this.transformInverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
 
-            foreach(Object obj in booleanObj)
+            foreach(Object obj in childObjects)
             {
                 obj.Translate(translation);
             }
@@ -170,7 +197,7 @@ namespace Raymagic
             this.rotationMatrix = TransformHelper.Rotate(this.rotationMatrix, angle, axis);
             this.transformInverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
 
-            foreach(Object obj in booleanObj)
+            foreach(Object obj in childObjects)
             {
                 obj.Rotate(angle, axis);
             }
@@ -186,12 +213,9 @@ namespace Raymagic
         {
             get 
             {
-                if(this.staticObject)
-                    return this.position;
-                else
-                    return new Vector3((float)this.translationMatrix[3,0], 
-                                       (float)this.translationMatrix[3,1], 
-                                       (float)this.translationMatrix[3,2]);
+                return new Vector3((float)this.translationMatrix[3,0], 
+                                   (float)this.translationMatrix[3,1], 
+                                   (float)this.translationMatrix[3,2]);
             }
         }
 

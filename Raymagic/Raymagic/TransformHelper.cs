@@ -5,7 +5,7 @@ using Matrix = Extreme.Mathematics.Matrix;
 
 namespace Raymagic
 {
-    public class TransformHelper
+    public static class TransformHelper
     {
         public static Matrix<double> Translate(Matrix<double> matrix, Vector3 translation)
         {

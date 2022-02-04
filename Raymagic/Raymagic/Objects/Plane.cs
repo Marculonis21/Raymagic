@@ -14,7 +14,7 @@ namespace Raymagic
 
         public override float SDFDistance(Vector3 testPos)
         {
-            return SDFs.Plane(testPos, this.normal, this.position.Z);
+            return SDFs.Plane(testPos, this.normal, 0);
         }
     }
 }

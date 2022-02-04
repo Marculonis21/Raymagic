@@ -13,7 +13,7 @@ namespace Raymagic
 
         public override float SDFDistance(Vector3 testPos)
         {
-            return SDFs.Box(testPos, this.position, this.size);
+            return SDFs.Box(testPos, new Vector3(), this.size);
         }
     }
 }

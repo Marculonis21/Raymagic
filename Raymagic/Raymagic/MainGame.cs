@@ -171,7 +171,7 @@ namespace Raymagic
             /* map.dynamicObjectList[0].Rotate(1f,"z"); */
             /* float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
             /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
-            map.dynamicObjectList[0].Rotate(1f, "z");
+            /* map.dynamicObjectList[0].Rotate(1f, "z"); */
             /* map.dynamicObjectList[1].Rotate(2f, "z"); */
 
             base.Update(gameTime);
@@ -183,7 +183,6 @@ namespace Raymagic
 
             Informer.instance.AddInfo("debug", $"--- DEBUG INFO ---");
             screen.DrawGame(this);
-
 
             Informer.instance.ShowInfo(new Vector2(10,10), this.font, Color.Red);
             base.Draw(gameTime);
