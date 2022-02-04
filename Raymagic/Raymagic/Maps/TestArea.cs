@@ -55,27 +55,38 @@ namespace Raymagic
             data.staticMapObjects.Add(plane3);
             data.staticMapObjects.Add(plane4);
 
-            Box _b1 = new Box(new Vector3(250,250,100),
+            Box _b1 = new Box(new Vector3(250,250,50),
                               new Vector3(20,20,20),
                               Color.Gray);
-            BoxFrame _b1Frame = new BoxFrame(new Vector3(250,250,100),
+            BoxFrame _b1Frame = new BoxFrame(new Vector3(250,250,50),
                                              new Vector3(40,40,40),
                                              10,
                                              Color.Gray);
 
-            Box _b2 = new Box(new Vector3(300,300,100),
+            Box _b2 = new Box(new Vector3(300,300,60),
                               new Vector3(20,20,20),
                               Color.Blue);
 
-            BoxFrame _b2Frame = new BoxFrame(new Vector3(300,300,100),
+            BoxFrame _b2Frame = new BoxFrame(new Vector3(300,300,60),
                                              new Vector3(40,40,40),
                                              10,
                                              Color.DarkRed);
 
+            Box _b3 = new Box(new Vector3(200,300,60),
+                              new Vector3(20,20,20),
+                              Color.Gold);
+
+            BoxFrame _b3Frame = new BoxFrame(new Vector3(200,300,60),
+                                             new Vector3(40,40,40),
+                                             10,
+                                             Color.DarkGoldenrod);
+
             data.staticMapObjects.Add(_b1);
             data.staticMapObjects.Add(_b2);
+            data.staticMapObjects.Add(_b3);
             data.staticMapObjects.Add(_b1Frame);
             data.staticMapObjects.Add(_b2Frame);
+            data.staticMapObjects.Add(_b3Frame);
 
 
             Light light = new Light(new Vector3(300,300,200),
