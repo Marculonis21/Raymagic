@@ -21,14 +21,14 @@ namespace Raymagic
             data.staticMapObjects.Add(mainPlaneW);
             int checkerSize = 50;
 
-            for (int y = 0; y < (topCorner.Y-botCorner.Y)/checkerSize; y++)
-                for (int x = 0; x < (topCorner.X-botCorner.X)/checkerSize; x++)
-                {
-                    if((x+y)%2 == 0)
-                        data.staticMapObjects.Add(new Box(new Vector3(checkerSize/2 + x*checkerSize, y/2 + y*checkerSize, -10),
-                                                          new Vector3(checkerSize,checkerSize,21),
-                                                          Color.Black));
-                }
+            /* for (int y = 0; y < (topCorner.Y-botCorner.Y)/checkerSize; y++) */
+            /*     for (int x = 0; x < (topCorner.X-botCorner.X)/checkerSize; x++) */
+            /*     { */
+            /*         if((x+y)%2 == 0) */
+            /*             data.staticMapObjects.Add(new Box(new Vector3(checkerSize/2 + x*checkerSize, y/2 + y*checkerSize, -10), */
+            /*                                               new Vector3(checkerSize,checkerSize,21), */
+            /*                                               Color.Black)); */
+            /*     } */
 
 
             Plane roofPlane = new Plane(new Vector3(0,0,295),
@@ -61,7 +61,7 @@ namespace Raymagic
             BoxFrame _b1Frame = new BoxFrame(new Vector3(250,250,50),
                                              new Vector3(40,40,40),
                                              10,
-                                             Color.Gray);
+                                             Color.Green);
 
             Box _b2 = new Box(new Vector3(300,300,60),
                               new Vector3(20,20,20),
@@ -114,23 +114,23 @@ namespace Raymagic
 
 
             Box b = new Box(new Vector3(100,100,30),
-                            new Vector3(100,100,20),
+                            new Vector3(200,200,20),
                             Color.Gray,
                             false,
-                            boundingBoxSize: new Vector3(110,110,200));
-
-            /* b.AddBoolean(BooleanOP.SUNION, */
-            /*              new Sphere(new Vector3(0,0,20), */
-            /*                         40, */
-            /*                         Color.Black, */
-            /*                         false)); */
+                            boundingBoxSize: new Vector3(210,210,300));
 
             b.AddChildObject(new Sphere(new Vector3(0,0,40),
-                                        35,
+                                        45,
                                         Color.Green,
                                         false,
-                                        BooleanOP.SUNION,
-                                        20), true);
+                                        BooleanOP.SUNION, 40), true);
+
+            b.AddChildObject(new Sphere(new Vector3(40,40,40),
+                                        40,
+                                        Color.Black,
+                                        false, BooleanOP.SDIFFERENCE, 5), true);
+
+
             data.dynamicMapObjects.Add(b);
 
             /* data.dynamicMapObjects.Add(S2); */

@@ -15,7 +15,7 @@ namespace Raymagic
             /* this.color = color; */
         }
 
-        public float SDF(Vector3 testPos)
+        public float DistanceFrom(Vector3 testPos)
         {
             return SDFs.Point(testPos, position);
         }

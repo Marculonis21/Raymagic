@@ -107,14 +107,14 @@ namespace Raymagic
             Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");
         }
 
-        public float Test(Vector3 testPos, float minDist, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, out Object obj)
         {
             if(root != null)
                 return root.Test(testPos, minDist, out obj);
             else
             {
                 obj = null;
-                return float.MaxValue;
+                return new SDFout(float.MaxValue, Color.Pink);
             }
         }
     }

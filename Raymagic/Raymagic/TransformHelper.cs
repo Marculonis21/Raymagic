@@ -54,16 +54,37 @@ namespace Raymagic
             return matrix;
         }
 
-        public static Matrix<double> GetInverse(Matrix<double> translationMatrix, Matrix<double> rotationMatrix)
+        public static double[] GetInverse(Matrix<double> translationMatrix, Matrix<double> rotationMatrix)
         {
-            return (rotationMatrix * translationMatrix).GetInverse();
+            /* return (rotationMatrix * translationMatrix).GetInverse(); */
+            Matrix<double> inverse = (rotationMatrix * translationMatrix).GetInverse();
+            return new double[12] {
+                inverse[0,0],
+                inverse[0,1],
+                inverse[0,2],
+                inverse[1,0],
+                inverse[1,1],
+                inverse[1,2],
+                inverse[2,0],
+                inverse[2,1],
+                inverse[2,2],
+                inverse[3,0],
+                inverse[3,1],
+                inverse[3,2]
+            };
+
         }
 
-        public static Vector3 Transform(Vector3 orig, Matrix<double> transformInverse)
+        /* public static Vector3 Transform(Vector3 orig, Matrix<double> transformInverse) */
+        public static Vector3 Transform(Vector3 orig, double[] transformInverse)
         {
-            return new Vector3((float)((orig.X*transformInverse[0,0]) + (orig.Y*transformInverse[1,0]) + (orig.Z*transformInverse[2,0]) + (1*transformInverse[3,0])),
-                               (float)((orig.X*transformInverse[0,1]) + (orig.Y*transformInverse[1,1]) + (orig.Z*transformInverse[2,1]) + (1*transformInverse[3,1])),
-                               (float)((orig.X*transformInverse[0,2]) + (orig.Y*transformInverse[1,2]) + (orig.Z*transformInverse[2,2]) + (1*transformInverse[3,2])));
+            /* return new Vector3((float)((orig.X*transformInverse[0,0]) + (orig.Y*transformInverse[1,0]) + (orig.Z*transformInverse[2,0]) + (1*transformInverse[3,0])), */
+            /*                    (float)((orig.X*transformInverse[0,1]) + (orig.Y*transformInverse[1,1]) + (orig.Z*transformInverse[2,1]) + (1*transformInverse[3,1])), */
+            /*                    (float)((orig.X*transformInverse[0,2]) + (orig.Y*transformInverse[1,2]) + (orig.Z*transformInverse[2,2]) + (1*transformInverse[3,2]))); */
+
+            return new Vector3((float)((orig.X*transformInverse[0]) + (orig.Y*transformInverse[3]) + (orig.Z*transformInverse[6]) + (1*transformInverse[9])),
+                               (float)((orig.X*transformInverse[1]) + (orig.Y*transformInverse[4]) + (orig.Z*transformInverse[7]) + (1*transformInverse[10])),
+                               (float)((orig.X*transformInverse[2]) + (orig.Y*transformInverse[5]) + (orig.Z*transformInverse[8]) + (1*transformInverse[11])));
         }
     }
 }

@@ -45,21 +45,21 @@ namespace Raymagic
             this.boundingBox = new Box(this.boundingBoxPosition, this.boundingBoxSize, Color.Red);
         }
 
-        public float Test(Vector3 testPos, float minDist, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, out Object obj)
         {
             obj = null;
 
-            float test;
+            SDFout test;
             if(this.isLeaf)
             {
                 test = this.boundingBox.SDF(testPos, minDist, false, false);
                 // test the object bounding box
-                if(test < minDist)
+                if(test.distance < minDist)
                 {
                     // if bounding box collided try the actuall object SDF
-                    float objTest = this.obj.SDF(testPos, minDist, false, false);
+                    SDFout objTest = this.obj.SDF(testPos, minDist, false, false);
 
-                    if(objTest < minDist)
+                    if(objTest.distance < minDist)
                     {
                         obj = this.obj;
                         return objTest;
@@ -69,15 +69,15 @@ namespace Raymagic
             else
             {
                 test = this.boundingBox.SDF(testPos, minDist, false, false);
-                if(minDist > test)
+                if(test.distance < minDist)
                 {
-                    float lTest = LEFT.Test(testPos, minDist, out Object lObj);
-                    float rTest = RIGHT.Test(testPos, minDist, out Object rObj);
+                    SDFout lTest = LEFT.Test(testPos, minDist, out Object lObj);
+                    SDFout rTest = RIGHT.Test(testPos, minDist, out Object rObj);
 
                     // both of them will improve MIN - choose the best one
-                    if(lTest < minDist && rTest < minDist)
+                    if(lTest.distance < minDist && rTest.distance < minDist)
                     {
-                        if(lTest < rTest)
+                        if(lTest.distance < rTest.distance)
                         {
                             obj = lObj;
                             return lTest;
@@ -89,13 +89,13 @@ namespace Raymagic
                         }
                     }
                     // only left will improve MIN
-                    else if(lTest < minDist && rTest >= minDist)
+                    else if(lTest.distance < minDist && rTest.distance >= minDist)
                     {
                         obj = lObj;
                         return lTest;
                     }
                     // only right
-                    else if(rTest < minDist && lTest >= minDist)
+                    else if(rTest.distance < minDist && lTest.distance >= minDist)
                     {
                         obj = rObj;
                         return rTest;
@@ -105,7 +105,7 @@ namespace Raymagic
                 }
             }
 
-            return float.MaxValue;
+            return new SDFout(float.MaxValue, Color.Pink);
         }
         
         public void Print(int depth)

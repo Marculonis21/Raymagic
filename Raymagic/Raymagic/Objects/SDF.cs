@@ -14,6 +14,7 @@ namespace Raymagic
         SUNION
     }
 
+    [Serializable]
     public struct SDFout
     {
         public float distance {get; private set;}
@@ -152,7 +153,7 @@ namespace Raymagic
         public static float SmoothDifference(float OBJ1, float OBJ2, float k)
         {
             float h = Math.Max(k-Math.Abs(-OBJ1-OBJ2),0.0f);
-            return (float)(Math.Max(-OBJ1, OBJ2) + h*h*0.25f/k);
+            return (float)(Math.Max(OBJ1, -OBJ2) + h*h*0.25f/k);
         }
 
         public static float SmoothIntersect(float OBJ1, float OBJ2, float k)
@@ -164,9 +165,12 @@ namespace Raymagic
         // needs to work with color too
         public static SDFout SmoothUnion(float OBJ1, float OBJ2, Color color1, Color color2, float k)
         {
-            float h = Math.Max(k-Math.Abs(OBJ1-OBJ2),0.0f);
+            float h = Math.Max(k-Math.Abs(OBJ2-OBJ1),0.0f);
             float dst = (float)(Math.Min(OBJ1, OBJ2) - h*h*0.25/k);
-            Color color = Color.Lerp(color1, color2, k);
+
+            float interpolation = Math.Clamp(0.5f + 0.5f * (OBJ2 - OBJ1)/k, 0.0f, 1.0f);
+            Color color = Color.Lerp(color1, color2, interpolation);
+
             return new SDFout(dst, color);
         }
     }

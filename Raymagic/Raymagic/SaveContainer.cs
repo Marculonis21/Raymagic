@@ -5,9 +5,9 @@ namespace Raymagic
     [Serializable]
     class SaveContainer
     {
-        public float[,,] distanceMap;
+        public SDFout[,,] distanceMap;
 
-        public SaveContainer(float[,,] dm)
+        public SaveContainer(SDFout[,,] dm)
         {
             this.distanceMap = dm;
         }

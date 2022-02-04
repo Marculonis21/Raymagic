@@ -23,7 +23,8 @@ namespace Raymagic
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
         public float distanceMapDetail = 2;
-        public float[,,] distanceMap;
+        /* public float[,,] distanceMap; */
+        public SDFout[,,] distanceMap;
 
         private Map()
         {
@@ -57,9 +58,9 @@ namespace Raymagic
             mapOrigin = data.botCorner;
             mapTopCorner = data.topCorner;
 
-            distanceMap = new float[(int)(mapSize.X/distanceMapDetail), 
-                                    (int)(mapSize.Y/distanceMapDetail),
-                                    (int)(mapSize.Z/distanceMapDetail)];
+            distanceMap = new SDFout[(int)(mapSize.X/distanceMapDetail), 
+                                     (int)(mapSize.Y/distanceMapDetail),
+                                     (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine($"Create/Load - distance map (detail {this.distanceMapDetail}) (C/L)?>");
             string input = Console.ReadLine();
@@ -95,23 +96,23 @@ namespace Raymagic
                     int y = (int)(i / (mapSize.X/distanceMapDetail));
                     int x = (int)(i % (mapSize.X/distanceMapDetail));
 
-                    float d;
-                    float dBest = 9999;
+                    SDFout test;
+                    SDFout best = new SDFout(float.MaxValue, Color.Pink);
                     foreach(Object obj in this.staticObjectList)
                     {
-                        d = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
-                                                            y*distanceMapDetail, 
-                                                            z*distanceMapDetail),dBest);
-                        if(d < dBest)
-                            dBest = d;
+                        test = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
+                                                               y*distanceMapDetail, 
+                                                               z*distanceMapDetail), best.distance);
+                        if(test.distance < best.distance)
+                            best = test;
                     }
 
-                    distanceMap[x,y,z] = dBest;
+                    distanceMap[x,y,z] = best;
                 });
             }
             Console.CursorVisible = true;
 
-            SaveDistanceMap(id, this.distanceMapDetail);
+            /* SaveDistanceMap(id, this.distanceMapDetail); */
         }
 
         public Vector3 GetPlayerStart()
