@@ -86,7 +86,7 @@ namespace Raymagic
             lookDir = new Vector3((float)_x,(float)_y,(float)_z);
             lookDir.Normalize();
 
-            Informer.instance.AddInfo("playerRot", lookDir.ToString());
+            Informer.instance.AddInfo("playerRot", "LookDir: " + lookDir.ToString());
         }
 
         public void Jump(GameTime gameTime)
@@ -105,8 +105,8 @@ namespace Raymagic
             }
 
             this.position += this.velocity;
-            Informer.instance.AddInfo("playerPos", this.position.ToString());
-            Informer.instance.AddInfo("playerFeet", (this.position + new Vector3(0,0,-1)*size.Y).ToString());
+            Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
+            Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
 
         void BodyCollider(GameTime gameTime)

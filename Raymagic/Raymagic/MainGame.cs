@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -153,7 +151,7 @@ namespace Raymagic
                         Console.WriteLine(outObj.Info);
                     }
                 }
-                /* map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false, new Vector3(20,20,20))); */
+                map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false));
 
                 if(outObj != null)
                 {

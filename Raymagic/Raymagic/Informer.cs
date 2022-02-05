@@ -27,7 +27,6 @@ namespace Raymagic
                 infoList[key] = info;
             else
                 infoList.Add(key,info);
-
         }
 
         public void ShowInfo(Vector2 origin, SpriteFont font, Color color)

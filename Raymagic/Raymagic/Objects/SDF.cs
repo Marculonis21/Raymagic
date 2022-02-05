@@ -168,7 +168,7 @@ namespace Raymagic
             float dst = (float)(Math.Min(OBJ1, OBJ2) - h*h*0.25/k);
 
             float interpolation = Math.Clamp(0.5f + 0.5f * (OBJ2 - OBJ1)/k, 0.0f, 1.0f);
-            Color color = Color.Lerp(color1, color2, interpolation);
+            Color color = Color.Lerp(color2, color1, interpolation);
 
             return new SDFout(dst, color);
         }

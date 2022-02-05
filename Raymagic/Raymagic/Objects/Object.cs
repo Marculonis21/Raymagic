@@ -25,9 +25,6 @@ namespace Raymagic
 
         protected bool staticObject;
 
-        /* protected List<BooleanOP> booleanOp = new List<BooleanOP>(); */
-        /* protected List<Object> booleanObj = new List<Object>(); */
-
         protected List<Object> childObjects = new List<Object>();
         protected BooleanOP booleanOP;
         protected float booleanStrength;

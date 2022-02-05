@@ -50,6 +50,12 @@ namespace Raymagic
                                      new Vector3(0,-1,0),
                                      Color.Blue);
 
+
+            plane4.AddChildObject(new Sphere(new Vector3(250,0,50),
+                                             50,
+                                             Color.Yellow,
+                                             true,
+                                             BooleanOP.SUNION, 100), true);
             data.staticMapObjects.Add(plane1);
             data.staticMapObjects.Add(plane2);
             data.staticMapObjects.Add(plane3);
