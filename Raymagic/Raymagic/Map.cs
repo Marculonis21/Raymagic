@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace Raymagic
@@ -23,7 +24,6 @@ namespace Raymagic
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
         public float distanceMapDetail = 2;
-        /* public float[,,] distanceMap; */
         public SDFout[,,] distanceMap;
 
         private Map()
@@ -112,7 +112,7 @@ namespace Raymagic
             }
             Console.CursorVisible = true;
 
-            /* SaveDistanceMap(id, this.distanceMapDetail); */
+            SaveDistanceMap(id, this.distanceMapDetail);
         }
 
         public Vector3 GetPlayerStart()
@@ -121,16 +121,19 @@ namespace Raymagic
             return new Vector3(spawn.X*100, spawn.Y*100, spawn.Z*100);
         }
 
+        // SERIALIZATION
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {
             SaveContainer saveContainer = new SaveContainer(this.distanceMap);
 
             IFormatter formatter = new BinaryFormatter();  
+
             Stream stream = new FileStream($"Maps/{name}-{distanceMapDetail}.dm", FileMode.Create, FileAccess.Write, FileShare.None);  
             formatter.Serialize(stream, saveContainer);  
             stream.Close();  
 
             Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm saved");
+
         }
 
         public void LoadDistanceMap(string name, float distanceMapDetail)
@@ -142,7 +145,7 @@ namespace Raymagic
                 SaveContainer saveContainer = (SaveContainer)formatter.Deserialize(stream);  
                 stream.Close(); 
 
-                this.distanceMap = saveContainer.distanceMap;
+                this.distanceMap = saveContainer.Deserialize(this.distanceMap);
 
                 Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm loaded");
             }

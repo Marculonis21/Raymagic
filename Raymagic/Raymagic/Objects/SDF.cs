@@ -14,7 +14,6 @@ namespace Raymagic
         SUNION
     }
 
-    [Serializable]
     public struct SDFout
     {
         public float distance {get; private set;}
