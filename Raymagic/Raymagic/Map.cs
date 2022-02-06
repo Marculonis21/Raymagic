@@ -74,7 +74,7 @@ namespace Raymagic
                 throw new Exception("DM not selected");
             }
 
-            Console.WriteLine("baking distance field");
+            Console.WriteLine("Baking distance map...");
             Console.CursorVisible = false;
             for(int z = 0; z < mapSize.Z/distanceMapDetail; z++)
             {
@@ -110,9 +110,11 @@ namespace Raymagic
                     distanceMap[x,y,z] = best;
                 });
             }
-            Console.CursorVisible = true;
 
+            Console.WriteLine("Saving distance map...");
             SaveDistanceMap(id, this.distanceMapDetail);
+
+            Console.CursorVisible = true;
         }
 
         public Vector3 GetPlayerStart()
@@ -147,7 +149,7 @@ namespace Raymagic
 
                 this.distanceMap = saveContainer.Deserialize(this.distanceMap);
 
-                Console.WriteLine($"DistanceMap Maps/{name}-{distanceMapDetail}.dm loaded");
+                Console.WriteLine($"Distance map Maps/{name}-{distanceMapDetail}.dm loaded");
             }
             catch (FileNotFoundException)
             {

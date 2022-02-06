@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -23,11 +24,25 @@ namespace Raymagic
 
         Map map = Map.instance;
 
+        Dictionary<string, Keys> playerControls = new Dictionary<string, Keys>();
+
         private Player()
         {
             position = map.GetPlayerStart();
             rotation = new Vector2(270,120);
             size = new Vector2(30,75);
+
+            playerControls.Add("forward_move",  Keys.W);
+            playerControls.Add("backward_move", Keys.S);
+            playerControls.Add("left_move",     Keys.A);
+            playerControls.Add("right_move",    Keys.D);
+            playerControls.Add("jump",          Keys.Space);
+            playerControls.Add("playerMode",    Keys.F1);
+            playerControls.Add("godMode",       Keys.F2);
+            playerControls.Add("god_up",        Keys.Space);
+            playerControls.Add("god_down",      Keys.LeftControl);
+            playerControls.Add("TESTANYTHING_ON",Keys.O);
+            playerControls.Add("TESTANYTHING_OFF",Keys.P);
         }
 
         public static readonly Player instance = new Player();
@@ -36,31 +51,44 @@ namespace Raymagic
         int lastMouseY = 100;
         public void Controlls(GameTime gameTime, MouseState mouse)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.W)) 
-                this.position += new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,(float)Math.Sin(this.rotation.X*Math.PI/180)*2,0);
+            if (Keyboard.GetState().IsKeyDown(playerControls["forward_move"])) 
+                this.position += new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
+                                             (float)Math.Sin(this.rotation.X*Math.PI/180)*2,
+                                             0);
+            if (Keyboard.GetState().IsKeyDown(playerControls["backward_move"])) 
+                this.position -= new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
+                                             (float)Math.Sin(this.rotation.X*Math.PI/180)*2,
+                                             0);
+            if (Keyboard.GetState().IsKeyDown(playerControls["left_move"]))
+                this.position -= new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
+                                             (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,
+                                             0);
+            if (Keyboard.GetState().IsKeyDown(playerControls["right_move"])) 
+                this.position += new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
+                                             (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,
+                                             0);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) 
-                this.position -= new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,(float)Math.Sin(this.rotation.X*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-                this.position -= new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D)) 
-                this.position += new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,(float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,0);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.G)) 
-                GodMode = true;
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift&Keys.G)) 
-                GodMode = false;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space)) 
+            if (Keyboard.GetState().IsKeyDown(playerControls["jump"])) 
                 this.Jump(gameTime);
 
+            if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
+                GodMode = true;
+            if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
+                GodMode = false;
+
+
             if(GodMode)
-                if(Keyboard.GetState().IsKeyDown(Keys.LeftControl))
+            {
+                if(Keyboard.GetState().IsKeyDown(playerControls["god_down"]))
                     this.position.Z -= 2f;
-                if(Keyboard.GetState().IsKeyDown(Keys.Space))
+                if(Keyboard.GetState().IsKeyDown(playerControls["god_up"]))
                     this.position.Z += 2f;
+            }
+
+            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"])) */
+            /*     RayMarchingHelper.SpecularEnabled = true; */
+            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"])) */
+            /*     RayMarchingHelper.SpecularEnabled = false; */
 
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
@@ -121,7 +149,9 @@ namespace Raymagic
                 testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0);
                 testDir.Normalize();
 
-                RayMarchingHelper.PhysicsRayMarch(this.position + new Vector3(0,0,-1)*size.Y/2, testDir, 5, 0, out float width, out Vector3 hit, out Object obj); 
+                Ray testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, testDir);
+
+                RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out Object obj); 
 
                 if(width <= size.X/2)
                 {
@@ -133,7 +163,7 @@ namespace Raymagic
             }
 
             // maintain height above ground (stairs/steps) 
-            RayMarchingHelper.PhysicsRayMarch(this.position, new Vector3(0,0,-1), 10, -1, out float length, out Vector3 _, out Object _);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out Object _);
             if(length < size.Y)
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
@@ -145,7 +175,7 @@ namespace Raymagic
         {
             // fall
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            RayMarchingHelper.PhysicsRayMarch(feetPos, new Vector3(0,0,-1), 5, 0, out float length, out Vector3 _, out Object _);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 5, 0, out float length, out Vector3 _, out Object _);
 
             if(length > 0)
             {

@@ -17,15 +17,13 @@ namespace Raymagic
 
     public static class RayMarchingHelper
     {
-        public static void RayMarch(Vector3 position, Vector3 dir, out float length, out Color color)
+        public static void RayMarch(Ray ray, out float length, out Color color)
         {
             Map map = Map.instance;
             color = Color.Black;
             length = float.MaxValue;
 
-            dir.Normalize();
-
-            Vector3 testPos = position;
+            Vector3 testPos = ray.origin;
             const int maxSteps = 100;
             for (int iter = 0; iter < maxSteps; iter++)
             {
@@ -98,12 +96,20 @@ namespace Raymagic
                     }
 
                     Vector3 startPos;
+                    Vector3 objectNormal;
                     float lightIntensity = 0;
                     foreach(Light light in map.lightList)
                     {
-                        startPos = testPos+finalObj.SDF_normal(testPos)*2;
+                        objectNormal = finalObj.SDF_normal(testPos);
+                        startPos = testPos+objectNormal*2;
                         
-                        lightIntensity += LightRayMarch(startPos, light);
+                        float addIntensity = LightRayMarch(startPos, light);
+                        if(addIntensity > 0)
+                        {
+                            addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
+                        }
+
+                        lightIntensity += addIntensity;
                     }
 
                     lightIntensity = Math.Max(lightIntensity, 0.0001f); // try around something
@@ -114,36 +120,46 @@ namespace Raymagic
                     return;
                 }
 
-                testPos += dir*best.distance;
+                testPos += ray.direction*best.distance;
             }
+        }
+
+        private static float SpecularHighlight(Ray viewRay, Vector3 objectHitPos, Vector3 objectNormal, Vector3 lightPos)
+        {
+            Vector3 reflectionDir = viewRay.direction - 2*Vector3.Dot(viewRay.direction, objectNormal)*objectNormal;
+            Ray reflectionViewRay = new Ray(objectHitPos, reflectionDir);
+
+            // "= how close is the reflection vector to the light vector)"
+            return Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction);
         }
 
         public static float LightRayMarch(Vector3 position, Light light)
         {
             Map map = Map.instance;
-            Vector3 dir = (light.position - position);
-            dir.Normalize();
+            Ray ray = new Ray(position, light.position - position);
 
             float length = 1f;
-            /* float test; */
+
             float intensity = light.intensity;
             float k = 16f*intensity;
+
+            Vector3 testPos = position + ray.direction*length;
             while(length < (position - light.position).Length() - 0.1f)
             {
-                Vector3 coords = position + dir*length - map.mapOrigin;
+                Vector3 coords = testPos - map.mapOrigin;
 
                 SDFout test;
                 SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
-                test = map.BVH.Test(position + dir*length, best.distance, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, out Object dObj);
                 if(test.distance < best.distance)
                 {
                     best = test;
                 }
 
-                float lightDst = light.DistanceFrom(position + dir*length);
+                float lightDst = light.DistanceFrom(testPos);
                 if(lightDst < best.distance)
                 {
                     break;
@@ -157,24 +173,23 @@ namespace Raymagic
                     return 0.0f;
 
                 length += best.distance;
+                testPos += ray.direction*best.distance;
             }
 
             length = (position - light.position).Length();
+
             return intensity/(length*length);
         }
 
-        public static void PhysicsRayMarch(Vector3 position, Vector3 dir, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)
+        public static void PhysicsRayMarch(Ray ray, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)
         {
             Map map = Map.instance;
-            hit = position;
+            hit = ray.origin;
             length = float.MaxValue;
             hitObj = null;
 
-            dir.Normalize();
-
-            Vector3 testPos = position;
-
             SDFout test;
+            Vector3 testPos = ray.origin;
 
             for (int iter = 0; iter < maxSteps; iter++)
             {
@@ -205,16 +220,16 @@ namespace Raymagic
                     if(best.distance < 0)
                         length = -1;
                     else
-                        length = (position - testPos).Length(); 
+                        length = (ray.origin - testPos).Length(); 
 
                     hit = testPos;
                     return;
                 }
 
-                testPos += dir*best.distance;
+                testPos += ray.direction*best.distance;
             }
 
-            length = (position - testPos).Length();
+            length = (ray.origin - testPos).Length();
             hit = testPos;
         }
     }

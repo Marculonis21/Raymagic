@@ -132,17 +132,16 @@ namespace Raymagic
             {
                 lPressed = true;
             }
-
             if (mouse.RightButton == ButtonState.Pressed)
             {
                 rPressed = true;
             }
 
-
             Object outObj = null;
             if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
             {
-                RayMarchingHelper.PhysicsRayMarch(player.position, player.lookDir, 300, 0, out float length, out Vector3 hit, out Object hitObj);
+
+                RayMarchingHelper.PhysicsRayMarch(new Ray(player.position, player.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj);
                 foreach(Object dObj in map.dynamicObjectList)
                 {
                     if(hitObj == dObj)

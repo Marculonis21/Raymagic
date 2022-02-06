@@ -76,7 +76,7 @@ namespace Raymagic
 
                 Vector3 rayDir = (player.position + player.lookDir*zoom + viewPlaneRight*_x*detailSize + viewPlaneUp*_y*detailSize) - player.position;
 
-                RayMarchingHelper.RayMarch(player.position, rayDir, out float length, out Color Color);
+                RayMarchingHelper.RayMarch(new Ray(player.position, rayDir), out float length, out Color Color);
                 colors[x,y] = Color;
             }); 
 
