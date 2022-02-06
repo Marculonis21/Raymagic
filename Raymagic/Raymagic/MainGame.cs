@@ -170,6 +170,9 @@ namespace Raymagic
             /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
             /* map.dynamicObjectList[0].Rotate(1f, "z"); */
             /* map.dynamicObjectList[1].Rotate(2f, "z"); */
+            float x = (float)Math.Cos(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
+            float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f);
+            map.lightList[0].position += new Vector3(x,y,0);
 
             base.Update(gameTime);
         }

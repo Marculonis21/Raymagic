@@ -17,6 +17,8 @@ namespace Raymagic
 
     public static class RayMarchingHelper
     {
+        public static bool SpecularEnabled { get; set; }
+
         public static void RayMarch(Ray ray, out float length, out Color color)
         {
             Map map = Map.instance;
@@ -104,10 +106,11 @@ namespace Raymagic
                         startPos = testPos+objectNormal*2;
                         
                         float addIntensity = LightRayMarch(startPos, light);
-                        if(addIntensity > 0)
-                        {
-                            addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
-                        }
+                        if(SpecularEnabled)
+                            if(addIntensity > 0)
+                            {
+                                addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
+                            }
 
                         lightIntensity += addIntensity;
                     }
@@ -130,7 +133,7 @@ namespace Raymagic
             Ray reflectionViewRay = new Ray(objectHitPos, reflectionDir);
 
             // "= how close is the reflection vector to the light vector)"
-            return Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction);
+            return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0);
         }
 
         public static float LightRayMarch(Vector3 position, Light light)
@@ -176,9 +179,7 @@ namespace Raymagic
                 testPos += ray.direction*best.distance;
             }
 
-            length = (position - light.position).Length();
-
-            return intensity/(length*length);
+            return intensity/(Vector3.DistanceSquared(position, light.position));
         }
 
         public static void PhysicsRayMarch(Ray ray, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)

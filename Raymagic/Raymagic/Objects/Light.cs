@@ -4,7 +4,7 @@ namespace Raymagic
 {
     public class Light
     {
-        public Vector3 position {get; private set;}
+        public Vector3 position {get; set;}
         public float intensity {get; private set;}
         /* public Color color {get; private set;} */
 
