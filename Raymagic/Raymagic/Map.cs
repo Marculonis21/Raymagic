@@ -23,7 +23,7 @@ namespace Raymagic
 
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
-        public float distanceMapDetail = 2;
+        public float distanceMapDetail = 2f;
         public SDFout[,,] distanceMap;
 
         private Map()

@@ -145,6 +145,15 @@ namespace Raymagic
             Map.instance.infoObjectList.Remove(this.boundingBox);
         }
 
+        public void TranslateAbsolute(Vector3 newPosition)
+        {
+            this.translationMatrix[3,0] = 0;
+            this.translationMatrix[3,1] = 0;
+            this.translationMatrix[3,2] = 0;
+
+            this.Translate(newPosition);
+        }
+
         public void Translate(Vector3 translation)
         {
             this.translationMatrix = TransformHelper.Translate(translationMatrix, translation);
