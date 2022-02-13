@@ -9,7 +9,6 @@ namespace Raymagic
         public DMOCTTree root;
         public DMCompressionOCTTree(SDFout[,,] distanceMap)
         {
-            Console.WriteLine("OCTTree magic");
             Vector3 center = (Map.instance.mapTopCorner - Map.instance.mapOrigin)/2;
             Vector3 size = Map.instance.mapTopCorner - Map.instance.mapOrigin;
 
@@ -28,12 +27,14 @@ namespace Raymagic
                                                                                y*Map.instance.distanceMapDetail,
                                                                                z*Map.instance.distanceMapDetail);
 
-                        root.Insert(distanceMap[x,y,z].distance, testPos);
+                        root.Insert(distanceMap[x,y,z].distance, testPos, 2f);
                     }
                 }
             }
-            Console.WriteLine("weirdly done");
+
             Console.WriteLine(root.CountAllNodes());
+
+            Console.WriteLine($"Original size: {dmLenX*dmLenY*dmLenZ}");
         }
     }
 }

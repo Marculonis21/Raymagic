@@ -8,7 +8,7 @@ namespace Raymagic
         {
             MapData data = new MapData();
 
-            Vector3 topCorner = new Vector3(500,500,300);
+            Vector3 topCorner = new Vector3(512,512,512);
             Vector3 botCorner = new Vector3(0,0,0);
 
             data.topCorner = topCorner;

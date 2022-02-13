@@ -47,7 +47,7 @@ namespace Raymagic
             children[7] = new DMOCTTree(this, new Vector3(this.center.X + size.X/4, this.center.Y + size.Y/4, this.center.Z + size.Z/4), size/2);
         }
 
-        public void Insert(float distValue, Vector3 position, float possibleDistanceError = 2)
+        public void Insert(float distValue, Vector3 position, float possibleDistanceError = 10)
         {
             if(!InBoundary(position)) return;
 
@@ -82,13 +82,7 @@ namespace Raymagic
                     {
                         Subdivide();
 
-                        // add new 
-                        foreach (var child in children)
-                        {
-                            child.Insert(distValue, position, possibleDistanceError);
-                        }
-
-                        // readd from parent
+                        // re-add from parent
                         foreach (var child in children)
                         {
                             foreach (var item in itemList)
@@ -98,6 +92,12 @@ namespace Raymagic
                         }       
 
                         this.itemList = null;
+
+                        // add new 
+                        foreach (var child in children)
+                        {
+                            child.Insert(distValue, position, possibleDistanceError);
+                        }
                     }
                 }
             }
@@ -131,10 +131,8 @@ namespace Raymagic
                         return _out;
                 }
             }
-            else
-                return this;
 
-            throw new Exception("heasdfasdfad");
+            return this;
         }
 
         public int CountAllNodes()
