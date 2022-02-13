@@ -94,6 +94,8 @@ namespace Raymagic
                 }
 
             }
+
+            /* throw new Exception(""); */
             return float.NaN;
         }
 

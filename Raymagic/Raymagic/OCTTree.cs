@@ -9,12 +9,13 @@ namespace Raymagic
         public OCTTreeNode root;
         public Queue<OCTTreeNode> nodeQueue;
 
-        public OCTTree(SDFout[,,] distanceMap)
+        public OCTTree(SDFout[,,] distanceMap) // I would say that it works pretty fine!!!!
         {
             Map map = Map.instance;
             Vector3 center = (map.mapTopCorner - map.mapOrigin)/2;
             Vector3 size = map.mapTopCorner - map.mapOrigin;
 
+            Console.WriteLine("Creating octtree");
             this.root = new OCTTreeNode(center,size, Vector3.One * map.distanceMapDetail);
 
             int dmLenX = distanceMap.GetLength(0);
@@ -35,9 +36,11 @@ namespace Raymagic
                 }
             }
 
+            Console.WriteLine("Processing octtree");
+
             root.GroupTogether(1);
 
-            Console.WriteLine("done");
+            Console.WriteLine("DONE");
             int leafCounter = 0;
             int fullCounter = 1;
 
