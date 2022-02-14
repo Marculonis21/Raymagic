@@ -97,7 +97,7 @@ namespace Raymagic
 
 
             Light light = new Light(new Vector3(300,300,200),
-                                    100);
+                                    10000);
 
             data.mapLights.Add(light);
 

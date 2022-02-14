@@ -92,6 +92,8 @@ namespace Raymagic
 
             player = Player.instance;
             base.Initialize();
+
+            GC.Collect();
         }
 
         protected override void LoadContent()

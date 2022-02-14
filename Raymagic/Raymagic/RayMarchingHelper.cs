@@ -17,7 +17,12 @@ namespace Raymagic
 
     public static class RayMarchingHelper
     {
-        public static bool SpecularEnabled { get; set; }
+        /* public static bool SpecularEnabled { get; set; } */
+        public static bool GammaCorrectionEnabled { get; set; }
+ 
+        public static float Remap (this float value, float from1, float to1, float from2, float to2) {
+            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+        }
 
         public static void RayMarch(Ray ray, out float length, out Color color)
         {
@@ -75,9 +80,6 @@ namespace Raymagic
                 {
                     SDFout final = new SDFout(float.MaxValue, Color.Pink);
                     Object finalObj = null;
-                    /* float bestDst = float.MaxValue; */
-                    /* Color bestColor = color; */
-                    /* Object bestObj = null; */ 
 
                     if(sObj)
                     {
@@ -106,19 +108,22 @@ namespace Raymagic
                         startPos = testPos+objectNormal*2;
                         
                         float addIntensity = LightRayMarch(startPos, light);
-                        if(SpecularEnabled)
-                            if(addIntensity > 0)
-                            {
-                                addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
-                            }
+                        if(addIntensity > 0)
+                        {
+                            addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
+                        }
 
                         lightIntensity += addIntensity;
                     }
 
-                    lightIntensity = Math.Max(lightIntensity, 0.0001f); // try around something
+                    /* lightIntensity = Math.Max(lightIntensity, 0.0001f); // try around something */
                     color = new Color(final.color.R*lightIntensity,
                                       final.color.G*lightIntensity,
                                       final.color.B*lightIntensity);
+
+                    if (GammaCorrectionEnabled)
+                    {
+                    }
 
                     return;
                 }

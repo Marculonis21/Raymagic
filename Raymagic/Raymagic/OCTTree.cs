@@ -38,7 +38,7 @@ namespace Raymagic
 
             Console.WriteLine("Processing octtree");
 
-            root.GroupTogether(1);
+            root.GroupTogether(2);
 
             Console.WriteLine("DONE");
             int leafCounter = 0;

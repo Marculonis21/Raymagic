@@ -86,9 +86,9 @@ namespace Raymagic
             }
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
-                RayMarchingHelper.SpecularEnabled = true;
+                RayMarchingHelper.GammaCorrectionEnabled = true;
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
-                RayMarchingHelper.SpecularEnabled = false;
+                RayMarchingHelper.GammaCorrectionEnabled = false;
 
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));

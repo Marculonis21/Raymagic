@@ -38,9 +38,12 @@ namespace Raymagic
             {
                 this.colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
                 /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
+
+                GC.Collect();
             }
 
             this.detailSize = detailSize;
+
         }
 
         Color[,] colors;
