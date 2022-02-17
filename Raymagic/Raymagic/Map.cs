@@ -158,7 +158,9 @@ namespace Raymagic
             stream.Close();  
 
             Console.WriteLine($"DistanceMap Maps/Data/{name}-{distanceMapDetail}.dm saved");
-
+            saveContainer = null;
+            
+            GC.Collect();
         }
 
         public void LoadDistanceMap(string name, float distanceMapDetail)
@@ -173,6 +175,9 @@ namespace Raymagic
                 this.distanceMap = saveContainer.Deserialize(this.distanceMap);
 
                 Console.WriteLine($"Distance map Maps/Data/{name}-{distanceMapDetail}.dm loaded");
+                saveContainer = null;
+
+                GC.Collect();
             }
             catch (FileNotFoundException)
             {

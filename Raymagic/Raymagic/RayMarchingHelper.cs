@@ -123,6 +123,11 @@ namespace Raymagic
 
                     if (GammaCorrectionEnabled)
                     {
+                        Vector3 c = color.ToVector3();
+                        Vector3 _c = new Vector3((float)Math.Pow(c.X, 1/2.2),
+                                                 (float)Math.Pow(c.Y, 1/2.2),
+                                                 (float)Math.Pow(c.Z, 1/2.2));
+                        color = _c.ToColor();
                     }
 
                     return;

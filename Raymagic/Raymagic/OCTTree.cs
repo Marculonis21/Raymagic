@@ -4,19 +4,21 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public class OCTTree
+    public static class OCTTree
     {
-        public OCTTreeNode root;
-        public Queue<OCTTreeNode> nodeQueue;
+        public static OCTTreeNode root;
+        public static float maxGroupError;
 
-        public OCTTree(SDFout[,,] distanceMap) // I would say that it works pretty fine!!!!
+        public static void OCTTFromDistanceMap(SDFout[,,] distanceMap, float allowedError)
         {
             Map map = Map.instance;
             Vector3 center = (map.mapTopCorner - map.mapOrigin)/2;
             Vector3 size = map.mapTopCorner - map.mapOrigin;
 
+            maxGroupError = allowedError;
+
             Console.WriteLine("Creating octtree");
-            this.root = new OCTTreeNode(center,size, Vector3.One * map.distanceMapDetail);
+            root = new OCTTreeNode(center, size.X, map.distanceMapDetail);
 
             int dmLenX = distanceMap.GetLength(0);
             int dmLenY = distanceMap.GetLength(1);
@@ -36,15 +38,13 @@ namespace Raymagic
                 }
             }
 
-            Console.WriteLine("Processing octtree");
-
-            root.GroupTogether(2);
+            /* root.GroupTogether(2); */
 
             Console.WriteLine("DONE");
             int leafCounter = 0;
             int fullCounter = 1;
 
-            nodeQueue = new Queue<OCTTreeNode>();
+            Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>();
             nodeQueue.Enqueue(root);
 
             while (nodeQueue.Count > 0)
