@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -64,12 +65,12 @@ namespace Raymagic
             /* texture1.SaveAsPng(stream1, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
             /* stream1.Close(); */
 
-            int error = 1;
+            int error = 2;
             OCTTree.OCTTFromDistanceMap(map.distanceMap, error);
 
             int height = 100;
             Texture2D texture = new Texture2D(_graphics.GraphicsDevice, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1));
-            Stream stream = File.Create($"./DistanceMapTestTextures/{map.mapName}_texture_{map.distanceMapDetail}_byteTest_{error}_{height}.png");
+            Stream stream = File.Create($"./DistanceMapTestTextures/{map.mapName}_texture_{map.distanceMapDetail}_parallel_byteTest_{error}_{height}.png");
 
             List<Color> colorList = new List<Color>();
 

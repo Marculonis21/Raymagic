@@ -36,14 +36,12 @@ namespace Raymagic
         public bool IsRoot() => parent == null;
         public bool IsLeaf() => children == null;
         public bool IsEmpty() => empty;
-        public bool CanSubdivide()
+        public bool CanSubdivide(float size)
         {
-            GetPosSize(out Vector3 center, out float size);
             return size > OCTTree.nodeMinSize;
         }
-        public bool InBoundary(Vector3 testPos)
+        public bool InBoundary(Vector3 testPos, Vector3 center, float size)
         {
-            GetPosSize(out Vector3 center, out float size);
             return (center.X - size/2 <= testPos.X && testPos.X < center.X + size/2 && 
                     center.Y - size/2 <= testPos.Y && testPos.Y < center.Y + size/2 &&   
                     center.Z - size/2 <= testPos.Z && testPos.Z < center.Z + size/2);
@@ -86,11 +84,13 @@ namespace Raymagic
 
         public void Insert(Vector3 position, float distance)
         {
-            if(!InBoundary(position)) return;
+            GetPosSize(out Vector3 center, out float size);
+
+            if(!InBoundary(position,center,size)) return;
 
             if(IsLeaf())
             {
-                if(CanSubdivide())
+                if(CanSubdivide(size))
                 {
                     Subdivide();
                     foreach (var child in children)
@@ -118,7 +118,9 @@ namespace Raymagic
 
         public float Search(Vector3 position)
         {
-            if(!InBoundary(position)) return float.NaN;
+            GetPosSize(out Vector3 center, out float size);
+
+            if(!InBoundary(position, center, size)) return float.NaN;
 
             if(IsLeaf())
             {
