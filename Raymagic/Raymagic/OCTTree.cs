@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
 
 namespace Raymagic
@@ -18,7 +21,7 @@ namespace Raymagic
             maxGroupError = allowedError;
 
             Console.WriteLine("Creating octtree");
-            root = new OCTTreeNode(center, size.X, map.distanceMapDetail);
+            root = new OCTTreeNode(center.X, center.Y, center.Z, size.X, map.distanceMapDetail);
 
             int dmLenX = distanceMap.GetLength(0);
             int dmLenY = distanceMap.GetLength(1);
@@ -38,34 +41,42 @@ namespace Raymagic
                 }
             }
 
-            /* root.GroupTogether(2); */
 
             Console.WriteLine("DONE");
-            int leafCounter = 0;
-            int fullCounter = 1;
 
-            Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>();
-            nodeQueue.Enqueue(root);
+            IFormatter formatter = new BinaryFormatter();  
 
-            while (nodeQueue.Count > 0)
-            {
-                var node = nodeQueue.Dequeue();
-                if (node.IsLeaf())
-                {
-                    leafCounter++;
-                }
-                else
-                {
-                    foreach (var child in node.children)
-                    {
-                        nodeQueue.Enqueue(child);
-                        fullCounter++;
-                    }
-                }
-            }
+            Stream stream = new FileStream($"Maps/Data/TEST.dmt", FileMode.Create, FileAccess.Write, FileShare.None);  
+            formatter.Serialize(stream, root);  
+            stream.Close();  
 
-            Console.WriteLine($"Number of leaf nodes: {leafCounter}");
-            Console.WriteLine($"Number of all nodes: {fullCounter}");
+            Console.WriteLine($"SAVED");
+
+            /* int leafCounter = 0; */
+            /* int fullCounter = 1; */
+
+            /* Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>(); */
+            /* nodeQueue.Enqueue(root); */
+
+            /* while (nodeQueue.Count > 0) */
+            /* { */
+            /*     var node = nodeQueue.Dequeue(); */
+            /*     if (node.IsLeaf()) */
+            /*     { */
+            /*         leafCounter++; */
+            /*     } */
+            /*     else */
+            /*     { */
+            /*         foreach (var child in node.children) */
+            /*         { */
+            /*             nodeQueue.Enqueue(child); */
+            /*             fullCounter++; */
+            /*         } */
+            /*     } */
+            /* } */
+
+            /* Console.WriteLine($"Number of leaf nodes: {leafCounter}"); */
+            /* Console.WriteLine($"Number of all nodes: {fullCounter}"); */
         }
     }
 }

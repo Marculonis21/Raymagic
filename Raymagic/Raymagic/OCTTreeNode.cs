@@ -3,24 +3,47 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
+    [Serializable]
     public class OCTTreeNode
     {
         OCTTreeNode parent; 
         public OCTTreeNode[] children;
 
-        public Vector3 center;
-        float size;
-        float minSize;
+        /* public Vector3 center; */
+        /* float centerX; */
+        /* float centerY; */
+        /* float centerZ; */
+        /* float size; */
+        /* float minSize; */
+        /// Třeba by šlo si vytvořit bitmasku, kde bych si jen pamatoval svoji
+        /// relativní pozici v rodiči, mezi ostatními syny. (Root zná svoji polohu).
+        /// Každý node by si pak pamatoval jeden byte kde by 1 na určitém bitu značila, 
+        /// že je to takový danný syn svého rodiče. 
+        /// Pro hledání skutečné polohy musíme udělat search nahoru po 
+        /// parentnech a pak dolů zjišťovat rekurzivně přesnou polohu
+        /// středu svého parenta a pak sebe samotného. Nemusel bych vůbec
+        /// ukládat střed ani velikost (+minVelikost) node. Každá by držela
+        /// pouze 1 byte svého umístění. cca 41 bitů celkem na node.
+        ///
+        /// Pro detail 1 error 1 je zmenšení 6x. přitom zde by byl nárůst
+        /// velikosti na node o necelých 25% - SAVE BY SE MĚL ZMENŠIT...
+
+        byte relativePos;
 
         bool empty;
         float distanceValue;
 
-        public OCTTreeNode(Vector3 center, float size, float minSize, OCTTreeNode parent=null)
+        /* public OCTTreeNode(Vector3 center, float size, float minSize, OCTTreeNode parent=null) */
+        public OCTTreeNode(float x, float y, float z, float size, float minSize, OCTTreeNode parent=null)
         {
-            this.center = center;
-            this.size = size;
-            this.minSize = minSize;
-            this.parent = parent;
+            /* this.center = center; */
+            /* this.centerX = x; */
+            /* this.centerY = y; */
+            /* this.centerZ = z; */
+
+            /* this.size = size; */
+            /* this.minSize = minSize; */
+            /* this.parent = parent; */
             empty = true;
         }
 
@@ -30,23 +53,23 @@ namespace Raymagic
         public bool CanSubdivide() => (size > minSize);
         public bool InBoundary(Vector3 position)
         {
-            return (center.X - size/2 <= position.X && position.X < center.X + size/2 && 
-                    center.Y - size/2 <= position.Y && position.Y < center.Y + size/2 &&   
-                    center.Z - size/2 <= position.Z && position.Z < center.Z + size/2);
+            return (centerX - size/2 <= position.X && position.X < centerX + size/2 && 
+                    centerY - size/2 <= position.Y && position.Y < centerY + size/2 &&   
+                    centerZ - size/2 <= position.Z && position.Z < centerZ + size/2);
         }
 
         public void Subdivide()
         {
             children = new OCTTreeNode[8];
 
-            children[0] = new OCTTreeNode(new Vector3(this.center.X - size/4, this.center.Y - size/4, this.center.Z - size/4), size/2, minSize, this);
-            children[1] = new OCTTreeNode(new Vector3(this.center.X + size/4, this.center.Y - size/4, this.center.Z - size/4), size/2, minSize, this);
-            children[2] = new OCTTreeNode(new Vector3(this.center.X - size/4, this.center.Y - size/4, this.center.Z + size/4), size/2, minSize, this);
-            children[3] = new OCTTreeNode(new Vector3(this.center.X + size/4, this.center.Y - size/4, this.center.Z + size/4), size/2, minSize, this);
-            children[4] = new OCTTreeNode(new Vector3(this.center.X - size/4, this.center.Y + size/4, this.center.Z - size/4), size/2, minSize, this);
-            children[5] = new OCTTreeNode(new Vector3(this.center.X + size/4, this.center.Y + size/4, this.center.Z - size/4), size/2, minSize, this);
-            children[6] = new OCTTreeNode(new Vector3(this.center.X - size/4, this.center.Y + size/4, this.center.Z + size/4), size/2, minSize, this);
-            children[7] = new OCTTreeNode(new Vector3(this.center.X + size/4, this.center.Y + size/4, this.center.Z + size/4), size/2, minSize, this);
+            children[0] = new OCTTreeNode(this.centerX - size/4, this.centerY - size/4, this.centerZ - size/4, size/2, minSize, this);
+            children[1] = new OCTTreeNode(this.centerX + size/4, this.centerY - size/4, this.centerZ - size/4, size/2, minSize, this);
+            children[2] = new OCTTreeNode(this.centerX - size/4, this.centerY - size/4, this.centerZ + size/4, size/2, minSize, this);
+            children[3] = new OCTTreeNode(this.centerX + size/4, this.centerY - size/4, this.centerZ + size/4, size/2, minSize, this);
+            children[4] = new OCTTreeNode(this.centerX - size/4, this.centerY + size/4, this.centerZ - size/4, size/2, minSize, this);
+            children[5] = new OCTTreeNode(this.centerX + size/4, this.centerY + size/4, this.centerZ - size/4, size/2, minSize, this);
+            children[6] = new OCTTreeNode(this.centerX - size/4, this.centerY + size/4, this.centerZ + size/4, size/2, minSize, this);
+            children[7] = new OCTTreeNode(this.centerX + size/4, this.centerY + size/4, this.centerZ + size/4, size/2, minSize, this);
         }
 
         public void Insert(Vector3 position, float distance)
