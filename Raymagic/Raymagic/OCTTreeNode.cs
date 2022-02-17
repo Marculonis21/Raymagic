@@ -9,12 +9,6 @@ namespace Raymagic
         OCTTreeNode parent; 
         public OCTTreeNode[] children;
 
-        /* public Vector3 center; */
-        /* float centerX; */
-        /* float centerY; */
-        /* float centerZ; */
-        /* float size; */
-        /* float minSize; */
         /// Třeba by šlo si vytvořit bitmasku, kde bych si jen pamatoval svoji
         /// relativní pozici v rodiči, mezi ostatními syny. (Root zná svoji polohu).
         /// Každý node by si pak pamatoval jeden byte kde by 1 na určitém bitu značila, 
@@ -28,48 +22,66 @@ namespace Raymagic
         /// Pro detail 1 error 1 je zmenšení 6x. přitom zde by byl nárůst
         /// velikosti na node o necelých 25% - SAVE BY SE MĚL ZMENŠIT...
 
-        byte relativePos;
-
+        byte relativePosIndex; //functional but f slow
         bool empty;
         float distanceValue;
 
-        /* public OCTTreeNode(Vector3 center, float size, float minSize, OCTTreeNode parent=null) */
-        public OCTTreeNode(float x, float y, float z, float size, float minSize, OCTTreeNode parent=null)
+        public OCTTreeNode(byte relativePosIndex=0, OCTTreeNode parent = null)
         {
-            /* this.center = center; */
-            /* this.centerX = x; */
-            /* this.centerY = y; */
-            /* this.centerZ = z; */
-
-            /* this.size = size; */
-            /* this.minSize = minSize; */
-            /* this.parent = parent; */
-            empty = true;
+            this.relativePosIndex = relativePosIndex;
+            this.parent = parent;
+            this.empty = true;
         }
 
         public bool IsRoot() => parent == null;
         public bool IsLeaf() => children == null;
         public bool IsEmpty() => empty;
-        public bool CanSubdivide() => (size > minSize);
-        public bool InBoundary(Vector3 position)
+        public bool CanSubdivide()
         {
-            return (centerX - size/2 <= position.X && position.X < centerX + size/2 && 
-                    centerY - size/2 <= position.Y && position.Y < centerY + size/2 &&   
-                    centerZ - size/2 <= position.Z && position.Z < centerZ + size/2);
+            GetPosSize(out Vector3 center, out float size);
+            return size > OCTTree.nodeMinSize;
+        }
+        public bool InBoundary(Vector3 testPos)
+        {
+            GetPosSize(out Vector3 center, out float size);
+            return (center.X - size/2 <= testPos.X && testPos.X < center.X + size/2 && 
+                    center.Y - size/2 <= testPos.Y && testPos.Y < center.Y + size/2 &&   
+                    center.Z - size/2 <= testPos.Z && testPos.Z < center.Z + size/2);
         }
 
         public void Subdivide()
         {
             children = new OCTTreeNode[8];
 
-            children[0] = new OCTTreeNode(this.centerX - size/4, this.centerY - size/4, this.centerZ - size/4, size/2, minSize, this);
-            children[1] = new OCTTreeNode(this.centerX + size/4, this.centerY - size/4, this.centerZ - size/4, size/2, minSize, this);
-            children[2] = new OCTTreeNode(this.centerX - size/4, this.centerY - size/4, this.centerZ + size/4, size/2, minSize, this);
-            children[3] = new OCTTreeNode(this.centerX + size/4, this.centerY - size/4, this.centerZ + size/4, size/2, minSize, this);
-            children[4] = new OCTTreeNode(this.centerX - size/4, this.centerY + size/4, this.centerZ - size/4, size/2, minSize, this);
-            children[5] = new OCTTreeNode(this.centerX + size/4, this.centerY + size/4, this.centerZ - size/4, size/2, minSize, this);
-            children[6] = new OCTTreeNode(this.centerX - size/4, this.centerY + size/4, this.centerZ + size/4, size/2, minSize, this);
-            children[7] = new OCTTreeNode(this.centerX + size/4, this.centerY + size/4, this.centerZ + size/4, size/2, minSize, this);
+            // krychle rozdělená na 8 menších,
+            // směr relativní změny pozice vůči rodiči popisují 3 bity XYZ, 
+            // kde 0 značí směr záporný a 1 kladný.
+            // X změna v x-ose, Y v y-ose, Z v z-ose.
+            
+            children[0] = new OCTTreeNode(0, this);
+            children[1] = new OCTTreeNode(4, this);
+            children[2] = new OCTTreeNode(2, this);
+            children[3] = new OCTTreeNode(6, this);
+            children[4] = new OCTTreeNode(1, this);
+            children[5] = new OCTTreeNode(5, this);
+            children[6] = new OCTTreeNode(3, this);
+            children[7] = new OCTTreeNode(7, this);
+        }
+
+        public void GetPosSize(out Vector3 position, out float size)
+        {
+            if(this.parent != null)
+            {
+                this.parent.GetPosSize(out Vector3 parentPosition, out float parentSize);
+
+                position = OCTTree.ChildPosFromRelative(relativePosIndex, parentPosition, parentSize);
+                size = parentSize/2;
+            }
+            else // root node
+            {
+                position = OCTTree.rootPosition;
+                size = OCTTree.rootSize;
+            }
         }
 
         public void Insert(Vector3 position, float distance)
@@ -125,15 +137,12 @@ namespace Raymagic
 
             }
 
-            /* throw new Exception(""); */
             return float.NaN;
         }
 
         public bool GroupTogether(float maxSpread, string id="start")
         {
             if(this.IsLeaf() && this.IsEmpty()) return false;
-
-            /* Console.WriteLine($"{id}: {this.IsLeaf()}, {this.IsEmpty()}, {this.distanceValue}"); */
 
             if(IsLeaf())
             {

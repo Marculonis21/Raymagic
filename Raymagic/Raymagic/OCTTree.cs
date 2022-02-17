@@ -12,6 +12,10 @@ namespace Raymagic
         public static OCTTreeNode root;
         public static float maxGroupError;
 
+        public static Vector3 rootPosition;
+        public static float rootSize;
+        public static float nodeMinSize;
+
         public static void OCTTFromDistanceMap(SDFout[,,] distanceMap, float allowedError)
         {
             Map map = Map.instance;
@@ -21,13 +25,20 @@ namespace Raymagic
             maxGroupError = allowedError;
 
             Console.WriteLine("Creating octtree");
-            root = new OCTTreeNode(center.X, center.Y, center.Z, size.X, map.distanceMapDetail);
+            /* root = new OCTTreeNode(center.X, center.Y, center.Z, size.X, map.distanceMapDetail); */
+
+            rootPosition = center;
+            rootSize = size.X;
+            nodeMinSize = map.distanceMapDetail;
+
+            root = new OCTTreeNode();
 
             int dmLenX = distanceMap.GetLength(0);
             int dmLenY = distanceMap.GetLength(1);
             int dmLenZ = distanceMap.GetLength(2);
             for (int z = 0; z < dmLenZ; z++)
             {
+                Console.WriteLine($"{z}/{dmLenZ}");
                 for (int y = 0; y < dmLenY; y++)
                 {
                     for (int x = 0; x < dmLenX; x++)
@@ -44,39 +55,51 @@ namespace Raymagic
 
             Console.WriteLine("DONE");
 
+
             IFormatter formatter = new BinaryFormatter();  
 
-            Stream stream = new FileStream($"Maps/Data/TEST.dmt", FileMode.Create, FileAccess.Write, FileShare.None);  
+            Stream stream = new FileStream($"Maps/Data/TEST-bytes.dmt", FileMode.Create, FileAccess.Write, FileShare.None);  
             formatter.Serialize(stream, root);  
             stream.Close();  
 
             Console.WriteLine($"SAVED");
 
-            /* int leafCounter = 0; */
-            /* int fullCounter = 1; */
+            int leafCounter = 0;
+            int fullCounter = 1;
 
-            /* Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>(); */
-            /* nodeQueue.Enqueue(root); */
+            Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>();
+            nodeQueue.Enqueue(root);
 
-            /* while (nodeQueue.Count > 0) */
-            /* { */
-            /*     var node = nodeQueue.Dequeue(); */
-            /*     if (node.IsLeaf()) */
-            /*     { */
-            /*         leafCounter++; */
-            /*     } */
-            /*     else */
-            /*     { */
-            /*         foreach (var child in node.children) */
-            /*         { */
-            /*             nodeQueue.Enqueue(child); */
-            /*             fullCounter++; */
-            /*         } */
-            /*     } */
-            /* } */
+            while (nodeQueue.Count > 0)
+            {
+                var node = nodeQueue.Dequeue();
+                if (node.IsLeaf())
+                {
+                    leafCounter++;
+                }
+                else
+                {
+                    foreach (var child in node.children)
+                    {
+                        nodeQueue.Enqueue(child);
+                        fullCounter++;
+                    }
+                }
+            }
 
-            /* Console.WriteLine($"Number of leaf nodes: {leafCounter}"); */
-            /* Console.WriteLine($"Number of all nodes: {fullCounter}"); */
+            Console.WriteLine($"Number of leaf nodes: {leafCounter}");
+            Console.WriteLine($"Number of all nodes: {fullCounter}");
+        }
+
+        public static Vector3 ChildPosFromRelative(byte relativePosIndex, Vector3 parentPos, float parentSize)
+        {
+            parentPos.Deconstruct(out float X, out float Y, out float Z);
+
+            X += (relativePosIndex & 0b100) != 0 ? parentSize/4 : -parentSize/4;
+            Y += (relativePosIndex & 0b010) != 0 ? parentSize/4 : -parentSize/4;
+            Z += (relativePosIndex & 0b001) != 0 ? parentSize/4 : -parentSize/4;
+
+            return new Vector3(X,Y,Z);
         }
     }
 }
