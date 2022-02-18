@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Microsoft.Xna.Framework;
 
 namespace Raymagic
@@ -18,11 +19,8 @@ namespace Raymagic
         /// středu svého parenta a pak sebe samotného. Nemusel bych vůbec
         /// ukládat střed ani velikost (+minVelikost) node. Každá by držela
         /// pouze 1 byte svého umístění. cca 41 bitů celkem na node.
-        ///
-        /// Pro detail 1 error 1 je zmenšení 6x. přitom zde by byl nárůst
-        /// velikosti na node o necelých 25% - SAVE BY SE MĚL ZMENŠIT...
 
-        byte relativePosIndex; //functional but f slow
+        byte relativePosIndex; //functional but f slow => ;) parallel for go brrrrrrr
         bool empty;
         float distanceValue;
 

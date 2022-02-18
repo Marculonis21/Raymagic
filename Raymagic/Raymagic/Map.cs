@@ -81,6 +81,8 @@ namespace Raymagic
             BVH.BuildBVHDownUp();
             /* BdH.InfoPrint(); */
 
+            OCTTree.LoadNeeded();
+
             if(File.Exists($"Maps/Data/{mapName}-{distanceMapDetail}.dm"))
             {
                 Console.WriteLine("\nExisting distance map data found!");
@@ -88,7 +90,11 @@ namespace Raymagic
                 string input = Console.ReadLine();
                 if(input == "L" || input == "l")
                 {
+                    Console.WriteLine("Loading from file...");
                     LoadDistanceMap(id, this.distanceMapDetail);
+
+                    Console.WriteLine("Loading from OCTTree...");
+                    LoadFromOCTTree();
                     return;
                 }
                 else if(input != "C" && input != "c")
@@ -183,6 +189,27 @@ namespace Raymagic
             {
                 Console.WriteLine("unable to load");
             }
+        }
+
+        public void LoadFromOCTTree()
+        {
+            OCTTreeNode root = OCTTree.LoadRoot();
+
+            for (int z = 0; z < distanceMap.GetLength(2); z++)
+            {
+                for (int y = 0; y < distanceMap.GetLength(1); y++)
+                {
+                    for (int x = 0; x < distanceMap.GetLength(0); x++)
+                    {
+                        Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*distanceMapDetail,
+                                                                               y*distanceMapDetail,
+                                                                               z*distanceMapDetail);
+
+                        distanceMap[x,y,z] = new SDFout(root.Search(testPos), distanceMap[x,y,z].color);
+                    }
+                }
+            }
+
         }
     }
 }
