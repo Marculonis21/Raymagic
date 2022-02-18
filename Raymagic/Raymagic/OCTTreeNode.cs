@@ -170,6 +170,7 @@ namespace Raymagic
                 {
                     float min = float.MaxValue;
                     float max = float.MinValue;
+                    float sum = 0;
 
                     foreach (var child in children)
                     {
@@ -178,12 +179,14 @@ namespace Raymagic
 
                         if(child.distanceValue > max)
                             max = child.distanceValue;
+
+                        sum += child.distanceValue;
                     }
 
                     if(Math.Abs(max - min) <= maxSpread)
                     {
+                        this.distanceValue = sum/children.Length;
                         this.children = null;
-                        this.distanceValue = min;
                         this.empty = false;
 
                         this.parent.GroupTogether(maxSpread,"hey");

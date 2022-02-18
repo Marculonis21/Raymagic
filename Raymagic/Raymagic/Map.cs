@@ -41,7 +41,7 @@ namespace Raymagic
 
         public void LoadMaps()
         {
-            new Basic();
+            new BigRoom();
             new TestArea();
         }
 
@@ -93,8 +93,8 @@ namespace Raymagic
                     Console.WriteLine("Loading from file...");
                     LoadDistanceMap(id, this.distanceMapDetail);
 
-                    Console.WriteLine("Loading from OCTTree...");
-                    LoadFromOCTTree();
+                    /* Console.WriteLine("Loading from OCTTree..."); */
+                    /* LoadFromOCTTree(); */
                     return;
                 }
                 else if(input != "C" && input != "c")

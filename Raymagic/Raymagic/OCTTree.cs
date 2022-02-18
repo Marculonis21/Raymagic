@@ -17,9 +17,10 @@ namespace Raymagic
         public static float rootSize;
         public static float nodeMinSize;
 
+        static Map map = Map.instance;
+
         public static void LoadNeeded()
         {
-            Map map = Map.instance;
             Vector3 center = (map.mapTopCorner - map.mapOrigin)/2;
             Vector3 size = map.mapTopCorner - map.mapOrigin;
 
@@ -30,124 +31,123 @@ namespace Raymagic
 
         public static void OCTTFromDistanceMap(SDFout[,,] distanceMap, float allowedError)
         {
-/*             maxGroupError = allowedError; */
+            maxGroupError = allowedError;
 
-/*             Console.WriteLine("Creating octtree"); */
-/*             /1* root = new OCTTreeNode(center.X, center.Y, center.Z, size.X, map.distanceMapDetail); *1/ */
+            Console.WriteLine("Creating octtree");
 
-/*             root = new OCTTreeNode(); */
-/*             root.Subdivide(); */
+            root = new OCTTreeNode();
+            root.Subdivide();
 
-/*             int dmLenX = distanceMap.GetLength(0); */
-/*             int dmLenY = distanceMap.GetLength(1); */
-/*             int dmLenZ = distanceMap.GetLength(2); */
+            int dmLenX = distanceMap.GetLength(0);
+            int dmLenY = distanceMap.GetLength(1);
+            int dmLenZ = distanceMap.GetLength(2);
 
-/*             Parallel.For(0, 8, new ParallelOptions{MaxDegreeOfParallelism = 8}, i => // it works in parallel! */
-/*             { */
-/*                 int xStart; */
-/*                 int yStart; */
-/*                 int zStart; */
+            Parallel.For(0, 8, new ParallelOptions{MaxDegreeOfParallelism = 8}, i => // it works in parallel!
+            {
+                int xStart;
+                int yStart;
+                int zStart;
 
-/*                 int xEnd; */
-/*                 int yEnd; */
-/*                 int zEnd; */
-/*                 if(i == 0) */
-/*                 { */
-/*                     xStart = 0; */
-/*                     yStart = 0; */
-/*                     zStart = 0; */
+                int xEnd;
+                int yEnd;
+                int zEnd;
+                if(i == 0)
+                {
+                    xStart = 0;
+                    yStart = 0;
+                    zStart = 0;
 
-/*                     xEnd = dmLenX/2; */
-/*                     yEnd = dmLenY/2; */
-/*                     zEnd = dmLenZ/2; */
-/*                 } */
-/*                 else if(i == 1) */
-/*                 { */
-/*                     xStart = dmLenX/2; */
-/*                     yStart = 0; */
-/*                     zStart = 0; */
+                    xEnd = dmLenX/2;
+                    yEnd = dmLenY/2;
+                    zEnd = dmLenZ/2;
+                }
+                else if(i == 1)
+                {
+                    xStart = dmLenX/2;
+                    yStart = 0;
+                    zStart = 0;
 
-/*                     xEnd = dmLenX; */
-/*                     yEnd = dmLenY/2; */
-/*                     zEnd = dmLenZ/2; */
-/*                 } */
-/*                 else if(i == 2) */
-/*                 { */
-/*                     xStart = 0; */
-/*                     yStart = dmLenY/2; */
-/*                     zStart = 0; */
+                    xEnd = dmLenX;
+                    yEnd = dmLenY/2;
+                    zEnd = dmLenZ/2;
+                }
+                else if(i == 2)
+                {
+                    xStart = 0;
+                    yStart = dmLenY/2;
+                    zStart = 0;
 
-/*                     xEnd = dmLenX/2; */
-/*                     yEnd = dmLenY; */
-/*                     zEnd = dmLenZ/2; */
-/*                 } */
-/*                 else if(i == 3) */
-/*                 { */
-/*                     xStart = dmLenX/2; */
-/*                     yStart = dmLenY/2; */
-/*                     zStart = 0; */
+                    xEnd = dmLenX/2;
+                    yEnd = dmLenY;
+                    zEnd = dmLenZ/2;
+                }
+                else if(i == 3)
+                {
+                    xStart = dmLenX/2;
+                    yStart = dmLenY/2;
+                    zStart = 0;
 
-/*                     xEnd = dmLenX; */
-/*                     yEnd = dmLenY; */
-/*                     zEnd = dmLenZ/2; */
-/*                 } */
-/*                 else if(i == 4) */
-/*                 { */
-/*                     xStart = 0; */
-/*                     yStart = 0; */
-/*                     zStart = dmLenZ/2; */
+                    xEnd = dmLenX;
+                    yEnd = dmLenY;
+                    zEnd = dmLenZ/2;
+                }
+                else if(i == 4)
+                {
+                    xStart = 0;
+                    yStart = 0;
+                    zStart = dmLenZ/2;
 
-/*                     xEnd = dmLenX/2; */
-/*                     yEnd = dmLenY/2; */
-/*                     zEnd = dmLenZ; */
-/*                 } */
-/*                 else if(i == 5) */
-/*                 { */
-/*                     xStart = dmLenX/2; */
-/*                     yStart = 0; */
-/*                     zStart = dmLenZ/2; */
+                    xEnd = dmLenX/2;
+                    yEnd = dmLenY/2;
+                    zEnd = dmLenZ;
+                }
+                else if(i == 5)
+                {
+                    xStart = dmLenX/2;
+                    yStart = 0;
+                    zStart = dmLenZ/2;
 
-/*                     xEnd = dmLenX; */
-/*                     yEnd = dmLenY/2; */
-/*                     zEnd = dmLenZ; */
-/*                 } */
-/*                 else if(i == 6) */
-/*                 { */
-/*                     xStart = 0; */
-/*                     yStart = dmLenY/2; */
-/*                     zStart = dmLenZ/2; */
+                    xEnd = dmLenX;
+                    yEnd = dmLenY/2;
+                    zEnd = dmLenZ;
+                }
+                else if(i == 6)
+                {
+                    xStart = 0;
+                    yStart = dmLenY/2;
+                    zStart = dmLenZ/2;
 
-/*                     xEnd = dmLenX/2; */
-/*                     yEnd = dmLenY; */
-/*                     zEnd = dmLenZ; */
-/*                 } */
-/*                 else */
-/*                 { */
-/*                     xStart = dmLenX/2; */
-/*                     yStart = dmLenY/2; */
-/*                     zStart = dmLenZ/2; */
+                    xEnd = dmLenX/2;
+                    yEnd = dmLenY;
+                    zEnd = dmLenZ;
+                }
+                else
+                {
+                    xStart = dmLenX/2;
+                    yStart = dmLenY/2;
+                    zStart = dmLenZ/2;
 
-/*                     xEnd = dmLenX; */
-/*                     yEnd = dmLenY; */
-/*                     zEnd = dmLenZ; */
-/*                 } */
+                    xEnd = dmLenX;
+                    yEnd = dmLenY;
+                    zEnd = dmLenZ;
+                }
 
-/*                 for (int z = zStart; z < zEnd; z++) */
-/*                 { */
-/*                     Console.WriteLine($"Thread {i}: {z}/{zEnd}"); */
-/*                     for (int y = yStart; y < yEnd; y++) */
-/*                     { */
-/*                         for (int x = xStart; x < xEnd; x++) */
-/*                         { */
-/*                             Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*map.distanceMapDetail, */
-/*                                                                                    y*map.distanceMapDetail, */
-/*                                                                                    z*map.distanceMapDetail); */
+                for (int z = zStart; z < zEnd; z++)
+                {
+                    Console.WriteLine($"Thread {i}: {z}/{zEnd}");
+                    for (int y = yStart; y < yEnd; y++)
+                    {
+                        for (int x = xStart; x < xEnd; x++)
+                        {
+                            Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*map.distanceMapDetail,
+                                                                                   y*map.distanceMapDetail,
+                                                                                   z*map.distanceMapDetail);
 
-/*                             root.children[i].Insert(testPos, distanceMap[x,y,z].distance); */
-/*                         } */
-/*                     } */
-/*                 } */
-/*             }); */
+                            root.children[i].Insert(testPos, distanceMap[x,y,z].distance);
+                        }
+                    }
+                }
+            });
 
 
             /* for (int z = 0; z < dmLenZ; z++) */
@@ -167,41 +167,42 @@ namespace Raymagic
             /* } */
 
 
-            /* Console.WriteLine("DONE"); */
+            Console.WriteLine("DONE");
 
-            /* IFormatter formatter = new BinaryFormatter(); */  
+            IFormatter formatter = new BinaryFormatter();  
 
-            /* Stream stream = new FileStream($"Maps/Data/TEST_bytes_1detail_2error.dmt", FileMode.Create, FileAccess.Write, FileShare.None); */  
-            /* formatter.Serialize(stream, root); */  
-            /* stream.Close(); */  
+            Stream stream = new FileStream($"Maps/Data/TEST_bytes_{map.distanceMapDetail}detail_{maxGroupError}error.dmt", FileMode.Create, FileAccess.Write, FileShare.None);  
 
-            /* Console.WriteLine($"SAVED"); */
+            formatter.Serialize(stream, root);  
+            stream.Close();  
 
-            /* int leafCounter = 0; */
-            /* int fullCounter = 1; */
+            Console.WriteLine($"SAVED");
 
-            /* Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>(); */
-            /* nodeQueue.Enqueue(root); */
+            int leafCounter = 0;
+            int fullCounter = 1;
 
-            /* while (nodeQueue.Count > 0) */
-            /* { */
-            /*     var node = nodeQueue.Dequeue(); */
-            /*     if (node.IsLeaf()) */
-            /*     { */
-            /*         leafCounter++; */
-            /*     } */
-            /*     else */
-            /*     { */
-            /*         foreach (var child in node.children) */
-            /*         { */
-            /*             nodeQueue.Enqueue(child); */
-            /*             fullCounter++; */
-            /*         } */
-            /*     } */
-            /* } */
+            Queue<OCTTreeNode> nodeQueue = new Queue<OCTTreeNode>();
+            nodeQueue.Enqueue(root);
 
-            /* Console.WriteLine($"Number of leaf nodes: {leafCounter}"); */
-            /* Console.WriteLine($"Number of all nodes: {fullCounter}"); */
+            while (nodeQueue.Count > 0)
+            {
+                var node = nodeQueue.Dequeue();
+                if (node.IsLeaf())
+                {
+                    leafCounter++;
+                }
+                else
+                {
+                    foreach (var child in node.children)
+                    {
+                        nodeQueue.Enqueue(child);
+                        fullCounter++;
+                    }
+                }
+            }
+
+            Console.WriteLine($"Number of leaf nodes: {leafCounter}");
+            Console.WriteLine($"Number of all nodes: {fullCounter}");
         }
 
         public static Vector3 ChildPosFromRelative(byte relativePosIndex, Vector3 parentPos, float parentSize)
@@ -220,7 +221,7 @@ namespace Raymagic
             try
             {
                 IFormatter formatter = new BinaryFormatter();  
-                Stream stream = new FileStream($"Maps/Data/TEST_bytes_1detail_2error.dmt", FileMode.Open, FileAccess.Read, FileShare.Read);  
+                Stream stream = new FileStream($"Maps/Data/TEST_bytes_2detail_2error.dmt", FileMode.Open, FileAccess.Read, FileShare.Read);  
                 OCTTreeNode root = (OCTTreeNode)formatter.Deserialize(stream);  
                 stream.Close(); 
                 return root;
