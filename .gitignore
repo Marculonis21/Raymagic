@@ -4,6 +4,7 @@
 *.sln.docstates
 
 *.dm
+*.dmt
 
 # Build results
 
