@@ -64,30 +64,29 @@ namespace Raymagic
             /* texture1.SaveAsPng(stream1, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
             /* stream1.Close(); */
 
-            /* int error = 2; */
-            /* OCTTree.OCTTFromDistanceMap(map.distanceMap, error); */
+            /* OCTTree.OCTTFromDistanceMap(); */
 
-            /* int height = 100; */
-            /* Texture2D texture = new Texture2D(_graphics.GraphicsDevice, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
-            /* Stream stream = File.Create($"./DistanceMapTestTextures/{map.mapName}_texture_{map.distanceMapDetail}_parallel_byteTest_{error}_{height}.png"); */
+/*             int height = 100; */
+/*             Texture2D texture = new Texture2D(_graphics.GraphicsDevice, 5120,5120); */
+/*             Stream stream = File.Create($"./DistanceMapTestTextures/new_node_{map.mapName}_texture_{OCTTree.nodeMinSize}_{OCTTree.maxGroupError}_{height}.png"); */
 
-            /* List<Color> colorList = new List<Color>(); */
+/*             List<Color> colorList = new List<Color>(); */
 
-            /* for (int y = 0; y < texture.Height; y++) */
-            /* { */
-            /*     for (int x = 0; x < texture.Width; x++) */
-            /*     { */
-            /*         Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*map.distanceMapDetail, */
-            /*                                                                y*map.distanceMapDetail, */
-            /*                                                                height); */
-            /*         var _out = OCTTree.root.Search(testPos); */
-            /*         int bw = (int)Math.Clamp(_out, 0,255); */
-            /*         colorList.Add(new Color(bw,bw,bw)); */
-            /*     } */
-            /* } */
-            /* texture.SetData<Color>(colorList.ToArray()); */
-            /* texture.SaveAsPng(stream, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
-            /* stream.Close(); */
+/*             for (int y = 0; y < texture.Height; y++) */
+/*             { */
+/*                 for (int x = 0; x < texture.Width; x++) */
+/*                 { */
+/*                     Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*OCTTree.nodeMinSize, */
+/*                                                                            y*OCTTree.nodeMinSize, */
+/*                                                                            height); */
+/*                     var _out = OCTTree.root.Search(testPos); */
+/*                     int bw = (int)Math.Clamp(_out, 0,255); */
+/*                     colorList.Add(new Color(bw,bw,bw)); */
+/*                 } */
+/*             } */
+/*             texture.SetData<Color>(colorList.ToArray()); */
+/*             texture.SaveAsPng(stream, 5120,5120); */
+/*             stream.Close(); */
 
             player = Player.instance;
             base.Initialize();
