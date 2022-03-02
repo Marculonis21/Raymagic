@@ -88,21 +88,6 @@ namespace Raymagic
             return current;
         }
 
-        /* private bool SDFBoundCheck(Vector3 testPos, float minDist, bool useBounding, bool physics, out float dst) */
-        /* { */
-        /*     dst = 0; */
-        /*     if(useBounding && !this.staticObject && !physics) */
-        /*     { */
-        /*         if(minDist <= SDFs.Box(testPos, this.position, this.boundingBoxSize)) */
-        /*         { */
-        /*             dst = minDist + 1; */
-        /*             return false; */
-        /*         } */
-        /*     } */
-
-        /*     return true; */
-        /* } */
-
         public abstract float SDFDistance(Vector3 testPos);
 
         public Vector3 SDF_normal(Vector3 testPos)
