@@ -18,12 +18,7 @@ namespace Raymagic
     public static class RayMarchingHelper
     {
         /* public static bool SpecularEnabled { get; set; } */
-        public static bool GammaCorrectionEnabled { get; set; }
  
-        public static float Remap (this float value, float from1, float to1, float from2, float to2) {
-            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
-        }
-
         public static void RayMarch(Ray ray, out float length, out Color color)
         {
             Map map = Map.instance;
@@ -101,6 +96,7 @@ namespace Raymagic
 
                     Vector3 startPos;
                     Vector3 objectNormal;
+
                     float lightIntensity = 0;
                     foreach(Light light in map.lightList)
                     {
@@ -120,15 +116,6 @@ namespace Raymagic
                     color = new Color(final.color.R*lightIntensity,
                                       final.color.G*lightIntensity,
                                       final.color.B*lightIntensity);
-
-                    if (GammaCorrectionEnabled)
-                    {
-                        Vector3 c = color.ToVector3();
-                        Vector3 _c = new Vector3((float)Math.Pow(c.X, 1/2.2),
-                                                 (float)Math.Pow(c.Y, 1/2.2),
-                                                 (float)Math.Pow(c.Z, 1/2.2));
-                        color = _c.ToColor();
-                    }
 
                     return;
                 }
