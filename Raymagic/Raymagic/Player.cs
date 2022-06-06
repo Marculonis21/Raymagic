@@ -85,11 +85,10 @@ namespace Raymagic
                     this.position.Z += 2f;
             }
 
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
-                RayMarchingHelper.GammaCorrectionEnabled = true;
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
-                RayMarchingHelper.GammaCorrectionEnabled = false;
-
+            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"])) */
+            /*     RayMarchingHelper.GammaCorrectionEnabled = true; */
+            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"])) */
+            /*     RayMarchingHelper.GammaCorrectionEnabled = false; */
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
