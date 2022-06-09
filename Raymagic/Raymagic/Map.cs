@@ -20,6 +20,7 @@ namespace Raymagic
         public BVH BVH = new BVH();
         public List<Object> infoObjectList = new List<Object>();
         public List<Light> lightList = new List<Light>();
+        public List<Portal> portalList = new List<Portal> {null, null}; 
 
         public Vector3 mapSize;
         public Vector3 mapOrigin;
@@ -34,7 +35,7 @@ namespace Raymagic
 
         public static readonly Map instance = new Map();
 
-        public void AddMap(string id, MapData data)
+        public void RegisterMap(string id, MapData data)
         {
             maps.Add(id, data);
         }
@@ -72,7 +73,6 @@ namespace Raymagic
             }
 
             /* Maps/{name}-{distanceMapDetail}.dm */
-
             distanceMap = new SDFout[(int)(mapSize.X/distanceMapDetail), 
                                      (int)(mapSize.Y/distanceMapDetail),
                                      (int)(mapSize.Z/distanceMapDetail)];
@@ -80,8 +80,6 @@ namespace Raymagic
             Console.WriteLine("");
             BVH.BuildBVHDownUp();
             /* BdH.InfoPrint(); */
-
-            OCTTree.LoadNeeded();
 
             if(File.Exists($"Maps/Data/{mapName}-{distanceMapDetail}.dm"))
             {
@@ -93,8 +91,6 @@ namespace Raymagic
                     Console.WriteLine("Loading from file...");
                     LoadDistanceMap(id, this.distanceMapDetail);
 
-                    /* Console.WriteLine("Loading from OCTTree..."); */
-                    /* LoadFromOCTTree(); */
                     return;
                 }
                 else if(input != "C" && input != "c")
@@ -151,7 +147,7 @@ namespace Raymagic
             Vector3 spawn = data.playerSpawn;
             return new Vector3(spawn.X*100, spawn.Y*100, spawn.Z*100);
         }
-
+        
         // SERIALIZATION
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {
@@ -189,27 +185,6 @@ namespace Raymagic
             {
                 Console.WriteLine("unable to load");
             }
-        }
-
-        public void LoadFromOCTTree()
-        {
-            OCTTreeNode root = OCTTree.LoadRoot();
-
-            for (int z = 0; z < distanceMap.GetLength(2); z++)
-            {
-                for (int y = 0; y < distanceMap.GetLength(1); y++)
-                {
-                    for (int x = 0; x < distanceMap.GetLength(0); x++)
-                    {
-                        Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*distanceMapDetail,
-                                                                               y*distanceMapDetail,
-                                                                               z*distanceMapDetail);
-
-                        distanceMap[x,y,z] = new SDFout(root.Search(testPos), distanceMap[x,y,z].color);
-                    }
-                }
-            }
-
         }
     }
 }

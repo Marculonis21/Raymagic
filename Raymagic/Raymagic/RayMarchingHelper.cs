@@ -19,7 +19,7 @@ namespace Raymagic
     {
         /* public static bool SpecularEnabled { get; set; } */
  
-        public static void RayMarch(Ray ray, out float length, out Color color)
+        public static void RayMarch(Ray ray, out float length, out Color color, int depth=0)
         {
             Map map = Map.instance;
             color = Color.Black;
@@ -47,6 +47,25 @@ namespace Raymagic
                 SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+
+                if (depth < 2)
+                {
+                    foreach(Portal portal in map.portalList)
+                    {
+                        if (portal == null) continue;
+
+                        test = portal.PortalSDF(testPos, best.distance, ray, depth);
+                        if(test.distance < best.distance)
+                        {
+                            best = test;
+                            if(best.distance < 0.1f)
+                            {
+                                color = test.color;
+                                return;
+                            }
+                        }
+                    }
+                }
 
                 Object bestDObj = null;
                 test = map.BVH.Test(testPos, best.distance, out Object dObj);

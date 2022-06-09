@@ -29,7 +29,9 @@ namespace Raymagic
         protected BooleanOP booleanOP;
         protected float booleanStrength;
 
-        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float strength)
+        protected bool selectable; 
+
+        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
             this.translationMatrix[0,0] = 1;
             this.translationMatrix[1,1] = 1;
@@ -43,11 +45,12 @@ namespace Raymagic
 
             this.color = color;
             this.staticObject = staticObject;
+            this.selectable = selectable;
             this.info = info;
 
             this.Translate(position);
             this.booleanOP = booleanOP;
-            this.booleanStrength = strength;
+            this.booleanStrength = opStrength;
 
             if(boundingBoxSize.X != 0)
             {
@@ -70,10 +73,8 @@ namespace Raymagic
             childObjects.Add(child);
         }
 
-        public SDFout SDF(Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
+        public virtual SDFout SDF(Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
         {
-            /* float dst = float.MaxValue; */
-            /* Color color = Color.Pink; */
             SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 
             foreach (Object child in childObjects)
@@ -179,6 +180,7 @@ namespace Raymagic
 
         public string Info { get => info; }
         public bool IsStatic { get => staticObject; }
+        public bool IsSelectable { get => selectable; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }
     }

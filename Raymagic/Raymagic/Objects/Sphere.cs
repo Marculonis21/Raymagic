@@ -6,7 +6,7 @@ namespace Raymagic
     {
         float size;
 
-        public Sphere(Vector3 position, float size, Color color, bool staticObject = true, BooleanOP booleanOP=BooleanOP.NONE, float booleanStrength=1, Vector3 boundingBoxSize = new Vector3(), string info = "") : base(position, color, staticObject, boundingBoxSize, info, booleanOP, booleanStrength)
+        public Sphere(Vector3 position, float size, Color color, bool staticObject = true, BooleanOP booleanOP=BooleanOP.NONE, float opStrength=1, Vector3 boundingBoxSize = new Vector3(), bool selectable=false, string info = "") : base(position, color, staticObject, boundingBoxSize, info, booleanOP, opStrength, selectable)
         {
             this.size = size;
         }

@@ -22,7 +22,6 @@ namespace Raymagic
 
         Map map;
         Player player;
-        int zoom = 450;
 
         SpriteFont font;
 
@@ -63,30 +62,6 @@ namespace Raymagic
             /* texture1.SetData<Color>(colorList1.ToArray()); */
             /* texture1.SaveAsPng(stream1, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
             /* stream1.Close(); */
-
-            /* OCTTree.OCTTFromDistanceMap(); */
-
-/*             int height = 100; */
-/*             Texture2D texture = new Texture2D(_graphics.GraphicsDevice, 5120,5120); */
-/*             Stream stream = File.Create($"./DistanceMapTestTextures/new_node_{map.mapName}_texture_{OCTTree.nodeMinSize}_{OCTTree.maxGroupError}_{height}.png"); */
-
-/*             List<Color> colorList = new List<Color>(); */
-
-/*             for (int y = 0; y < texture.Height; y++) */
-/*             { */
-/*                 for (int x = 0; x < texture.Width; x++) */
-/*                 { */
-/*                     Vector3 testPos = Map.instance.mapOrigin + new Vector3(x*OCTTree.nodeMinSize, */
-/*                                                                            y*OCTTree.nodeMinSize, */
-/*                                                                            height); */
-/*                     var _out = OCTTree.root.Search(testPos); */
-/*                     int bw = (int)Math.Clamp(_out, 0,255); */
-/*                     colorList.Add(new Color(bw,bw,bw)); */
-/*                 } */
-/*             } */
-/*             texture.SetData<Color>(colorList.ToArray()); */
-/*             texture.SaveAsPng(stream, 5120,5120); */
-/*             stream.Close(); */
 
             player = Player.instance;
             base.Initialize();
@@ -189,37 +164,33 @@ namespace Raymagic
             {
 
                 RayMarchingHelper.PhysicsRayMarch(new Ray(player.position, player.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj);
-                foreach(Object dObj in map.dynamicObjectList)
+                if (hitObj.IsSelectable)
                 {
-                    if(hitObj == dObj)
-                    {
-                        outObj = hitObj;
-                        Console.WriteLine(outObj.Info);
-                    }
-                }
-                map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false));
+                    int type = lPressed ? 0 : 1;
+                    map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
+                    Console.WriteLine("added");
+                    /* foreach(Object dObj in map.dynamicObjectList) */
+                    /* { */
+                    /*     if(hitObj == dObj) */
+                    /*     { */
+                    /*         outObj = hitObj; */
+                    /*         Console.WriteLine(outObj.Info); */
+                    /*     } */
+                    /* } */
+                    /* map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false)); */
 
-                if(outObj != null)
-                {
-                    if(lPressed)
-                        outObj.DisplayBoundingBox();
-                    if(rPressed)
-                        outObj.HideBoundingBox();
+                    /* if(outObj != null) */
+                    /* { */
+                    /*     if(lPressed) */
+                    /*         outObj.DisplayBoundingBox(); */
+                    /*     if(rPressed) */
+                    /*         outObj.HideBoundingBox(); */
+                    /* } */
                 }
                 lPressed = rPressed = false;
             }
 
             player.Update(gameTime);
-
-            // test dobj movement
-            /* map.dynamicObjectList[0].Rotate(1f,"z"); */
-            /* float z = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
-            /* map.dynamicObjectList[1].Translate(new Vector3(0,0,z)); */
-            /* map.dynamicObjectList[0].Rotate(1f, "z"); */
-            /* map.dynamicObjectList[1].Rotate(2f, "z"); */
-            /* float x = (float)Math.Cos(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
-            /* float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
-            /* map.lightList[0].position += new Vector3(x,y,0); */
 
             base.Update(gameTime);
         }
