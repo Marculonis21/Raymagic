@@ -212,6 +212,20 @@ namespace Raymagic
             {
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
 
+                bool portalHit = false;
+                foreach(Portal portal in map.portalList)
+                {
+                    if (portal == null) continue;
+
+                    test = portal.PortalSDF(testPos, best.distance, ray, 0, physics:true);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        hitObj = portal;
+                        portalHit = true;
+                    }
+                }
+
                 foreach(Object obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos, best.distance, physics:true);
@@ -219,6 +233,7 @@ namespace Raymagic
                     {
                         best = test;
                         hitObj = obj;
+                        portalHit = false;
                     }
                 }
 
@@ -229,6 +244,7 @@ namespace Raymagic
                     {
                         best = test;
                         hitObj = dObj;
+                        portalHit = false;
                     }
                 }
 

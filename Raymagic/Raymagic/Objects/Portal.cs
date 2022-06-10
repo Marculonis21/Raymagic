@@ -26,7 +26,7 @@ namespace Raymagic
         // special testing method including ray 
         public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool useBounding=true, bool physics=false)
         {
-            /* SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color); */
+            SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 
             Color outColor = this.color;
             if (Vector3.Distance(testPos, this.Position) < 40)
@@ -57,7 +57,7 @@ namespace Raymagic
                 }
             }
 
-            return new SDFout(SDFDistance(Transform(testPos)), outColor);
+            return new SDFout(current.distance, outColor);
         }
 
         public override float SDFDistance(Vector3 testPos)

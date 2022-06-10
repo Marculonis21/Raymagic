@@ -41,8 +41,9 @@ namespace Raymagic
             playerControls.Add("godMode",       Keys.F2);
             playerControls.Add("god_up",        Keys.Space);
             playerControls.Add("god_down",      Keys.LeftControl);
-            playerControls.Add("TESTANYTHING_ON",Keys.O);
-            playerControls.Add("TESTANYTHING_OFF",Keys.P);
+
+            playerControls.Add("TESTANYTHING_ON",  Keys.O);
+            playerControls.Add("TESTANYTHING_OFF", Keys.P);
         }
 
         public static readonly Player instance = new Player();
@@ -152,8 +153,11 @@ namespace Raymagic
 
                 RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out Object obj); 
 
-                if(width <= size.X/2)
+                if(width <= this.size.X/2)
                 {
+                    // pass through portals
+                    if (obj == map.portalList[0] || obj == map.portalList[1]) return;
+
                     Vector3 normal = obj.SDF_normal(hit);
 
                     this.position += normal*3;
@@ -172,7 +176,7 @@ namespace Raymagic
 
         void FeetCollider(GameTime gameTime)
         {
-            // fall
+            // gravity
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 5, 0, out float length, out Vector3 _, out Object _);
 
