@@ -16,13 +16,15 @@ namespace Raymagic
 
             Plane mainPlaneW = new Plane(new Vector3(0,0,0),
                                          new Vector3(0,0,1),
-                                         Color.White);
+                                         Color.White,
+                                         selectable:true);
 
             data.staticMapObjects.Add(mainPlaneW);
 
             Plane roofPlane = new Plane(new Vector3(0,0,295),
                                         new Vector3(0,0,-1),
-                                        Color.Black);
+                                        Color.Black,
+                                        selectable:true);
 
             data.staticMapObjects.Add(roofPlane);
 
@@ -98,7 +100,7 @@ namespace Raymagic
                             new Vector3(200,200,20),
                             Color.Gray,
                             false,
-                            boundingBoxSize: new Vector3(210,210,300));
+                            boundingBoxSize: new Vector3(210,210,300), selectable:true);
 
             b.AddChildObject(new Sphere(new Vector3(0,0,40),
                                         45,

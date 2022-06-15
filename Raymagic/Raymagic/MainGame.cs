@@ -192,6 +192,9 @@ namespace Raymagic
 
             player.Update(gameTime);
 
+            /* float x = (float)Math.Cos(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
+            /* float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
+            /* map.lightList[0].position += new Vector3(x,y,0); */
             base.Update(gameTime);
         }
         
