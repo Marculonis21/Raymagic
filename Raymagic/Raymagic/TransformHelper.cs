@@ -75,7 +75,6 @@ namespace Raymagic
 
         }
 
-        /* public static Vector3 Transform(Vector3 orig, Matrix<double> transformInverse) */
         public static Vector3 Transform(Vector3 orig, double[] transformInverse)
         {
             /* return new Vector3((float)((orig.X*transformInverse[0,0]) + (orig.Y*transformInverse[1,0]) + (orig.Z*transformInverse[2,0]) + (1*transformInverse[3,0])), */

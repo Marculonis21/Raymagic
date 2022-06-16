@@ -193,7 +193,7 @@ namespace Raymagic
             // Get player look dir vector
             Vector3 playerLookDir = lookDir;
 
-            // Get one of player look dir perpendicular vectors (UP)
+            // Get player look dir perpendicular vectors (UP)
             double R_inclinPerpen = (rotation.Y+90)*Math.PI/180f;
             double R_azimPerpen = (rotation.X)*Math.PI/180f;
             double _x = Math.Cos(R_azimPerpen)*Math.Sin(R_inclinPerpen); 

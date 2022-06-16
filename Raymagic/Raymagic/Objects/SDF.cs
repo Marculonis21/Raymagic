@@ -136,14 +136,9 @@ namespace Raymagic
             return (center - test).Length();
         }
 
-        public static float Portal(Vector3 test, Vector3 normal)
+        public static float Portal(Vector3 test, Vector3 normal, float portalSize)
         {
-            float circle = Sphere(test, 50);
-            float cutPlane = Plane(test - normal*2f, normal);
-
-            var portal = Intersect(circle, cutPlane);
-
-            return portal;
+            return Intersect(Sphere(test, portalSize), Plane(test - normal*2f, normal));
         }
 
         public static float Difference(float ORIG, float DIFF)

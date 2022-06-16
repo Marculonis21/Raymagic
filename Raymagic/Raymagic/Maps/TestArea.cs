@@ -11,6 +11,20 @@ namespace Raymagic
             Vector3 topCorner = new Vector3(500,500,300);
             Vector3 botCorner = new Vector3(0,0,0);
 
+            Box xBox = new Box(new Vector3(0,0,0),
+                               new Vector3(500,20,20),
+                               Color.Red);
+            Box yBox = new Box(new Vector3(0,0,0),
+                               new Vector3(20,500,20),
+                               Color.Blue);
+            Box zBox = new Box(new Vector3(0,0,0),
+                               new Vector3(20,20,500),
+                               Color.Green);
+
+            data.staticMapObjects.Add(xBox);
+            data.staticMapObjects.Add(yBox);
+            data.staticMapObjects.Add(zBox);
+
             data.topCorner = topCorner;
             data.botCorner = botCorner;
 
