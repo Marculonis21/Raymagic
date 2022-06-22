@@ -141,6 +141,11 @@ namespace Raymagic
             return Intersect(Sphere(test, portalSize), Plane(test - normal*2f, normal));
         }
 
+        public static float Capsule(Vector3 test, float height, float radius)
+        {
+            return (new Vector3(test.X, test.Y, test.Z - Math.Clamp(test.Z, 0, height))).Length() - radius;
+        }
+
         public static float Difference(float ORIG, float DIFF)
         {
             return Math.Max(ORIG, -DIFF);

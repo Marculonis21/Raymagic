@@ -128,7 +128,7 @@ namespace Raymagic
                                         false, BooleanOP.SDIFFERENCE, 5), true);
 
 
-            data.dynamicMapObjects.Add(b);
+            /* data.dynamicMapObjects.Add(b); */
 
             Map.instance.RegisterMap("testArea", data);
         }

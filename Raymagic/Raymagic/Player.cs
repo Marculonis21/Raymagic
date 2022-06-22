@@ -10,6 +10,7 @@ namespace Raymagic
         //SINGLETON
         public Vector3 position;
         public Vector2 rotation;
+
         public Vector3 velocity;
 
         Vector2 size;
@@ -30,7 +31,7 @@ namespace Raymagic
         {
             position = map.GetPlayerStart();
             rotation = new Vector2(270,120);
-            size = new Vector2(30,75);
+            size = new Vector2(25,75);
 
             playerControls.Add("forward_move",  Keys.W);
             playerControls.Add("backward_move", Keys.S);
@@ -98,12 +99,16 @@ namespace Raymagic
 
         public void Rotate(Vector2 rot)
         {
+            // changes rotation speed
             rot /= 3;
+
+            // 0.01 & 179.9 -> portals places straight down/up need to have set
+            // up vector - from look dir
             this.rotation += rot;
-            if(this.rotation.Y < 25)
-                this.rotation.Y = 25;
-            if(this.rotation.Y > 160)
-                this.rotation.Y = 160;
+            if(this.rotation.Y < 0.01)
+                this.rotation.Y = 0.01f;
+            if(this.rotation.Y > 179.9)
+                this.rotation.Y = 179.9f;
 
             double R_inclination = rotation.Y*Math.PI/180f;
             double R_azimuth = rotation.X*Math.PI/180f;
