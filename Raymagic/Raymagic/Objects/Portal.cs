@@ -7,9 +7,13 @@ namespace Raymagic
 {
     public class Portal : Object
     {
+        protected Vector3 fNormal = new Vector3(1,0,0);
+        protected Vector3 fRight =  new Vector3(0,1,0);
+        protected Vector3 fUp =     new Vector3(0,0,1);
+
         protected Vector3 normal;
-        protected Vector3 up;
         protected Vector3 right;
+        protected Vector3 up;
 
         protected Matrix<double> baseChangeMatrix;
         protected Matrix<double> baseChangeMatrixInverse;
@@ -23,8 +27,8 @@ namespace Raymagic
 
             if (normal == new Vector3(0,0,1) || normal == new Vector3(0,0,-1))
             {
-                this.right = new Vector3(1,0,0);
-                this.up = new Vector3(0,1,0);
+                this.up = normal.Z * Vector3.Normalize(Player.instance.lookDir * new Vector3(1,1,0));
+                this.right = Vector3.Normalize(Vector3.Cross(up,normal));
             }
             else
             {
@@ -35,16 +39,19 @@ namespace Raymagic
             Console.WriteLine($"normal {normal}, right {right}, up {up}");
             this.baseChangeMatrix = Matrix.Create<double>(3,3, new double[] {
                     normal.X, normal.Y, normal.Z,
-                    up.X, up.Y, up.Z,
                     right.X, right.Y, right.Z,
+                    up.X, up.Y, up.Z,
                     }, 
                     Extreme.Mathematics.MatrixElementOrder.ColumnMajor);
             this.baseChangeMatrixInverse = baseChangeMatrix.GetInverse();
 
+            /* var inVector = Vector3.Normalize(new Vector3(0,0,1)); */
+            /* Console.WriteLine(inVector); */
             /* var v = Vector.Create<double>(inVector.X, inVector.Y, inVector.Z); */
 
-            /* var k2B = baseChangeMatrix.Solve(v); */
-            /* var B2k = baseChangeMatrixInverse.Solve(k2B); */
+            /* var K2B = baseChangeMatrix.Solve(v); */
+            /* var B2K = baseChangeMatrixInverse.Solve(v); */
+            /* Console.WriteLine($"solved {K2B}"); */
 
             this.type = type;
 
@@ -68,64 +75,41 @@ namespace Raymagic
             Color outColor = this.color;
             if (Vector3.Distance(testPos, this.Position) < portalSize-8)
             {
+
+                Portal otherPortal = null;
+
                 if (this.type == 0 && Map.instance.portalList[1] != null)
                 {
-                    var otherPortal = Map.instance.portalList[1];
-                    var otherPos = otherPortal.Position;
-                    var otherNormal = otherPortal.normal;
-                    var translate = this.Position - testPos;
-
-                    Vector3 reflectDir = Vector3.Reflect(ray.direction, this.normal);
-
-                    /* /1* Console.WriteLine($"ro: {reflectDir}"); *1/ */
-                    var reflectB1 = this.baseChangeMatrix.Solve(Vector.Create<double>(reflectDir.X,reflectDir.Y,reflectDir.Z));
-                    /* /1* Console.WriteLine($"rn: {reflectB1}"); *1/ */
-                    /* // BASIS = {NORMAL, UP, RIGTH} */
-
-                    /* var _n = otherPortal.normal; */
-                    /* var _r = otherPortal.right; */
-                    /* var _u = otherPortal.up; */
-                    /* var vector = Vector3.Normalize(_n * (float)reflectB1[0] + _r * (float)reflectB1[1] + _u * (float)reflectB1[2]); */
-                    /* var reflectKanon = otherPortal.baseChangeMatrixInverse.Solve(Vector.Create<double>(vector.X,vector.Y,vector.Z)); */
-                    /* Console.WriteLine($"ref {reflectDir} -> B1 {reflectB1} -> vector {vector} -> K {reflectKanon}"); */
-                    return new SDFout(float.MaxValue, Color.Pink);
-
-                    /* Vector3 outDir = Vector3.Normalize(new Vector3((float)reflectKanon[0], (float)reflectKanon[1], (float)reflectKanon[2])); */
-
-                    /* Ray outRay = new Ray((otherPos-translate)+outDir*25, outDir); */
-
-                    /* RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1); */
+                    otherPortal = Map.instance.portalList[1];
                 }
                 else if (this.type == 1 && Map.instance.portalList[0] != null)
                 {
-                    var otherPortal = Map.instance.portalList[0];
-                    var otherPos = otherPortal.Position;
-                    var otherNormal = otherPortal.normal;
-                    var translate = this.Position - testPos;
-
-                    Vector3 reflectDir = Vector3.Reflect(ray.direction, this.normal);
-
-                    /* var reflectB1 = this.baseChangeMatrix.Solve(Vector.Create<double>(reflectDir.X,reflectDir.Y,reflectDir.Z)); */
-                    /* // BASIS = {NORMAL, RIGHT, UP} */
-                    /* var _n = otherPortal.normal; */
-                    /* var _r = otherPortal.right; */
-                    /* var _u = otherPortal.up; */
-                    /* var vector = Vector3.Normalize(_n * (float)reflectB1[0] + _r * (float)reflectB1[1] + _u * (float)reflectB1[2]); */
-                    /* var reflectKanon = otherPortal.baseChangeMatrixInverse.Solve(Vector.Create<double>(vector.X,vector.Y,vector.Z)); */
-
-                    /* Vector3 outDir = Vector3.Normalize(new Vector3((float)reflectKanon[0], (float)reflectKanon[1], (float)reflectKanon[2])); */
-
-                    /* Ray outRay = new Ray((otherPos-translate)+outDir*25, outDir); */
-
-                    /* RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1); */
-
-                    /* Vector3 outDir = Vector3.Reflect(ray.direction, this.normal); */
-                    /* Ray outRay = new Ray((otherPos-translate)+outDir*25, outDir); */
-
-                    /* Ray outRay = new Ray((otherPos-translate)+outDir*25, outDir); */
-
-                    /* RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1); */
+                    otherPortal = Map.instance.portalList[0];
                 }
+
+                if (otherPortal == null) return current;
+
+                var otherPos = otherPortal.Position;
+
+                Vector3 translateK = this.Position - testPos;
+                Vector3 reflectK = Vector3.Normalize(Vector3.Reflect(ray.direction, this.normal));
+
+                var reflectB = this.baseChangeMatrix.Solve(Vector.Create<double>(reflectK.X,reflectK.Y,reflectK.Z));
+                var translateB = this.baseChangeMatrix.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
+                /* // BASIS = {NORMAL, RIGHT, UP}*/
+
+                var reflectKNew = otherPortal.baseChangeMatrixInverse.Solve(reflectB);
+                var _translateKNew = otherPortal.baseChangeMatrixInverse.Solve(translateB);
+                /* Console.WriteLine($"refK {reflectK} ->\n refB1 {reflectB} ->\n K {reflectKNew}"); */
+
+                /* return new SDFout(float.MaxValue, Color.Pink); */
+
+                Vector3 outDir = Vector3.Normalize(new Vector3((float)reflectKNew[0], (float)reflectKNew[1], (float)reflectKNew[2]));
+                Vector3 translateKNew = new Vector3((float)_translateKNew[0], (float)_translateKNew[1], (float)_translateKNew[2]);
+
+                /* Ray outRay = new Ray(otherPos-translate+(outDir*25), outDir); */
+                Ray outRay = new Ray((otherPos-translateKNew)+(outDir*25), outDir);
+                RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1);
             }
 
             return new SDFout(current.distance, outColor);

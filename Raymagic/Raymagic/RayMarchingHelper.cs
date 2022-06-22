@@ -41,14 +41,13 @@ namespace Raymagic
                     return;
                 }
 
-
                 bool sObj = true; // (is the best one static?)
                 SDFout test;
                 SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
-                if (depth < 2)
+                if (depth < 5)
                 {
                     foreach(Portal portal in map.portalList)
                     {
