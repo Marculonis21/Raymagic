@@ -10,20 +10,21 @@ namespace Raymagic
         //SINGLETON
         public Vector3 position;
         public Vector2 rotation;
-
         public Vector3 velocity;
 
         Vector2 size;
-
-        float gravity = 0.05f;
-
-        public int cursorSize = 10;
+        public Object model;
 
         public Vector3 lookDir {get; private set;}
 
         public bool GodMode = false;
+        Vector3 preGodPositionCache;
+
+        const float gravity = 0.05f;
+        public int cursorSize = 10;
 
         Map map = Map.instance;
+
 
         Dictionary<string, Keys> playerControls = new Dictionary<string, Keys>();
 
@@ -32,6 +33,8 @@ namespace Raymagic
             position = map.GetPlayerStart();
             rotation = new Vector2(270,120);
             size = new Vector2(25,75);
+
+            /* model = new PlayerModel(size.Y, size.X); */
 
             playerControls.Add("forward_move",  Keys.W);
             playerControls.Add("backward_move", Keys.S);
@@ -45,6 +48,25 @@ namespace Raymagic
 
             playerControls.Add("TESTANYTHING_ON",  Keys.O);
             playerControls.Add("TESTANYTHING_OFF", Keys.P);
+
+            this.model = new Capsule(new Vector3(400,400,0),
+                                     size.Y/2, 
+                                     size.X, 
+                                     Color.Orange,
+                                     false);
+            Capsule topPart = new Capsule(new Vector3(0,0,-size.X),
+                                          75/2,
+                                          26,
+                                          Color.White,
+                                          false,
+                                          boundingBoxSize: new Vector3(35,35,75));
+
+            topPart.AddChildObject(new Plane(new Vector3(0,0,75/4),
+                                             new Vector3(0,0,-1),
+                                             Color.Black,
+                                             booleanOP: BooleanOP.INTERSECT), true);
+
+            this.model.AddChildObject(topPart, true);
         }
 
         public static readonly Player instance = new Player();
@@ -70,13 +92,25 @@ namespace Raymagic
                                              (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,
                                              0);
 
+            // move model to "feet" position
+            if (!GodMode)
+            {
+                model.TranslateAbsolute(this.position + new Vector3(0,0,-1)*(size.Y/2) + new Vector3(0,0,-1)*(size.X/2));
+            }
+
             if (Keyboard.GetState().IsKeyDown(playerControls["jump"])) 
                 this.Jump(gameTime);
 
             if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
+            {
                 GodMode = true;
+                this.preGodPositionCache = this.position;
+            }
             if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
+            {
                 GodMode = false;
+                this.position = this.preGodPosition;
+            }
 
 
             if(GodMode)

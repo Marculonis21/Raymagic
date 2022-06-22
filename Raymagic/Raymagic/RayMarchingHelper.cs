@@ -18,6 +18,11 @@ namespace Raymagic
     public static class RayMarchingHelper
     {
         /* public static bool SpecularEnabled { get; set; } */
+        enum ObjHitType
+        {
+            Static,
+            Dynamic,
+        }
  
         public static void RayMarch(Ray ray, out float length, out Color color, int depth=0)
         {
@@ -41,12 +46,11 @@ namespace Raymagic
                     return;
                 }
 
-                bool sObj = true; // (is the best one static?)
+                ObjHitType type = ObjHitType.Static;
                 SDFout test;
                 SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Z/map.distanceMapDetail)];
-
                 if (depth < 5)
                 {
                     foreach(Portal portal in map.portalList)
@@ -66,13 +70,24 @@ namespace Raymagic
                     }
                 }
 
-                Object bestDObj = null;
+                Object bestObj = null;
                 test = map.BVH.Test(testPos, best.distance, out Object dObj);
                 if(test.distance < best.distance)
                 {
                     best = test;
-                    bestDObj = dObj;
-                    sObj = false;
+                    bestObj = dObj;
+                    type = ObjHitType.Dynamic;
+                }
+
+                if (depth > 0 || Player.instance.GodMode) 
+                {
+                    test = Player.instance.model.SDF(testPos, best.distance);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        bestObj = Player.instance.model;
+                        type = ObjHitType.Dynamic;
+                    }
                 }
 
                 foreach(Object iObj in map.infoObjectList)
@@ -94,7 +109,7 @@ namespace Raymagic
                     SDFout final = new SDFout(float.MaxValue, Color.Pink);
                     Object finalObj = null;
 
-                    if(sObj)
+                    if(type == ObjHitType.Static)
                     {
                         foreach(Object obj in map.staticObjectList)
                         {
@@ -106,10 +121,10 @@ namespace Raymagic
                             }
                         }
                     }
-                    else
+                    else if(type == ObjHitType.Dynamic)
                     {
                         final = best;
-                        finalObj = bestDObj;
+                        finalObj = bestObj;
                     }
 
                     Vector3 startPos;
@@ -171,7 +186,13 @@ namespace Raymagic
                                               (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                               (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
-                test = map.BVH.Test(testPos, best.distance, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, out Object _);
+                if(test.distance < best.distance)
+                {
+                    best = test;
+                }
+
+                test = Player.instance.model.SDF(testPos, best.distance);
                 if(test.distance < best.distance)
                 {
                     best = test;

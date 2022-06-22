@@ -16,6 +16,8 @@ namespace Raymagic
         // -> faster Transform()
         protected double[] inverse = new double[12]; 
 
+        protected Vector3 childRelativePos;
+
         protected Color color;
         protected string info;
 
@@ -49,6 +51,7 @@ namespace Raymagic
             this.info = info;
 
             this.Translate(position);
+            this.childRelativePos = position;
             this.booleanOP = booleanOP;
             this.booleanStrength = opStrength;
 
@@ -131,23 +134,29 @@ namespace Raymagic
             Map.instance.infoObjectList.Remove(this.boundingBox);
         }
 
-        public void TranslateAbsolute(Vector3 newPosition)
+        public void TranslateAbsolute(Vector3 newPosition, bool propagateToChildren=true)
         {
             this.translationMatrix[3,0] = 0;
             this.translationMatrix[3,1] = 0;
             this.translationMatrix[3,2] = 0;
 
-            this.Translate(newPosition);
+            this.translationMatrix = TransformHelper.Translate(translationMatrix, newPosition);
+            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+
+            foreach(Object obj in childObjects)
+            {
+                obj.TranslateAbsolute(newPosition+obj.childRelativePos, propagateToChildren);
+            }
         }
 
-        public void Translate(Vector3 translation)
+        public void Translate(Vector3 translation, bool propagateToChildren=true)
         {
             this.translationMatrix = TransformHelper.Translate(translationMatrix, translation);
             this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
 
             foreach(Object obj in childObjects)
             {
-                obj.Translate(translation);
+                obj.Translate(translation, propagateToChildren);
             }
         }
 

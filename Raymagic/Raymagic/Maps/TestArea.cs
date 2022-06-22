@@ -130,6 +130,29 @@ namespace Raymagic
 
             /* data.dynamicMapObjects.Add(b); */
 
+            /* Capsule body = new Capsule(new Vector3(400,400,0), */
+            /*                         75/2, */ 
+            /*                         25, */ 
+            /*                         Color.Orange, */
+            /*                         false, */ 
+            /*                         boundingBoxSize: new Vector3(35,35,75)); */
+
+            /* Capsule topPart = new Capsule(new Vector3(0,0,-25), */
+            /*                               75/2, */
+            /*                               26, */
+            /*                               Color.White, */
+            /*                               false, */
+            /*                               boundingBoxSize: new Vector3(35,35,75)); */
+
+            /* topPart.AddChildObject(new Plane(new Vector3(0,0,75/4), */
+            /*                                  new Vector3(0,0,-1), */
+            /*                                  Color.Black, */
+            /*                                  booleanOP: BooleanOP.INTERSECT), true); */
+
+            /* body.AddChildObject(topPart, true); */
+                                  
+            /* data.dynamicMapObjects.Add(body); */
+
             Map.instance.RegisterMap("testArea", data);
         }
     }
