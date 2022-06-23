@@ -104,16 +104,13 @@ namespace Raymagic
 
                 var otherPos = otherPortal.Position;
 
-                /* Vector3 reflectK = Vector3.Normalize(Vector3.Reflect(ray.direction, this.normal)); */
                 Vector3 translateK = this.Position - testPos;
                 Vector3 dirK = ray.direction;
 
-                /* var reflectB = this.baseChangeMatrix.Solve(Vector.Create<double>(reflectK.X,reflectK.Y,reflectK.Z)); */
                 var translateB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
                 var dirB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(dirK.X,dirK.Y,dirK.Z));
                 /* // BASIS = {NORMAL, RIGHT, UP}*/
 
-                /* var reflectKNew = otherPortal.baseChangeMatrixInverse.Solve(reflectB); */
                 var _translateKNew = otherPortal.baseChangeMatrixInverse.Solve(translateB);
                 var _dirKNew = otherPortal.baseChangeMatrixInverse.Solve(dirB);
                 /* Console.WriteLine($"refK {reflectK} ->\n refB1 {reflectB} ->\n K {reflectKNew}"); */
@@ -121,7 +118,6 @@ namespace Raymagic
 
                 /* return new SDFout(float.MaxValue, Color.Pink); */
 
-                /* Vector3 outDir = Vector3.Normalize(new Vector3((float)reflectKNew[0], (float)reflectKNew[1], (float)reflectKNew[2])); */
                 Vector3 outDir = Vector3.Normalize(new Vector3((float)_dirKNew[0], (float)_dirKNew[1], (float)_dirKNew[2]));
                 Vector3 translateKNew = new Vector3((float)_translateKNew[0], (float)_translateKNew[1], (float)_translateKNew[2]);
 

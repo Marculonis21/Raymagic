@@ -127,11 +127,12 @@ namespace Raymagic
                                         Color.Black,
                                         false, BooleanOP.SDIFFERENCE, 5), true);
 
-            /* data.dynamicMapObjects.Add(b); */
+            data.dynamicMapObjects.Add(b);
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
                                  Color.Gray, selectable:true);
+
             data.staticMapObjects.Add(boxbox);
 
 

@@ -145,7 +145,7 @@ namespace Raymagic
                         lightIntensity += addIntensity;
                     }
 
-                    /* lightIntensity = Math.Max(lightIntensity, 0.0001f); // try around something */
+                    lightIntensity = Math.Max(lightIntensity, 0.00025f); // try around something
                     color = new Color(final.color.R*lightIntensity,
                                       final.color.G*lightIntensity,
                                       final.color.B*lightIntensity);

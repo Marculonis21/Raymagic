@@ -217,9 +217,10 @@ namespace Raymagic
         {
             // gravity
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 5, 0, out float length, out Vector3 _, out Object _);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 5, 0, out float length, out Vector3 _, out Object obj);
 
-            if(length > 0)
+            // room under feet or pass through portals
+            if ((length > 0) || (obj == map.portalList[0] || obj == map.portalList[1]))
             {
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
             }
