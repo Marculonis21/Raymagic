@@ -109,7 +109,7 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
             {
                 GodMode = false;
-                this.position = this.preGodPosition;
+                this.position = this.preGodPositionCache;
             }
 
 

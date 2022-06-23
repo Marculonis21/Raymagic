@@ -196,6 +196,15 @@ namespace Raymagic
             /* float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
             /* map.lightList[0].position += new Vector3(x,y,0); */
 
+            if (map.portalList[0] != null && map.portalList[1] != null)
+            {
+                foreach (var portal in map.portalList)
+                {
+                    portal.CheckTransfer();
+                    portal.OnFieldExit();
+                    portal.OnFieldEnter();
+                }
+            }
             base.Update(gameTime);
         }
         
