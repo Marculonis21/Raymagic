@@ -31,8 +31,8 @@ namespace Raymagic
 
             if (normal == new Vector3(0,0,1) || normal == new Vector3(0,0,-1))
             {
-                this.up = normal.Z * Vector3.Normalize(Player.instance.lookDir * new Vector3(1,1,0));
-                this.right = Vector3.Normalize(Vector3.Cross(up,normal));
+                this.up = Vector3.Normalize(Player.instance.lookDir * new Vector3(1,1,0));
+                this.right = Vector3.Normalize(Vector3.Cross(up, normal));
             }
             else
             {
@@ -93,7 +93,7 @@ namespace Raymagic
         // special testing method including ray 
         public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool useBounding=true, bool physics=false)
         {
-            if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink);
+            /* if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink); */
 
             SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 
@@ -118,8 +118,8 @@ namespace Raymagic
 
                 /* return new SDFout(float.MaxValue, Color.Pink); */
 
-                Vector3 outDir = Vector3.Normalize(new Vector3((float)_dirKNew[0], (float)_dirKNew[1], (float)_dirKNew[2]));
-                Vector3 translateKNew = new Vector3((float)_translateKNew[0], (float)_translateKNew[1], (float)_translateKNew[2]);
+                Vector3 outDir = Vector3.Normalize(_dirKNew.ToVector3());
+                Vector3 translateKNew = _translateKNew.ToVector3();
 
                 Ray outRay = new Ray((otherPos-translateKNew)+(outDir*25), outDir);
                 RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1);

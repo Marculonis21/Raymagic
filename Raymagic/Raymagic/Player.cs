@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Raymagic
 {
-    public class Player 
+    public class Player
     {
         //SINGLETON
         public Vector3 position;
@@ -121,10 +121,10 @@ namespace Raymagic
                     this.position.Z += 2f;
             }
 
-            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"])) */
-            /*     RayMarchingHelper.GammaCorrectionEnabled = true; */
-            /* if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"])) */
-            /*     RayMarchingHelper.GammaCorrectionEnabled = false; */
+            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
+                this.RotateAbsolute(new Vector3(1,0,0));
+            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
+                this.RotateAbsolute(new Vector3(1,1,1));
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
@@ -144,6 +144,15 @@ namespace Raymagic
             if(this.rotation.Y > 179.9)
                 this.rotation.Y = 179.9f;
 
+            while (this.rotation.X > 360)
+            {
+                this.rotation.X -= 360;
+            }
+            while (this.rotation.X < 0)
+            {
+                this.rotation.X += 360;
+            }
+
             double R_inclination = rotation.Y*Math.PI/180f;
             double R_azimuth = rotation.X*Math.PI/180f;
             double _x = Math.Cos(R_azimuth)*Math.Sin(R_inclination); 
@@ -154,6 +163,29 @@ namespace Raymagic
             lookDir.Normalize();
 
             Informer.instance.AddInfo("playerRot", "LookDir: " + lookDir.ToString());
+        }
+
+        public void RotateAbsolute(Vector3 rot)
+        {
+            lookDir = Vector3.Normalize(rot);
+
+            Vector2 v = Vector2.Normalize(new Vector2(lookDir.X, lookDir.Y));
+            var xDegree = Math.Acos(v.X)*180/Math.PI;
+            var yDegree = Math.Asin(v.Y)*180/Math.PI;
+
+            float testAzimuth = 0;
+            if (yDegree > 0)
+            {
+                testAzimuth = (float)xDegree;
+            }
+            else
+            {
+                testAzimuth = 360 - (float)xDegree;
+            }
+
+            var RI = Math.Acos(lookDir.Z);
+
+            this.rotation = new Vector2(testAzimuth, (float)(RI*180/Math.PI));
         }
 
         public void Jump(GameTime gameTime)
