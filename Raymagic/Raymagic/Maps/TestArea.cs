@@ -159,6 +159,11 @@ namespace Raymagic
                                   
             /* data.dynamicMapObjects.Add(body); */
 
+            /* Cylinder c = new Cylinder(new Vector3(400,400,50), new Vector3(0,0,1), */
+            /*                           200, 50, Color.Orange); */
+                                      
+            /* data.staticMapObjects.Add(c); */
+
             Map.instance.RegisterMap("testArea", data);
         }
     }

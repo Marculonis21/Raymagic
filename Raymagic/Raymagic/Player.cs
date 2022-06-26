@@ -71,8 +71,8 @@ namespace Raymagic
 
         public static readonly Player instance = new Player();
 
-        int lastMouseX = 100;
-        int lastMouseY = 100;
+        int lastMouseX = 500;
+        int lastMouseY = 500;
         public void Controlls(GameTime gameTime, MouseState mouse)
         {
             if (Keyboard.GetState().IsKeyDown(playerControls["forward_move"])) 
@@ -128,7 +128,7 @@ namespace Raymagic
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
-            Mouse.SetPosition(100, 100);
+            Mouse.SetPosition(500, 500);
         }
 
         public void Rotate(Vector2 rot)
@@ -204,6 +204,7 @@ namespace Raymagic
             }
 
             this.position += this.velocity;
+            /* Console.WriteLine(this.velocity); */
             Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
             Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
@@ -249,15 +250,19 @@ namespace Raymagic
         {
             // gravity
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 5, 0, out float length, out Vector3 _, out Object obj);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 20, 0, out float length, out Vector3 _, out Object obj);
 
             // room under feet or pass through portals
+            /* if ((length > 0) || (obj == map.portalList[0] || obj == map.portalList[1])) */
+
             if ((length > 0) || (obj == map.portalList[0] || obj == map.portalList[1]))
             {
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
             }
             else if(velocity.Z < 0)
+            {
                 this.velocity.Z = 0;
+            }
         }
 
         public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)

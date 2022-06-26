@@ -22,6 +22,7 @@ namespace Raymagic
 
         int type;
         float portalSize = 50; 
+        float portalDepth = 75; 
 
         protected Portal otherPortal;
 
@@ -98,7 +99,8 @@ namespace Raymagic
             SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 
             Color outColor = this.color;
-            if (Vector3.Distance(testPos, this.Position) < portalSize-8)
+
+            if (Vector3.Distance(testPos, this.Position) < portalSize-8 && !physics)
             {
                 if (this.otherPortal == null) return current;
 
@@ -122,6 +124,7 @@ namespace Raymagic
                 Vector3 translateKNew = _translateKNew.ToVector3();
 
                 Ray outRay = new Ray((otherPos-translateKNew)+(outDir*25), outDir);
+
                 RayMarchingHelper.RayMarch(outRay, out float _, out outColor, depth+1);
             }
 
@@ -130,7 +133,7 @@ namespace Raymagic
 
         public override float SDFDistance(Vector3 testPos)
         {
-            return SDFs.Portal(testPos, this.normal, this.portalSize);
+            return SDFs.Portal(testPos, this.normal, this.portalSize, this.portalDepth);
         }
     }
 }

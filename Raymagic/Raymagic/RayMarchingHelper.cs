@@ -182,9 +182,17 @@ namespace Raymagic
                 Vector3 coords = testPos - map.mapOrigin;
 
                 SDFout test;
-                SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
-                                              (int)Math.Abs(coords.Y/map.distanceMapDetail),
-                                              (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+                SDFout best = new SDFout(float.MaxValue, Color.Pink);
+                try
+                {
+                    best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                           (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                           (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    Console.WriteLine("LIGHT ERROR");
+                }
 
                 test = map.BVH.Test(testPos, best.distance, out Object _);
                 if(test.distance < best.distance)
@@ -230,9 +238,10 @@ namespace Raymagic
 
             for (int iter = 0; iter < maxSteps; iter++)
             {
+                bool portalHit = false;
+
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
 
-                bool portalHit = false;
                 foreach(Portal portal in map.portalList)
                 {
                     if (portal == null) continue;
