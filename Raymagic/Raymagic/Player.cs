@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Raymagic
 {
-    public class Player
+    public class Player : IPortalable
     {
         //SINGLETON
-        public Vector3 position;
+        public Vector3 position {get; private set;}
         public Vector2 rotation;
         public Vector3 velocity;
 
@@ -24,7 +24,6 @@ namespace Raymagic
         public int cursorSize = 10;
 
         Map map = Map.instance;
-
 
         Dictionary<string, Keys> playerControls = new Dictionary<string, Keys>();
 
@@ -58,8 +57,7 @@ namespace Raymagic
                                           75/2,
                                           26,
                                           Color.White,
-                                          false,
-                                          boundingBoxSize: new Vector3(35,35,75));
+                                          false);
 
             topPart.AddChildObject(new Plane(new Vector3(0,0,75/4),
                                              new Vector3(0,0,-1),
@@ -116,9 +114,9 @@ namespace Raymagic
             if(GodMode)
             {
                 if(Keyboard.GetState().IsKeyDown(playerControls["god_down"]))
-                    this.position.Z -= 2f;
+                    this.position += new Vector3(0,0,-2);
                 if(Keyboard.GetState().IsKeyDown(playerControls["god_up"]))
-                    this.position.Z += 2f;
+                    this.position += new Vector3(0,0,+2);
             }
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
@@ -167,7 +165,7 @@ namespace Raymagic
 
         public void RotateAbsolute(Vector3 rot)
         {
-            lookDir = Vector3.Normalize(rot);
+            this.lookDir = Vector3.Normalize(rot);
 
             Vector2 v = Vector2.Normalize(new Vector2(lookDir.X, lookDir.Y));
             var xDegree = Math.Acos(v.X)*180/Math.PI;
@@ -188,6 +186,11 @@ namespace Raymagic
             this.rotation = new Vector2(testAzimuth, (float)(RI*180/Math.PI));
         }
 
+        public void TranslateAbsolute(Vector3 newPosition)
+        {
+            this.position = newPosition;
+        }
+
         public void Jump(GameTime gameTime)
         {
             if(GodMode) return; // disable jumping in godmode - GODS FLY
@@ -197,14 +200,15 @@ namespace Raymagic
 
         public void Update(GameTime gameTime)
         {
+
             if(!GodMode)
             {
-                FeetCollider(gameTime);
                 BodyCollider(gameTime);
+                FeetCollider(gameTime);
             }
 
             this.position += this.velocity;
-            /* Console.WriteLine(this.velocity); */
+
             Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
             Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
         }
@@ -215,6 +219,7 @@ namespace Raymagic
             double angle;
             Vector3 testDir;
             double R_azimuth = rotation.X*Math.PI/180f;
+            Object obj;
             for (int i = 0; i < 12; i++)
             {
                 angle = 2*Math.PI/12 * i;
@@ -223,12 +228,12 @@ namespace Raymagic
 
                 Ray testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, testDir);
 
-                RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out Object obj); 
+                RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out obj); 
 
                 if(width <= this.size.X/2)
                 {
                     // pass through portals
-                    if (obj == map.portalList[0] || obj == map.portalList[1]) return;
+                    if ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)return;
 
                     Vector3 normal = obj.SDF_normal(hit);
 
@@ -238,8 +243,8 @@ namespace Raymagic
             }
 
             // maintain height above ground (stairs/steps) 
-            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out Object _);
-            if(length < size.Y)
+            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out obj);
+            if ((length < size.Y) && !((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null))
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
@@ -248,14 +253,12 @@ namespace Raymagic
 
         void FeetCollider(GameTime gameTime)
         {
-            // gravity
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 20, 0, out float length, out Vector3 _, out Object obj);
 
-            // room under feet or pass through portals
-            /* if ((length > 0) || (obj == map.portalList[0] || obj == map.portalList[1])) */
-
-            if ((length > 0) || (obj == map.portalList[0] || obj == map.portalList[1]))
+            // gravity
+            if ((length > 0) || 
+                ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null))
             {
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
             }
