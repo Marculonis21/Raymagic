@@ -24,7 +24,7 @@ namespace Raymagic
         float portalSize = 50; 
         float portalDepth = 75; 
 
-        protected Portal otherPortal;
+        public Portal otherPortal {get; protected set;}
 
         public Portal(Vector3 center, Vector3 normal, int type) : base(center, Color.Black, false, new Vector3(), "", BooleanOP.NONE, 0, false)
         {
@@ -94,7 +94,7 @@ namespace Raymagic
         // special testing method including ray 
         public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool useBounding=true, bool physics=false)
         {
-            /* if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink); */
+            if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink);
 
             SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 

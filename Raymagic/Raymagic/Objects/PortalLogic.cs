@@ -73,23 +73,18 @@ namespace Raymagic
                 if ((thisDot < 0 && objectLastDot[i] > 0) ||
                     (thisDot > 0 && objectLastDot[i] < 0))
                 {
-                    Console.WriteLine($"transfer - {this.type}");
                     if (objectWatcher[i] == Player.instance.model)
                     {
-                        /* Player.instance.Rotate(new Vector2((float)(Math.PI),0)); */
-
                         var lookDirK = Player.instance.lookDir;
                         var rotB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
                         var newRotK = this.otherPortal.baseChangeMatrixInverse.Solve(rotB);
-                        Console.WriteLine($"{lookDirK} -> {rotB} -> {newRotK}");
 
                         Player.instance.RotateAbsolute(newRotK.ToVector3());
-                        Player.instance.position = this.otherPortal.Position + Player.instance.lookDir*5;
-
+                        Player.instance.TranslateAbsolute(this.otherPortal.Position + Player.instance.lookDir * 5 * Vector3.Dot(this.otherPortal.normal, Player.instance.lookDir));
                     }
                     else
                     {
-                        objectWatcher[i].TranslateAbsolute(this.otherPortal.Position + this.otherPortal.normal*20); 
+                        objectWatcher[i].TranslateAbsolute(this.otherPortal.Position + this.otherPortal.normal*35); 
                         objectWatcher[i].Rotate(180, "z");
 
                     }
