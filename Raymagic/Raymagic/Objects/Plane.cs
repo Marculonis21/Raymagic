@@ -9,7 +9,7 @@ namespace Raymagic
 
         public Plane(Vector3 position, Vector3 normal, Color color, BooleanOP booleanOP=BooleanOP.NONE, float booleanStrength=1, bool selectable=false, String info = "") : base(position, color, true, new Vector3(), info, booleanOP, booleanStrength, selectable)
         {
-            this.normal = normal;
+            this.normal = Vector3.Normalize(normal);
         }
 
         public override float SDFDistance(Vector3 testPos)

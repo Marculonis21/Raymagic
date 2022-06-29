@@ -26,9 +26,18 @@ namespace Raymagic
 
         public Portal otherPortal {get; protected set;}
 
+        protected enum State
+        {
+            READY,
+            REACENTLYUSED,
+        }
+        protected State portalState;
+        public int cooldownCounter;
+
         public Portal(Vector3 center, Vector3 normal, int type) : base(center, Color.Black, false, new Vector3(), "", BooleanOP.NONE, 0, false)
         {
             this.normal = normal;
+            this.portalState = State.READY;
 
             if (normal == new Vector3(0,0,1) || normal == new Vector3(0,0,-1))
             {

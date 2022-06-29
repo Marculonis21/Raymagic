@@ -18,12 +18,13 @@ namespace Raymagic
         public Vector3 lookDir {get; private set;}
 
         const float walkingSpeed = 2.5f;
+        const float jumpStrength = 0.5f;
         bool grounded = true;
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
 
-        const float gravity = 0.02f;
+        const float gravity = 0.05f;
         public int cursorSize = 10;
 
         Map map = Map.instance;
@@ -218,16 +219,19 @@ namespace Raymagic
         public void Jump(GameTime gameTime)
         {
             if(GodMode) return; // disable jumping in godmode - GODS FLY
-            if(this.velocity.Z == 0 && grounded)
-                this.velocity += new Vector3(0,0,1)*0.5f*gameTime.ElapsedGameTime.Milliseconds;
+            if(grounded)
+            {
+                grounded = false;
+                this.velocity += new Vector3(0,0,1)*jumpStrength*gameTime.ElapsedGameTime.Milliseconds;
+            }
         }
 
         public void Update(GameTime gameTime)
         {
             if(!GodMode)
             {
-                BodyCollider(gameTime);
                 FeetCollider(gameTime);
+                BodyCollider(gameTime);
             }
 
             if (this.velocity.Z < -20)
@@ -243,65 +247,139 @@ namespace Raymagic
 
             Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
             Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
+            Informer.instance.AddInfo("playerVelocity", "Player velocity: " + this.velocity);
+            Informer.instance.AddInfo("playerGroundedState", "Player grounded: " + this.grounded);
         }
 
         void BodyCollider(GameTime gameTime)
         {
-            // body side collider
-            double angle;
-            Vector3 testDir;
-            double R_azimuth = rotation.X*Math.PI/180f;
-            Object obj;
-            for (int i = 0; i < 12; i++)
+            float width;
+            Vector3 hitPos;
+            Object hitObj;
+            Ray testRay = new Ray();
+            bool collisionFound = false;
+
+            for (int i = 0; i < 4; i++)
             {
-                angle = 2*Math.PI/12 * i;
-                testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0);
-                testDir.Normalize();
-
-                Ray testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, testDir);
-
-                RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out obj); 
-
-                if(width <= this.size.X/2)
+                do
                 {
-                    // pass through portals
-                    if ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)return;
+                    switch (i)
+                    {
+                        case 0: testRay = new Ray(this.position, new Vector3());                                  break;
+                        case 1: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/4, new Vector3());   break;
+                        case 2: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, new Vector3());   break;
+                        case 3: testRay = new Ray(this.position + new Vector3(0,0,-1)*3*size.Y/4, new Vector3()); break;
+                    }
 
-                    Vector3 normal = obj.SDF_normal(hit);
+                    collisionFound = false;
+                    RayMarchingHelper.PhysicsRayMarch(testRay, 1, size.X/2, out width, out hitPos, out hitObj); 
 
-                    this.position += normal*3;
-                    return;
-                }
+                    if (width <= this.size.X/2)
+                    {
+                        if ((hitObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
+                            (hitObj == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
+
+                        Vector3 normal = hitObj.SDF_normal(hitPos);
+
+                        // walkingSpeed/# of testRays
+                        this.position += normal/2;
+                        collisionFound = true;
+                        /* Console.WriteLine("casd"); */
+                    }
+                    
+                } while (collisionFound);
             }
 
             // maintain height above ground (stairs/steps) 
-            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out obj);
-            if ((length < size.Y) && !((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null))
+            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out hitPos, out hitObj);
+
+            if ((length < size.Y) && 
+                !((hitObj == map.portalList[0] || hitObj == map.portalList[1]) && ((Portal)hitObj).otherPortal != null))
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
-
         }
+
+        /* void BodyCollider(GameTime gameTime) */
+        /* { */
+        /*     // body side collider */
+        /*     double angle; */
+        /*     Vector3 testDir; */
+        /*     double R_azimuth = rotation.X*Math.PI/180f; */
+        /*     Object obj; */
+        /*     for (int i = 0; i < 12; i++) */
+        /*     { */
+        /*         angle = 2*Math.PI/12 * i; */
+        /*         testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0); */
+        /*         testDir.Normalize(); */
+
+        /*         Ray testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, testDir); */
+
+        /*         RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out obj); */ 
+
+        /*         if(width <= this.size.X/2) */
+        /*         { */
+        /*             // pass through portals */
+        /*             if ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)return; */
+
+        /*             Vector3 normal = obj.SDF_normal(hit); */
+
+        /*             this.position += normal*3; */
+        /*             return; */
+        /*         } */
+        /*     } */
+
+        /*     // maintain height above ground (stairs/steps) */ 
+        /*     RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out obj); */
+        /*     if ((length < size.Y) && !((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)) */
+        /*     { */
+        /*         this.position += new Vector3(0,0,1)*(size.Y-length); */
+        /*     } */
+
+        /* } */
 
         void FeetCollider(GameTime gameTime)
         {
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 2, 0, out float length, out Vector3 hit, out Object obj);
+            //check if the bottom part of the player capsule is touching the ground
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1)*size.X/2, new Vector3(0,0,-1)), 1, -1, out float capsuleLength, out Vector3 _, out Object capsObj);
 
-            // gravity
-            if ((length > 0) || ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null) ||
-                (map.portalList[0] != null && map.portalList[0].PosInPortal(feetPos)) || (map.portalList[1] != null && map.portalList[1].PosInPortal(feetPos)))
+            //check directly under player feet
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1), new Vector3(0,0,-1)), 2, -1, out float downLength, out Vector3 hit, out Object obj);
+
+            if ((capsuleLength > size.X/2 || downLength > size.X/4) ||
+               ((capsObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
+                (capsObj == map.portalList[1] && map.portalList[1].otherPortal != null)))  
             {
-                this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
                 grounded = false;
+                this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
             }
-            else if(!grounded)
+            else if (this.velocity.Z < 0)
             {
-                Console.WriteLine("happended");
                 grounded = true;
                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0);
             }
         }
+
+/*         void FeetCollider(GameTime gameTime) */
+/*         { */
+/*             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y; */
+/*             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 2, 0, out float length, out Vector3 hit, out Object obj); */
+
+/*             // gravity */
+/*             if ((length > 0) || ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null) || */
+/*                 (map.portalList[0] != null && map.portalList[0].PosInPortal(feetPos)) || (map.portalList[1] != null && map.portalList[1].PosInPortal(feetPos))) */
+/*             { */
+/*                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds; */
+/*                 grounded = false; */
+/*             } */
+/*             else if(!grounded) */
+/*             { */
+/*                 Console.WriteLine("happended"); */
+/*                 grounded = true; */
+/*                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0); */
+/*             } */
+/*         } */
 
         public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)
         {

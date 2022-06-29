@@ -127,7 +127,18 @@ namespace Raymagic
                                         Color.Black,
                                         false, BooleanOP.SDIFFERENCE, 5), true);
 
-            data.dynamicMapObjects.Add(b);
+            /* data.dynamicMapObjects.Add(b); */
+
+            Box ramp = new Box(new Vector3(50,400,50),
+                               new Vector3(100,200,200),
+                               Color.LightGreen,
+                               false, boundingBoxSize:new Vector3(100,200,200), selectable:true);
+
+            ramp.AddChildObject(new Plane(new Vector3(0,0,0),
+                                          new Vector3(0,-1,1),
+                                          Color.Black,
+                                          BooleanOP.INTERSECT), true);
+            data.dynamicMapObjects.Add(ramp);
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),

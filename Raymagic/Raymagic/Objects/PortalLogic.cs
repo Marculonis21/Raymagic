@@ -65,6 +65,18 @@ namespace Raymagic
 
         public void CheckTransfer()
         {
+            if (this.cooldownCounter > 10)
+            {
+                this.portalState = State.READY;
+                this.cooldownCounter = 0;
+            }
+
+            if (this.portalState == State.REACENTLYUSED) 
+            {
+                this.cooldownCounter += 1;
+                return;
+            }
+
             List<Object> toRemove = new List<Object>(); 
 
             for (int i = 0; i < objectWatcher.Count; i++)
@@ -79,18 +91,22 @@ namespace Raymagic
                         var rotB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
                         var newRotK = this.otherPortal.baseChangeMatrixInverse.Solve(rotB);
 
-                        var velocityK = Player.instance.velocity;
+                        // dabble in momentum
+                        var velocityK = Player.instance.velocity * this.normal*1.099f;
                         var velB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z));
                         var newVelK = this.otherPortal.baseChangeMatrixInverse.Solve(velB);
 
-                        /* var translateK = this.Position - Player.instance.position; */
-                        /* var transB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)); */
-                        /* var newTransK = this.otherPortal.baseChangeMatrixInverse.Solve(transB); */
+                        var translateK = this.Position - Player.instance.position;
+                        var transB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
+                        var newTransK = this.otherPortal.baseChangeMatrixInverse.Solve(transB);
 
                         Player.instance.RotateAbsolute(newRotK.ToVector3());
-                        Player.instance.TranslateAbsolute(this.otherPortal.Position + Player.instance.lookDir * 5 * Vector3.Dot(this.otherPortal.normal, Player.instance.lookDir));
+                        Player.instance.TranslateAbsolute(this.otherPortal.Position + this.otherPortal.normal*10 + Player.instance.lookDir * 5 * Vector3.Dot(this.otherPortal.normal, Player.instance.lookDir));
                         Console.WriteLine($"{velocityK}, {newVelK.ToVector3()}");
                         Player.instance.SetVelocity(newVelK.ToVector3());
+
+                        this.portalState = State.REACENTLYUSED;
+                        this.otherPortal.portalState = State.REACENTLYUSED;
                     }
                     else
                     {
