@@ -79,8 +79,18 @@ namespace Raymagic
                         var rotB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
                         var newRotK = this.otherPortal.baseChangeMatrixInverse.Solve(rotB);
 
+                        var velocityK = Player.instance.velocity;
+                        var velB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z));
+                        var newVelK = this.otherPortal.baseChangeMatrixInverse.Solve(velB);
+
+                        /* var translateK = this.Position - Player.instance.position; */
+                        /* var transB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)); */
+                        /* var newTransK = this.otherPortal.baseChangeMatrixInverse.Solve(transB); */
+
                         Player.instance.RotateAbsolute(newRotK.ToVector3());
                         Player.instance.TranslateAbsolute(this.otherPortal.Position + Player.instance.lookDir * 5 * Vector3.Dot(this.otherPortal.normal, Player.instance.lookDir));
+                        Console.WriteLine($"{velocityK}, {newVelK.ToVector3()}");
+                        Player.instance.SetVelocity(newVelK.ToVector3());
                     }
                     else
                     {

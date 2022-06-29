@@ -10,17 +10,20 @@ namespace Raymagic
         //SINGLETON
         public Vector3 position {get; private set;}
         public Vector2 rotation;
-        public Vector3 velocity;
+        public Vector3 velocity {get; private set;}
 
         Vector2 size;
         public Object model;
 
         public Vector3 lookDir {get; private set;}
 
+        const float walkingSpeed = 2.5f;
+        bool grounded = true;
+
         public bool GodMode = false;
         Vector3 preGodPositionCache;
 
-        const float gravity = 0.05f;
+        const float gravity = 0.02f;
         public int cursorSize = 10;
 
         Map map = Map.instance;
@@ -73,22 +76,38 @@ namespace Raymagic
         int lastMouseY = 500;
         public void Controlls(GameTime gameTime, MouseState mouse)
         {
+            Vector2 walkingVelocity = new Vector2();
             if (Keyboard.GetState().IsKeyDown(playerControls["forward_move"])) 
-                this.position += new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
-                                             (float)Math.Sin(this.rotation.X*Math.PI/180)*2,
-                                             0);
+                walkingVelocity += new Vector2((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
+                                               (float)Math.Sin(this.rotation.X*Math.PI/180)*2);
+
             if (Keyboard.GetState().IsKeyDown(playerControls["backward_move"])) 
-                this.position -= new Vector3((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
-                                             (float)Math.Sin(this.rotation.X*Math.PI/180)*2,
-                                             0);
+                walkingVelocity -= new Vector2((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
+                                               (float)Math.Sin(this.rotation.X*Math.PI/180)*2);
+                                             
             if (Keyboard.GetState().IsKeyDown(playerControls["left_move"]))
-                this.position -= new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
-                                             (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,
-                                             0);
+                walkingVelocity -= new Vector2((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
+                                               (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2);
+
             if (Keyboard.GetState().IsKeyDown(playerControls["right_move"])) 
-                this.position += new Vector3((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
-                                             (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2,
-                                             0);
+                walkingVelocity += new Vector2((float)Math.Cos((90+this.rotation.X)*Math.PI/180)*2,
+                                               (float)Math.Sin((90+this.rotation.X)*Math.PI/180)*2);
+
+            if (walkingVelocity.X != 0 && walkingVelocity.Y != 0)
+            {
+                walkingVelocity = Vector2.Normalize(walkingVelocity);
+            }
+
+            if (grounded)
+            {
+                walkingVelocity *= walkingSpeed;
+                this.velocity = new Vector3(walkingVelocity.X, walkingVelocity.Y, velocity.Z);
+            }
+            else
+            {
+                walkingVelocity *= 0.1f;
+                this.velocity = new Vector3(velocity.X+walkingVelocity.X, velocity.Y+walkingVelocity.Y, velocity.Z);
+            }
 
             // move model to "feet" position
             if (!GodMode)
@@ -191,20 +210,33 @@ namespace Raymagic
             this.position = newPosition;
         }
 
+        public void SetVelocity(Vector3 newVelocity)
+        {
+            this.velocity = newVelocity;
+        }
+
         public void Jump(GameTime gameTime)
         {
             if(GodMode) return; // disable jumping in godmode - GODS FLY
-            if(this.velocity.Z == 0)
-                this.velocity.Z += 0.5f*gameTime.ElapsedGameTime.Milliseconds;
+            if(this.velocity.Z == 0 && grounded)
+                this.velocity += new Vector3(0,0,1)*0.5f*gameTime.ElapsedGameTime.Milliseconds;
         }
 
         public void Update(GameTime gameTime)
         {
-
             if(!GodMode)
             {
                 BodyCollider(gameTime);
                 FeetCollider(gameTime);
+            }
+
+            if (this.velocity.Z < -20)
+            {
+                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, -20);
+            }
+            if (this.velocity.Z > 20)
+            {
+                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 20);
             }
 
             this.position += this.velocity;
@@ -254,17 +286,20 @@ namespace Raymagic
         void FeetCollider(GameTime gameTime)
         {
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 20, 0, out float length, out Vector3 _, out Object obj);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 2, 0, out float length, out Vector3 hit, out Object obj);
 
             // gravity
-            if ((length > 0) || 
-                ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null))
+            if ((length > 0) || ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null) ||
+                (map.portalList[0] != null && map.portalList[0].PosInPortal(feetPos)) || (map.portalList[1] != null && map.portalList[1].PosInPortal(feetPos)))
             {
                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
+                grounded = false;
             }
-            else if(velocity.Z < 0)
+            else if(!grounded)
             {
-                this.velocity.Z = 0;
+                Console.WriteLine("happended");
+                grounded = true;
+                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0);
             }
         }
 
