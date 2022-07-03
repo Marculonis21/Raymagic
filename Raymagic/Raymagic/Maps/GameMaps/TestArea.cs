@@ -28,6 +28,8 @@ namespace Raymagic
             data.topCorner = topCorner;
             data.botCorner = botCorner;
 
+            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(100,100,100), 50, Color.Green));
+
             Plane mainPlaneW = new Plane(new Vector3(0,0,0),
                                          new Vector3(0,0,1),
                                          Color.White,

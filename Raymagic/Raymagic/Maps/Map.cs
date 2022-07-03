@@ -13,21 +13,27 @@ namespace Raymagic
         //SINGLETON
         public Dictionary<string, MapData> maps {get; private set;}
         MapData data;
-        public string mapName;
 
-        public List<Object> staticObjectList = new List<Object>();
-        public List<Object> dynamicObjectList = new List<Object>();
-        public List<IPortalable> portalableObjectList = new List<IPortalable>();
-        public BVH BVH = new BVH();
-        public List<Object> infoObjectList = new List<Object>();
-        public List<Light> lightList = new List<Light>();
-        public List<Portal> portalList = new List<Portal> {null, null}; 
+        public string mapName;
 
         public Vector3 mapSize;
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
         public float distanceMapDetail;
         public SDFout[,,] distanceMap;
+
+        public List<Object> staticObjectList = new List<Object>();
+        public List<Object> dynamicObjectList = new List<Object>();
+        public List<Object> infoObjectList = new List<Object>();
+        public List<IPortalable> portalableObjectList = new List<IPortalable>();
+        public List<PhysicsObject> physicsObjectsList = new List<PhysicsObject>();
+
+        public List<Light> lightList = new List<Light>();
+        public List<Portal> portalList = new List<Portal> {null, null}; 
+
+        public BVH BVH = new BVH();
+
+        public PhysicsSpace physicsSpace;
 
         private Map()
         {
@@ -53,7 +59,10 @@ namespace Raymagic
             this.mapName = id;
             this.staticObjectList = data.staticMapObjects;
             this.dynamicObjectList = data.dynamicMapObjects;
+            this.physicsObjectsList = data.physicsMapObjects;
             this.lightList = data.mapLights;
+
+            this.physicsSpace = new PhysicsSpace(physicsObjectsList);
 
             mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;
