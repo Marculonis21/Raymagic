@@ -13,7 +13,7 @@ namespace Raymagic
         public Vector3 velocity {get; private set;}
 
         Vector2 size;
-        public Object model;
+        public Object model {get; private set;}
 
         public Vector3 lookDir {get; private set;}
 

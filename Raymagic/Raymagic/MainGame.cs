@@ -64,6 +64,7 @@ namespace Raymagic
             /* stream1.Close(); */
 
             player = Player.instance;
+            map.portalableObjectList.Add(player);
             base.Initialize();
 
             GC.Collect();

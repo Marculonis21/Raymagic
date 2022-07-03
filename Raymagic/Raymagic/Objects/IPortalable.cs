@@ -4,6 +4,8 @@ namespace Raymagic
 {
     public interface IPortalable 
     {
+        public Object model {get;}
+
         public Vector3 lookDir {get;}
         public Vector3 position {get;}
         public Vector3 velocity {get;}
