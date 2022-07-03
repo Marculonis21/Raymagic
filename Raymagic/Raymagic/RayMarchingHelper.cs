@@ -61,6 +61,7 @@ namespace Raymagic
                         if(test.distance < best.distance)
                         {
                             best = test;
+                            // cut sdf checks when portal is enough
                             if(best.distance < 0.1f)
                             {
                                 color = test.color;
@@ -86,6 +87,17 @@ namespace Raymagic
                     {
                         best = test;
                         bestObj = Player.instance.model;
+                        type = ObjHitType.Dynamic;
+                    }
+                }
+
+                foreach(var obj in map.physicsObjectsList)
+                {
+                    test = obj.SDF(testPos, best.distance);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        bestObj = obj;
                         type = ObjHitType.Dynamic;
                     }
                 }
@@ -204,6 +216,15 @@ namespace Raymagic
                 if(test.distance < best.distance)
                 {
                     best = test;
+                }
+
+                foreach(var obj in map.physicsObjectsList)
+                {
+                    test = obj.SDF(testPos, best.distance);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                    }
                 }
 
                 float lightDst = light.DistanceFrom(testPos);
