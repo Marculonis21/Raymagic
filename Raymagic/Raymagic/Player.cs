@@ -272,7 +272,7 @@ namespace Raymagic
                     }
 
                     collisionFound = false;
-                    RayMarchingHelper.PhysicsRayMarch(testRay, 1, size.X/2, out width, out hitPos, out hitObj); 
+                    RayMarchingHelper.PhysicsRayMarch(testRay, 1, size.X/2, out width, out hitPos, out hitObj, caller:this.model); 
 
                     if (width <= this.size.X/2)
                     {
@@ -291,7 +291,7 @@ namespace Raymagic
             }
 
             // maintain height above ground (stairs/steps) 
-            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out hitPos, out hitObj);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out hitPos, out hitObj, caller:this.model);
 
             if ((length < size.Y) && 
                 !((hitObj == map.portalList[0] || hitObj == map.portalList[1]) && ((Portal)hitObj).otherPortal != null))
@@ -342,10 +342,10 @@ namespace Raymagic
         {
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
             //check if the bottom part of the player capsule is touching the ground
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1)*size.X/2, new Vector3(0,0,-1)), 1, -1, out float capsuleLength, out Vector3 _, out Object capsObj);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1)*size.X/2, new Vector3(0,0,-1)), 1, -1, out float capsuleLength, out Vector3 _, out Object capsObj, caller:this.model);
 
             //check directly under player feet
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1), new Vector3(0,0,-1)), 2, -1, out float downLength, out Vector3 hit, out Object obj);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1), new Vector3(0,0,-1)), 2, -1, out float downLength, out Vector3 hit, out Object obj, caller:this.model);
 
             if ((capsuleLength > size.X/2 || downLength > size.X/4) ||
                ((capsObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 

@@ -311,6 +311,17 @@ namespace Raymagic
                     }
                 }
 
+                if (Player.instance.model != caller)
+                {
+                    test = Player.instance.model.SDF(testPos, best.distance, physics:true);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        hitObj = Player.instance.model;
+                        portalHit = false;
+                    }
+                }
+
                 if(best.distance <= stepMinSize)
                 {
                     if(best.distance < 0)
