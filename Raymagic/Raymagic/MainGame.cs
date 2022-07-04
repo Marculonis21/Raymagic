@@ -206,6 +206,9 @@ namespace Raymagic
                     portal.OnFieldEnter();
                 }
             }
+
+            map.Update(gameTime);
+
             base.Update(gameTime);
         }
         

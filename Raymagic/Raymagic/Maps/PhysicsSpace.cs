@@ -22,5 +22,10 @@ namespace Raymagic
         public PhysicsSpace() : this(new List<PhysicsObject>()) 
         {
         }
+
+        public void Update(float dt)
+        {
+            solver.Solve(dt, objects);
+        }
     }
 }

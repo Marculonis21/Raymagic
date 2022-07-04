@@ -28,8 +28,6 @@ namespace Raymagic
             data.topCorner = topCorner;
             data.botCorner = botCorner;
 
-            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(100,100,100), 50, Color.Green));
-
             Plane mainPlaneW = new Plane(new Vector3(0,0,0),
                                          new Vector3(0,0,1),
                                          Color.White,
@@ -142,12 +140,16 @@ namespace Raymagic
                                           BooleanOP.INTERSECT), true);
             data.dynamicMapObjects.Add(ramp);
 
+            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,450,250), 25, Color.Green));
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,300,200), 25, Color.Violet)); */
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(60,200,200), 25, Color.Orange)); */
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,100,200), 25, Color.Aqua)); */
+
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
                                  Color.Gray, selectable:true);
 
             data.staticMapObjects.Add(boxbox);
-
 
             /* Capsule body = new Capsule(new Vector3(400,400,0), */
             /*                         75/2, */ 

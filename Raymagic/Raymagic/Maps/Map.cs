@@ -42,6 +42,15 @@ namespace Raymagic
 
         public static readonly Map instance = new Map();
 
+        public bool enabledUpdate = false;
+        public void Update(GameTime gameTime)
+        {
+            if (enabledUpdate)
+            {
+                physicsSpace.Update(gameTime.ElapsedGameTime.Milliseconds/1000f);
+            }
+        }
+
         public void RegisterMap(string id, MapData data)
         {
             maps.Add(id, data);

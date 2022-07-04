@@ -140,9 +140,9 @@ namespace Raymagic
             }
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
-                this.RotateAbsolute(new Vector3(1,0,0));
+                map.enabledUpdate = true;
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
-                this.RotateAbsolute(new Vector3(1,1,1));
+                map.enabledUpdate = false;
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 

@@ -247,7 +247,7 @@ namespace Raymagic
             return intensity/(Vector3.DistanceSquared(position, light.position));
         }
 
-        public static void PhysicsRayMarch(Ray ray, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj)
+        public static void PhysicsRayMarch(Ray ray, int maxSteps, float stepMinSize, out float length, out Vector3 hit, out Object hitObj, Object caller = null)
         {
             Map map = Map.instance;
             hit = ray.origin;
@@ -298,12 +298,31 @@ namespace Raymagic
                     }
                 }
 
+                foreach(PhysicsObject pObj in map.physicsObjectsList)
+                {
+                    if (pObj == caller) continue;
+
+                    test = pObj.SDF(testPos, best.distance, physics:true);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        hitObj = pObj;
+                        portalHit = false;
+                    }
+                }
+
                 if(best.distance <= stepMinSize)
                 {
                     if(best.distance < 0)
                         length = -1;
                     else
+                    {
                         length = (ray.origin - testPos).Length(); 
+                        if (maxSteps == 1) // collision checks use only one step - diffferent length better
+                        {
+                            length = best.distance;
+                        }
+                    }
 
                     hit = testPos;
                     return;

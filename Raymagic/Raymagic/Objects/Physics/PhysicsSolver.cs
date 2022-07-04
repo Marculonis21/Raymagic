@@ -5,9 +5,9 @@ namespace Raymagic
     public class PhysicsSolver
     {
         List<PhysicsObject> objects;
-        Vector3 gravity = new Vector3(0,0,-1);
+        Vector3 gravity = new Vector3(0,0,-2500f); // weird af gravity values
 
-        public void Update(float dt, List<PhysicsObject> objects)
+        public void Solve(float dt, List<PhysicsObject> objects)
         {
             this.objects = objects;
 
@@ -29,6 +29,7 @@ namespace Raymagic
             foreach (var obj in objects)
             {
                 obj.UpdatePosition(dt);
+                Informer.instance.AddInfo("sadfasdfasdfadsfasdf", obj.Position.ToString());
             }
         }
 
@@ -36,9 +37,17 @@ namespace Raymagic
         {
             foreach (var obj in objects)
             {
-                if (obj.FindCollision(out Vector3 hitAxis, out float length))
+                if (obj.FindCollision(out Vector3 hitAxis, out float length, out Object collisionObject))
                 {
-                    obj.Translate(hitAxis*length);
+                    if (objects.Contains(collisionObject))
+                    {
+                        obj.Translate(hitAxis*length);
+                        collisionObject.Translate(-hitAxis*length);
+                    }
+                    else
+                    {
+                        obj.Translate(hitAxis*length);
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ namespace Raymagic
 
         public PhysicsObject(Vector3 position, float size, Color color) : base(position, size, color, false)
         {
+            this.oldPosition = position;
             this.size = size;
         }
         
@@ -34,16 +35,17 @@ namespace Raymagic
             this.acceleration = new Vector3();
         }
 
-        public bool FindCollision(out Vector3 axis, out float length)
+        public bool FindCollision(out Vector3 axis, out float length, out Object hitObj)
         {
             Ray testRay = new Ray(this.Position, new Vector3());
             axis = new Vector3();
 
-            RayMarchingHelper.PhysicsRayMarch(testRay, 1, size, out length, out Vector3 hit, out Object hitObj);
+            RayMarchingHelper.PhysicsRayMarch(testRay, 1, size, out length, out Vector3 hit, out hitObj, caller:this);
 
             if (length <= this.size)
             {
                 axis = hitObj.SDF_normal(hit);
+                length = size - length;
                 return true;
             }
             else
