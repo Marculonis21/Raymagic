@@ -142,10 +142,14 @@ namespace Raymagic
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
             {
                 map.enabledUpdate = true;
+                /* map.portalMomentumConstant += 0.0001f; */
+                /* Console.WriteLine(map.portalMomentumConstant); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
             {
                 map.enabledUpdate = false;
+                /* map.portalMomentumConstant -= 0.0001f; */
+                /* Console.WriteLine(map.portalMomentumConstant); */
             }
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
@@ -261,37 +265,29 @@ namespace Raymagic
             Vector3 hitPos;
             Object hitObj;
             Ray testRay = new Ray();
-            bool collisionFound = false;
 
             for (int i = 0; i < 4; i++)
             {
-                do
+                switch (i)
                 {
-                    switch (i)
-                    {
-                        case 0: testRay = new Ray(this.position, new Vector3());                                  break;
-                        case 1: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/4, new Vector3());   break;
-                        case 2: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, new Vector3());   break;
-                        case 3: testRay = new Ray(this.position + new Vector3(0,0,-1)*3*size.Y/4, new Vector3()); break;
-                    }
+                    case 0: testRay = new Ray(this.position, new Vector3());                                  break;
+                    case 1: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/4, new Vector3());   break;
+                    case 2: testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, new Vector3());   break;
+                    case 3: testRay = new Ray(this.position + new Vector3(0,0,-1)*3*size.Y/4, new Vector3()); break;
+                }
 
-                    collisionFound = false;
-                    RayMarchingHelper.PhysicsRayMarch(testRay, 1, size.X/2, out width, out hitPos, out hitObj, caller:this.model); 
+                RayMarchingHelper.PhysicsRayMarch(testRay, 1, size.X/2, out width, out hitPos, out hitObj, caller:this.model); 
 
-                    if (width <= this.size.X/2)
-                    {
-                        if ((hitObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
-                            (hitObj == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
+                if (width <= this.size.X/2)
+                {
+                    if ((hitObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
+                        (hitObj == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
 
-                        Vector3 normal = hitObj.SDF_normal(hitPos);
+                    Vector3 normal = hitObj.SDF_normal(hitPos);
 
-                        // walkingSpeed/# of testRays
-                        this.position += normal/2;
-                        collisionFound = true;
-                        /* Console.WriteLine("casd"); */
-                    }
-                    
-                } while (collisionFound);
+                    Console.WriteLine(normal*(this.size.X/2 - width));
+                    this.position += normal*(this.size.X/2 - width);
+                }
             }
 
             // maintain height above ground (stairs/steps) 
@@ -303,45 +299,6 @@ namespace Raymagic
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
         }
-
-        /* void BodyCollider(GameTime gameTime) */
-        /* { */
-        /*     // body side collider */
-        /*     double angle; */
-        /*     Vector3 testDir; */
-        /*     double R_azimuth = rotation.X*Math.PI/180f; */
-        /*     Object obj; */
-        /*     for (int i = 0; i < 12; i++) */
-        /*     { */
-        /*         angle = 2*Math.PI/12 * i; */
-        /*         testDir = new Vector3((float)Math.Cos(R_azimuth+angle), (float)Math.Sin(R_azimuth+angle), 0); */
-        /*         testDir.Normalize(); */
-
-        /*         Ray testRay = new Ray(this.position + new Vector3(0,0,-1)*size.Y/2, testDir); */
-
-        /*         RayMarchingHelper.PhysicsRayMarch(testRay, 5, 0, out float width, out Vector3 hit, out obj); */ 
-
-        /*         if(width <= this.size.X/2) */
-        /*         { */
-        /*             // pass through portals */
-        /*             if ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)return; */
-
-        /*             Vector3 normal = obj.SDF_normal(hit); */
-
-        /*             this.position += normal*3; */
-        /*             return; */
-        /*         } */
-        /*     } */
-
-        /*     // maintain height above ground (stairs/steps) */ 
-        /*     RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out Vector3 _, out obj); */
-        /*     if ((length < size.Y) && !((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null)) */
-        /*     { */
-        /*         this.position += new Vector3(0,0,1)*(size.Y-length); */
-        /*     } */
-
-        /* } */
-
         void FeetCollider(GameTime gameTime)
         {
             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
@@ -349,11 +306,11 @@ namespace Raymagic
             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1)*size.X/2, new Vector3(0,0,-1)), 1, -1, out float capsuleLength, out Vector3 _, out Object capsObj, caller:this.model);
 
             //check directly under player feet
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1), new Vector3(0,0,-1)), 2, -1, out float downLength, out Vector3 hit, out Object obj, caller:this.model);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 1, -1, out float downLength, out Vector3 hit, out Object feetObj, caller:this.model);
 
             if ((capsuleLength > size.X/2 || downLength > size.X/4) ||
-               ((capsObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
-                (capsObj == map.portalList[1] && map.portalList[1].otherPortal != null)))  
+                (capsObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
+                (capsObj == map.portalList[1] && map.portalList[1].otherPortal != null))  
             {
                 grounded = false;
                 float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -365,26 +322,6 @@ namespace Raymagic
                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0);
             }
         }
-
-/*         void FeetCollider(GameTime gameTime) */
-/*         { */
-/*             Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y; */
-/*             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 2, 0, out float length, out Vector3 hit, out Object obj); */
-
-/*             // gravity */
-/*             if ((length > 0) || ((obj == map.portalList[0] || obj == map.portalList[1]) && ((Portal)obj).otherPortal != null) || */
-/*                 (map.portalList[0] != null && map.portalList[0].PosInPortal(feetPos)) || (map.portalList[1] != null && map.portalList[1].PosInPortal(feetPos))) */
-/*             { */
-/*                 this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds; */
-/*                 grounded = false; */
-/*             } */
-/*             else if(!grounded) */
-/*             { */
-/*                 Console.WriteLine("happended"); */
-/*                 grounded = true; */
-/*                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0); */
-/*             } */
-/*         } */
 
         public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)
         {

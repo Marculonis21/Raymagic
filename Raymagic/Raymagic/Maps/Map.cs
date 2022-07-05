@@ -45,6 +45,7 @@ namespace Raymagic
         public static readonly Map instance = new Map();
 
         public bool enabledUpdate = false;
+        public float portalMomentumConstant = 0.96787f;
         public void Update(GameTime gameTime)
         {
             if (enabledUpdate)

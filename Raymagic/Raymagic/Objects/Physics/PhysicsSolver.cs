@@ -6,6 +6,7 @@ namespace Raymagic
     {
         List<PhysicsObject> objects;
         /* Vector3 gravity = new Vector3(0,0,-2500f); // weird af gravity values */
+        Map map = Map.instance;
 
         public void Solve(float dt, List<PhysicsObject> objects)
         {
@@ -45,6 +46,9 @@ namespace Raymagic
             {
                 if (obj.FindCollision(out Vector3 hitAxis, out float length, out Object collisionObject))
                 {
+                    if ((collisionObject == map.portalList[0] && map.portalList[0].otherPortal != null) || 
+                        (collisionObject == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
+
                     if (objects.Contains(collisionObject))
                     {
                         obj.Translate(hitAxis*length);
@@ -65,7 +69,8 @@ namespace Raymagic
                         float N =  Map.instance.gravity * 1;
                         float frictionForce = N*0.15f;
 
-                        Vector3 velDir = Vector3.Normalize(obj.oldVelocity);
+                        Vector3 velDir = Vector3.Normalize(obj.velocity);
+                        if (float.IsNaN(velDir.X)) continue;
                         obj.ApplyForce(-velDir*frictionForce);
                     }
                 }

@@ -77,7 +77,8 @@ namespace Raymagic
                     var newRotK = this.otherPortal.baseChangeMatrixInverse.Solve(rotB);
 
                     // dabble in momentum !!!
-                    var velocityK = objectWatcher[i].velocity * this.normal*1.099f;
+                    /* var velocityK = objectWatcher[i].velocity * this.normal*1.099f; */
+                    var velocityK = objectWatcher[i].velocity * this.normal * Map.instance.portalMomentumConstant;
                     var velB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z));
                     var newVelK = this.otherPortal.baseChangeMatrixInverse.Solve(velB);
 
