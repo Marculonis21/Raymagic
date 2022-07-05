@@ -164,7 +164,7 @@ namespace Raymagic
             if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
             {
 
-                RayMarchingHelper.PhysicsRayMarch(new Ray(player.position, player.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj);
+                RayMarchingHelper.PhysicsRayMarch(new Ray(player.position, player.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:player.model);
                 if (hitObj.IsSelectable)
                 {
                     int type = lPressed ? 0 : 1;
@@ -190,6 +190,7 @@ namespace Raymagic
                 }
                 lPressed = rPressed = false;
             }
+            map.Update(gameTime);
 
             player.Update(gameTime);
 
@@ -206,8 +207,6 @@ namespace Raymagic
                     portal.OnFieldEnter();
                 }
             }
-
-            map.Update(gameTime);
 
             base.Update(gameTime);
         }

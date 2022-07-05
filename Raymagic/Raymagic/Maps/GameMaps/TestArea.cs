@@ -141,7 +141,7 @@ namespace Raymagic
             data.dynamicMapObjects.Add(ramp);
 
             data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,450,250), 25, Color.Green));
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,300,200), 25, Color.Violet)); */
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,200), 25, Color.Violet)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(60,200,200), 25, Color.Orange)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,100,200), 25, Color.Aqua)); */
 

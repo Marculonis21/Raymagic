@@ -35,6 +35,8 @@ namespace Raymagic
 
         public PhysicsSpace physicsSpace;
 
+        public float gravity = 3000f;
+
         private Map()
         {
             maps = new Dictionary<string, MapData>();
@@ -47,7 +49,7 @@ namespace Raymagic
         {
             if (enabledUpdate)
             {
-                physicsSpace.Update(gameTime.ElapsedGameTime.Milliseconds/1000f);
+                physicsSpace.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
         }
 

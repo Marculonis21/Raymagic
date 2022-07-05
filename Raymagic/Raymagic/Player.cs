@@ -18,13 +18,13 @@ namespace Raymagic
         public Vector3 lookDir {get; private set;}
 
         const float walkingSpeed = 2.5f;
-        const float jumpStrength = 0.5f;
+        float jumpStrength = 11f;
         bool grounded = true;
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
 
-        const float gravity = 0.05f;
+        /* const float gravity = 0.05f; */
         public int cursorSize = 10;
 
         Map map = Map.instance;
@@ -140,9 +140,13 @@ namespace Raymagic
             }
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
+            {
                 map.enabledUpdate = true;
+            }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
+            {
                 map.enabledUpdate = false;
+            }
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
@@ -222,7 +226,7 @@ namespace Raymagic
             if(grounded)
             {
                 grounded = false;
-                this.velocity += new Vector3(0,0,1)*jumpStrength*gameTime.ElapsedGameTime.Milliseconds;
+                this.velocity += new Vector3(0,0,1)*jumpStrength;
             }
         }
 
@@ -352,7 +356,8 @@ namespace Raymagic
                 (capsObj == map.portalList[1] && map.portalList[1].otherPortal != null)))  
             {
                 grounded = false;
-                this.velocity += new Vector3(0,0,-1) * gravity*gameTime.ElapsedGameTime.Milliseconds;
+                float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                this.velocity += new Vector3(0,0,-1) * Map.instance.gravity * dt * dt; // falls at the same speed as physics objects
             }
             else if (this.velocity.Z < 0)
             {

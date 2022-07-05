@@ -8,6 +8,7 @@ namespace Raymagic
         
         Vector3 oldPosition;
         Vector3 acceleration;
+        public Vector3 oldVelocity {get; private set;}
         float size;
 
         public PhysicsObject(Vector3 position, float size, Color color) : base(position, size, color, false)
@@ -20,6 +21,7 @@ namespace Raymagic
         {
             Vector3 velocity = this.Position - oldPosition;
             oldPosition = this.Position;
+            oldVelocity = velocity;
             this.Translate(velocity + acceleration * dt * dt);
 
             ClearForces();
