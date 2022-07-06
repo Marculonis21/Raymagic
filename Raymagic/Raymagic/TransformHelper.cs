@@ -54,6 +54,28 @@ namespace Raymagic
             return matrix;
         }
 
+        // https://stackoverflow.com/questions/6721544/circular-rotation-around-an-arbitrary-axis
+        public static Matrix<double> Rotate(Matrix<double> matrix, float angle, Vector3 axis)
+        {
+            float c = (float)Math.Cos(angle*(float)Math.PI/180);
+            float s = (float)Math.Sin(angle*(float)Math.PI/180);
+
+            Vector3.Normalize(axis).Deconstruct(out float uX, out float uY, out float uZ);
+            var uX2 = uX * uX; 
+            var uY2 = uY * uY; 
+            var uZ2 = uZ * uZ; 
+
+            Matrix<double> rotM = Matrix.Create<double>(4,4, new double[] {
+                    c + uX2*(1 - c),      uX*uY*(1 - c) - uZ*s, uX*uZ*(1 - c) + uY*s, 0,
+                    uY*uX*(1 - c) + uZ*s, c + uY2*(1 - c),      uY*uZ*(1 - c) - uX*s, 0,
+                    uZ*uX*(1 - c) - uY*s, uZ*uY*(1 - c) + uX*s, c + uZ2*(1 - c),      0,
+                    0                   , 0                   , 0              ,      1
+                    }, Extreme.Mathematics.MatrixElementOrder.RowMajor);
+
+            matrix *= rotM;
+            return matrix;
+        }
+
         public static double[] GetInverse(Matrix<double> translationMatrix, Matrix<double> rotationMatrix)
         {
             /* return (rotationMatrix * translationMatrix).GetInverse(); */

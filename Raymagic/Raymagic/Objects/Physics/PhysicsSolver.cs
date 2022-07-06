@@ -5,7 +5,6 @@ namespace Raymagic
     public class PhysicsSolver
     {
         List<PhysicsObject> objects;
-        /* Vector3 gravity = new Vector3(0,0,-2500f); // weird af gravity values */
         Map map = Map.instance;
 
         public void Solve(float dt, List<PhysicsObject> objects)
@@ -63,6 +62,8 @@ namespace Raymagic
                     else
                     {
                         obj.Translate(hitAxis*length);
+
+                        obj.UpdateRotation();
                         
                         // touching ground - apply env forces - friction
                         

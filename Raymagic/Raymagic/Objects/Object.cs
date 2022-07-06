@@ -170,6 +170,17 @@ namespace Raymagic
                 obj.Rotate(angle, axis);
             }
         }
+
+        public void Rotate(float angle, Vector3 axis)
+        {
+            this.rotationMatrix = TransformHelper.Rotate(this.rotationMatrix, angle, axis);
+            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+
+            foreach(Object obj in childObjects)
+            {
+                obj.Rotate(angle, axis);
+            }
+        }
         
         protected Vector3 Transform(Vector3 orig)
         {

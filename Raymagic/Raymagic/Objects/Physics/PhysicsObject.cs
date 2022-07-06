@@ -15,13 +15,30 @@ namespace Raymagic
 
         float size;
 
-        public PhysicsObject(Vector3 position, float size, Color color) : base(position, size, color, false)
+        public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1, false)
         {
             this.position = position;
             this.size = size;
 
             this.model = this;
             this.lookDir = new Vector3(1,0,0);
+
+            this.AddChildObject(new Plane(new Vector3(),
+                                          new Vector3(1,0,0),
+                                          Color.Black,
+                                          BooleanOP.INTERSECT), true);
+
+            Sphere sphere2 = new Sphere(new Vector3(), 
+                                        size, 
+                                        color2,
+                                        false);
+
+            sphere2.AddChildObject(new Plane(new Vector3(),
+                                             new Vector3(-1,0,0),
+                                             Color.Black,
+                                             BooleanOP.INTERSECT), true);
+
+            this.AddChildObject(sphere2, true);
         }
         
         public void UpdatePosition(float dt)
@@ -32,6 +49,22 @@ namespace Raymagic
             this.Translate(newVelocity + acceleration * dt * dt);
 
             ClearForces();
+        }
+
+        public void UpdateRotation()
+        {
+            var movementDir = Vector3.Normalize(velocity);
+            var upVector = new Vector3(0,0,1);
+            if (!float.IsNaN(movementDir.X))
+            {
+                var rightDir = Vector3.Normalize(Vector3.Cross(movementDir, upVector));
+                if (!float.IsNaN(rightDir.X))
+                {
+                    float angle = (velocity.Length() / this.size) * (float)(180f / Math.PI);
+
+                    this.Rotate(angle, rightDir);
+                }
+            }
         }
 
         public void ApplyForce(Vector3 force)
@@ -70,7 +103,7 @@ namespace Raymagic
         public void TranslateAbsolute(Vector3 newPosition)
         {
             this.position = newPosition;
-            this.TranslateAbsolute(newPosition,true);
+            this.TranslateAbsolute(newPosition, true);
         }
 
         public void SetVelocity(Vector3 newVelocity)
@@ -79,8 +112,15 @@ namespace Raymagic
             // to change velocity you need to properly change last pos after
             // translation
         
-            Console.WriteLine(newVelocity);
             this.position += -newVelocity;
+        }
+
+        public void Destroy()
+        {
+            // maybe 
+            
+            Map.instance.portalableObjectList.Remove(this);
+            Map.instance.physicsObjectsList.Remove(this);
         }
     }
 }
