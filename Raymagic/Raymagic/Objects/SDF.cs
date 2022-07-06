@@ -122,7 +122,6 @@ namespace Raymagic
 
         public static float Sphere(Vector3 test, float size)
         {
-            /* return (center - test).Length() - size; */
             return (test).Length() - size;
         }
 
