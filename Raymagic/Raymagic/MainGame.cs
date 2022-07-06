@@ -44,25 +44,6 @@ namespace Raymagic
             map.LoadMaps();
             UserInit();
 
-            // DISTANCE MAP SLICE 
-            /* Texture2D texture1 = new Texture2D(_graphics.GraphicsDevice, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
-            /* Stream stream1 = File.Create("./DistanceMapTestTextures/texture.png"); */
-
-            /* List<Color> colorList1 = new List<Color>(); */
-            /* for (int y = 0; y < texture1.Height; y++) */
-            /* { */
-            /*     for (int x = 0; x < texture1.Width; x++) */
-            /*     { */
-            /*         int bw = (int)Math.Clamp(map.distanceMap[x,y,50].distance, 0,255); */
-            /*         colorList1.Add(new Color(bw,bw,bw)); */
-
-            /*         /1* colorList.Add(map.distanceMap[x,y,100].color); *1/ */
-            /*     } */
-            /* } */
-            /* texture1.SetData<Color>(colorList1.ToArray()); */
-            /* texture1.SaveAsPng(stream1, map.distanceMap.GetLength(0), map.distanceMap.GetLength(1)); */
-            /* stream1.Close(); */
-
             player = Player.instance;
             map.portalableObjectList.Add(player);
             map.portalableObjectList.AddRange(map.physicsObjectsList);
@@ -171,23 +152,6 @@ namespace Raymagic
                     int type = lPressed ? 0 : 1;
                     map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
                     Console.WriteLine("added");
-                    /* foreach(Object dObj in map.dynamicObjectList) */
-                    /* { */
-                    /*     if(hitObj == dObj) */
-                    /*     { */
-                    /*         outObj = hitObj; */
-                    /*         Console.WriteLine(outObj.Info); */
-                    /*     } */
-                    /* } */
-                    /* map.infoObjectList.Add(new Sphere(hit, 10, Color.Red, false)); */
-
-                    /* if(outObj != null) */
-                    /* { */
-                    /*     if(lPressed) */
-                    /*         outObj.DisplayBoundingBox(); */
-                    /*     if(rPressed) */
-                    /*         outObj.HideBoundingBox(); */
-                    /* } */
                 }
                 lPressed = rPressed = false;
             }
