@@ -280,12 +280,10 @@ namespace Raymagic
 
                 if (width <= this.size.X/2)
                 {
-                    if ((hitObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
-                        (hitObj == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
+                    if (HitObjectIsActivePortal(hitObj))  break;
 
                     Vector3 normal = hitObj.SDF_normal(hitPos);
 
-                    Console.WriteLine(normal*(this.size.X/2 - width));
                     this.position += normal*(this.size.X/2 - width);
                 }
             }
@@ -294,23 +292,30 @@ namespace Raymagic
             RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out hitPos, out hitObj, caller:this.model);
 
             if ((length < size.Y) && 
-                !((hitObj == map.portalList[0] || hitObj == map.portalList[1]) && ((Portal)hitObj).otherPortal != null))
+                !(HitObjectIsActivePortal(hitObj)))
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
         }
         void FeetCollider(GameTime gameTime)
         {
-            Vector3 feetPos = this.position + new Vector3(0,0,-1)*size.Y;
-            //check if the bottom part of the player capsule is touching the ground
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos + new Vector3(0,0,1)*size.X/2, new Vector3(0,0,-1)), 1, -1, out float capsuleLength, out Vector3 _, out Object capsObj, caller:this.model);
+            Vector3 headPos = this.position;
+            Vector3 feetPos = headPos + new Vector3(0,0,-1)*size.Y;
+            Vector3 capsuleBotPos = feetPos + new Vector3(0,0,1)*size.X/2;
+
+            // check from head down - size of the body, if collides with portal let him fall
+            RayMarchingHelper.PhysicsRayMarch(new Ray(headPos, new Vector3(0,0,-1)), 5, size.X/2, out float fromHeadLen, out Vector3 _, out Object hObj, caller:this.model);
 
             //check directly under player feet
-            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 1, -1, out float downLength, out Vector3 hit, out Object feetObj, caller:this.model);
+            RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 1, -1, out float fromFeetLen, out Vector3 _, out Object fObj, caller:this.model);
 
-            if ((capsuleLength > size.X/2 || downLength > size.X/4) ||
-                (capsObj == map.portalList[0] && map.portalList[0].otherPortal != null) || 
-                (capsObj == map.portalList[1] && map.portalList[1].otherPortal != null))  
+            RayMarchingHelper.PhysicsRayMarch(new Ray(capsuleBotPos, new Vector3(0,0,-1)), 1, -1, out float fromCapsBot, out Vector3 _, out Object cObj, caller:this.model);
+
+
+            if ((fromFeetLen > 0 && fromCapsBot > size.X/2) ||
+                (fromFeetLen > size.X/4 && fromCapsBot < size.X/2) ||
+                (fromFeetLen < 0 && HitObjectIsActivePortal(hObj)))
+                                  
             {
                 grounded = false;
                 float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -321,6 +326,12 @@ namespace Raymagic
                 grounded = true;
                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0);
             }
+        }
+
+        bool HitObjectIsActivePortal(Object hit)
+        {
+            return ((hit == map.portalList[0] && map.portalList[0].otherPortal != null) ||
+                    (hit == map.portalList[1] && map.portalList[1].otherPortal != null));
         }
 
         public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)
