@@ -4,8 +4,9 @@ namespace Raymagic
 {
     public class PhysicsObject : Sphere, IPortalable
     {
+        public bool isTrigger {get; protected set;}
+
         // Physics object based on Verlet Integration
-        
         Vector3 acceleration;
         public Vector3 velocity {get; private set;}
 
@@ -13,7 +14,7 @@ namespace Raymagic
         public Vector3 lookDir {get; private set;}
         public Object model {get; private set;}
 
-        float size;
+        public float size {get; private set;}
 
         public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1, false)
         {
@@ -40,7 +41,7 @@ namespace Raymagic
 
             this.AddChildObject(sphere2, true);
         }
-        
+
         public void UpdatePosition(float dt)
         {
             Vector3 newVelocity = this.Position - position;
@@ -118,7 +119,6 @@ namespace Raymagic
         public void Destroy()
         {
             // maybe 
-            
             Map.instance.portalableObjectList.Remove(this);
             Map.instance.physicsObjectsList.Remove(this);
         }

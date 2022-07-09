@@ -27,6 +27,8 @@ namespace Raymagic
             var gravityVector = Map.instance.gravity*new Vector3(0,0,-1);
             foreach (var obj in objects)
             {
+                if (obj.isTrigger) continue;
+
                 obj.ApplyForce(gravityVector);
             }
         }
@@ -35,6 +37,8 @@ namespace Raymagic
         {
             foreach (var obj in objects)
             {
+                if (obj.isTrigger) continue;
+
                 obj.UpdatePosition(dt);
             }
         }
@@ -43,6 +47,12 @@ namespace Raymagic
         {
             foreach (var obj in objects)
             {
+                if (obj.isTrigger)
+                {
+                    ((PhysicsTrigger)obj).FindCollision(out Vector3 _, out float _, out Object _);
+                    continue;
+                }
+
                 if (obj.FindCollision(out Vector3 hitAxis, out float length, out Object collisionObject))
                 {
                     if ((collisionObject == map.portalList[0] && map.portalList[0].otherPortal != null) || 
