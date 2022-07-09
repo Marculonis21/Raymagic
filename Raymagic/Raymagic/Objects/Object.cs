@@ -76,14 +76,14 @@ namespace Raymagic
             childObjects.Add(child);
         }
 
-        public virtual SDFout SDF(Vector3 testPos, float minDist, bool useBounding=true, bool physics=false)
+        public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
             SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
 
             foreach (Object child in childObjects)
             {
                 // need to pass the original (not transformed) testPos
-                var childOut = child.SDF(testPos, minDist, useBounding, physics);
+                var childOut = child.SDF(testPos, minDist, physics);
                 var _out = SDFs.Combine(current.distance, childOut.distance, current.color, childOut.color, child.booleanOP, child.booleanStrength);
 
                 current = _out;
