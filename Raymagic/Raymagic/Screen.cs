@@ -14,6 +14,8 @@ namespace Raymagic
         Point screenDimensions;
         int detailSize;
 
+        public bool DrawPhase {get; private set;}
+
         Stopwatch watch;
 
         private Screen() {} 
@@ -47,8 +49,10 @@ namespace Raymagic
         }
 
         Color[,] colors;
+
         public void DrawGame()
         {
+            this.DrawPhase = true;
             RayMarchingPhase();
             Informer.instance.AddInfo("debug raysPhase", $" ray phase: {watch.ElapsedMilliseconds}");
 
@@ -57,6 +61,7 @@ namespace Raymagic
             Informer.instance.AddInfo("debug drawPhase", $" draw phase: {watch.ElapsedMilliseconds}");
 
             Informer.instance.AddInfo("details", $"details: {detailSize}");
+            this.DrawPhase = false;
         }
 
         private void RayMarchingPhase()
