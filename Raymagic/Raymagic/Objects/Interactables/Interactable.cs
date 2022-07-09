@@ -8,7 +8,10 @@ namespace Raymagic
     {
         public List<Object> modelStates {get; protected set;}
         public int state {get; protected set;}
-        public OnStateChange stateChange;
+        public event OnStateChange stateChangeEvent;
+
+        protected bool playerControllable = false;
+        protected float controlDistance = float.MaxValue;
 
         public Interactable(Vector3 position) : base(position, Color.Black, false, new Vector3(), null, BooleanOP.NONE, 0, false)
         {
@@ -32,7 +35,18 @@ namespace Raymagic
         {
             state = (state + 1) % modelStates.Count;
             
-            stateChange?.Invoke(state);
+            stateChangeEvent?.Invoke(state);
+        }
+
+        public static void PlayerInteract(Vector3 playerPos)
+        {
+            foreach (var obj in Map.instance.interactableObjectList)
+            {
+                if (obj.playerControllable && Vector3.Distance(playerPos, obj.Position) < obj.controlDistance)
+                {
+                    obj.Interact();
+                }
+            }
         }
     }
 }

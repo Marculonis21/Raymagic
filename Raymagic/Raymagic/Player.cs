@@ -24,7 +24,8 @@ namespace Raymagic
         public bool GodMode = false;
         Vector3 preGodPositionCache;
 
-        /* const float gravity = 0.05f; */
+        bool interactButtonDown = false;
+
         public int cursorSize = 10;
 
         Map map = Map.instance;
@@ -44,6 +45,7 @@ namespace Raymagic
             playerControls.Add("left_move",     Keys.A);
             playerControls.Add("right_move",    Keys.D);
             playerControls.Add("jump",          Keys.Space);
+            playerControls.Add("interact",      Keys.E);
             playerControls.Add("playerMode",    Keys.F1);
             playerControls.Add("godMode",       Keys.F2);
             playerControls.Add("god_up",        Keys.Space);
@@ -144,11 +146,21 @@ namespace Raymagic
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
             {
                 /* map.enabledUpdate = true; */
-                map.interactableObjectList[0].Interact();
+                /* map.interactableObjectList[0].Interact(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
             {
-                map.interactableObjectList[0].Interact();
+                /* map.interactableObjectList[0].Interact(); */
+            }
+
+            if (Keyboard.GetState().IsKeyDown(playerControls["interact"]) && !this.interactButtonDown)
+            {
+                this.interactButtonDown = true;
+                Interactable.PlayerInteract(this.position);
+            }
+            if (Keyboard.GetState().IsKeyUp(playerControls["interact"]))
+            {
+                this.interactButtonDown = false;
             }
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));

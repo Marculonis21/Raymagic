@@ -6,6 +6,9 @@ namespace Raymagic
     {
         public Button(Vector3 position, Vector3 facing) : base(position)
         {
+            this.playerControllable = true;
+            this.controlDistance = 60;
+
             if (facing.Z != 0)
                 throw new Exception("Unable to make this kind of button - facing Z");
             // stage 1
@@ -32,11 +35,12 @@ namespace Raymagic
 
             modelStates.Add(bBase2);
 
-            this.boundingBox = new Box(position, 
-                                       new Vector3(12,12,30),
+            this.boundingBoxSize = new Vector3(12,12,50);
+
+            this.boundingBox = new Box(position + new Vector3(0,0,-25), 
+                                       this.boundingBoxSize,
                                        Color.Black);
 
-            this.boundingBoxSize = new Vector3(12,12,30);
         }
 
         public override void Interact()
