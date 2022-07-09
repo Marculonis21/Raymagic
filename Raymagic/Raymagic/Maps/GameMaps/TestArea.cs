@@ -140,7 +140,10 @@ namespace Raymagic
                                           BooleanOP.INTERSECT), true);
             data.dynamicMapObjects.Add(ramp);
 
-            data.interactableObjectList.Add(new Button(new Vector3(200,200,50), new Vector3(0, -1, 0)));
+            Button button = new Button(new Vector3(200,200,50), new Vector3(0, -1, 0));
+            button.stateChangeEvent += MainGame.TestMethod;
+            data.interactableObjectList.Add(button);
+
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,450,250), 25, Color.Green, Color.Gray)); */
             /* data.physicsMapObjects.Add(new PhysicsTrigger(new Vector3(100,100,100), 100)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,200), 25, Color.Violet)); */

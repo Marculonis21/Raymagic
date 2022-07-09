@@ -47,16 +47,14 @@ namespace Raymagic
 
             player = Player.instance;
 
-            /* ((PhysicsTrigger)(map.physicsObjectsList[1])).onCollisionEvent += Test; */
-
             base.Initialize();
 
             GC.Collect();
         }
 
-        protected void Test(Object obj)
+        public static void TestMethod(int state)
         {
-            Console.WriteLine("Triggered " + obj.ToString());
+            Console.WriteLine("Triggered " + state.ToString());
         }
 
         protected override void LoadContent()
