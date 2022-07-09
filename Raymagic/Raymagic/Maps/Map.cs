@@ -27,6 +27,7 @@ namespace Raymagic
         public List<Object> infoObjectList = new List<Object>();
         public List<IPortalable> portalableObjectList = new List<IPortalable>();
         public List<PhysicsObject> physicsObjectsList = new List<PhysicsObject>();
+        public List<Interactable> interactableObjectList = new List<Interactable>();
 
         public List<Light> lightList = new List<Light>();
         public List<Portal> portalList = new List<Portal> {null, null}; 
@@ -72,6 +73,8 @@ namespace Raymagic
             this.staticObjectList = data.staticMapObjects;
             this.dynamicObjectList = data.dynamicMapObjects;
             this.physicsObjectsList = data.physicsMapObjects;
+            this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
+            this.interactableObjectList = data.interactableObjectList;
             this.lightList = data.mapLights;
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);

@@ -69,6 +69,8 @@ namespace Raymagic
                                              booleanOP: BooleanOP.INTERSECT), true);
 
             this.model.AddChildObject(topPart, true);
+
+            map.portalableObjectList.Add(this);
         }
 
         public static readonly Player instance = new Player();
@@ -141,15 +143,12 @@ namespace Raymagic
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
             {
-                map.enabledUpdate = true;
-                /* map.portalMomentumConstant += 0.0001f; */
-                /* Console.WriteLine(map.portalMomentumConstant); */
+                /* map.enabledUpdate = true; */
+                map.interactableObjectList[0].Interact();
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
             {
-                map.enabledUpdate = false;
-                /* map.portalMomentumConstant -= 0.0001f; */
-                /* Console.WriteLine(map.portalMomentumConstant); */
+                map.interactableObjectList[0].Interact();
             }
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));

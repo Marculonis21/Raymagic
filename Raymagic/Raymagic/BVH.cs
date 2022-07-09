@@ -22,6 +22,8 @@ namespace Raymagic
         public void BuildBVHDownUp()
         {
             List<Object> dList = new List<Object>(Map.instance.dynamicObjectList);
+            dList.AddRange(Map.instance.interactableObjectList);
+
             if(dList.Count == 0) return;
 
             List<BVHNode> tmpNodes = new List<BVHNode>();
@@ -35,11 +37,11 @@ namespace Raymagic
                 Object obj1 = dList[0];
                 dList.Remove(obj1);
 
-                if(dList.Count == 0)
+                if(dList.Count == 0) // if only 1 object -> single leaf
                 {
                     tmpNodes.Add(new BVHNode(obj1));
                 }
-                else if(dList.Count == 1)
+                else if(dList.Count == 1) // only 2 objects -> root -> (L,R):(n1,n2)
                 {
                     Object obj2 = dList[0];
                     dList.Remove(obj2);
@@ -49,7 +51,7 @@ namespace Raymagic
 
                     tmpNodes.Add(new BVHNode(n1,n2));
                 }
-                else
+                else // more objects -> choose closest to obj1 -> root -> (L,R):(n1,n2)
                 {
                     Object obj2 = null;
                     float distanceRecord = float.MaxValue;
@@ -71,7 +73,7 @@ namespace Raymagic
                 }
             }
 
-            // last node is root left
+            // until there is only one node
             while(tmpNodes.Count > 1)
             {
                 BVHNode bestN1 = null;
@@ -79,7 +81,7 @@ namespace Raymagic
                 float distanceRecord = float.MaxValue;
                 float _distance;
 
-                foreach (var n1 in tmpNodes)
+                foreach (var n1 in tmpNodes) // find two closest nodes
                 {
                     foreach (var n2 in tmpNodes)
                     {
@@ -98,10 +100,10 @@ namespace Raymagic
                 tmpNodes.Remove(bestN1);
                 tmpNodes.Remove(bestN2);
 
-                tmpNodes.Add(new BVHNode(bestN1,bestN2));
+                tmpNodes.Add(new BVHNode(bestN1,bestN2)); // create new node with those two as child nodes
             }
 
-            this.root = tmpNodes[0];
+            this.root = tmpNodes[0]; // root is the last node
 
             sw.Stop();
             Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");

@@ -93,6 +93,8 @@ namespace Raymagic
 
                 foreach(var obj in map.physicsObjectsList)
                 {
+                    if (obj.isTrigger) continue;
+
                     test = obj.SDF(testPos, best.distance);
                     if(test.distance < best.distance)
                     {
@@ -101,6 +103,17 @@ namespace Raymagic
                         type = ObjHitType.Dynamic;
                     }
                 }
+
+                /* foreach(var obj in map.interactableObjectList) */
+                /* { */
+                /*     test = obj.SDF(testPos, best.distance); */
+                /*     if(test.distance < best.distance) */
+                /*     { */
+                /*         best = test; */
+                /*         bestObj = obj; */
+                /*         type = ObjHitType.Dynamic; */
+                /*     } */
+                /* } */
 
                 foreach(Object iObj in map.infoObjectList)
                 {
@@ -220,12 +233,23 @@ namespace Raymagic
 
                 foreach(var obj in map.physicsObjectsList)
                 {
+                    if (obj.isTrigger) continue;
+
                     test = obj.SDF(testPos, best.distance);
                     if(test.distance < best.distance)
                     {
                         best = test;
                     }
                 }
+
+                /* foreach(var obj in map.interactableObjectList) */
+                /* { */
+                /*     test = obj.SDF(testPos, best.distance); */
+                /*     if(test.distance < best.distance) */
+                /*     { */
+                /*         best = test; */
+                /*     } */
+                /* } */
 
                 float lightDst = light.DistanceFrom(testPos);
                 if(lightDst < best.distance)
@@ -287,20 +311,17 @@ namespace Raymagic
                     }
                 }
 
-                foreach(Object dObj in map.dynamicObjectList)
+                test = map.BVH.Test(testPos, best.distance, out Object dObj);
+                if(test.distance < best.distance)
                 {
-                    test = dObj.SDF(testPos, best.distance, physics:true);
-                    if(test.distance < best.distance)
-                    {
-                        best = test;
-                        hitObj = dObj;
-                        portalHit = false;
-                    }
+                    best = test;
+                    hitObj = dObj;
+                    portalHit = false;
                 }
 
                 foreach(PhysicsObject pObj in map.physicsObjectsList)
                 {
-                    if (pObj == caller) continue;
+                    if (pObj == caller || pObj.isTrigger) continue;
 
                     test = pObj.SDF(testPos, best.distance, physics:true);
                     if(test.distance < best.distance)

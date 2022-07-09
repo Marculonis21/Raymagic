@@ -49,32 +49,43 @@ namespace Raymagic
         {
             obj = null;
 
-            SDFout test;
-            if(this.isLeaf)
+            // test node bounding box
+            SDFout test = this.boundingBox.SDF(testPos, minDist, false);
+            if (test.distance < minDist)
             {
-                test = this.boundingBox.SDF(testPos, minDist, false, false);
-                // test the object bounding box
-                if(test.distance < minDist)
+                // if bounding box collided try the actuall node
+                if(this.isLeaf) // for leaf nodes
                 {
-                    // if bounding box collided try the actuall object SDF
-                    SDFout objTest = this.obj.SDF(testPos, minDist, false, false);
+                    SDFout objTest;
+                    if (obj is Interactable)
+                    {
+                        objTest = (obj as Interactable).SDF(testPos, minDist, false);
+                    }
+                    else
+                    {
+                        objTest = this.obj.SDF(testPos, minDist, false);
+                    }
 
                     if(objTest.distance < minDist)
                     {
-                        obj = this.obj;
+                        if (obj is Interactable)
+                        {
+                            var _obj = obj as Interactable;
+                            obj = _obj.modelStates[_obj.state];
+                        }
+                        else
+                        {
+                            obj = this.obj;
+                        }
                         return objTest;
                     }
                 }
-            }
-            else
-            {
-                test = this.boundingBox.SDF(testPos, minDist, false, false);
-                if(test.distance < minDist)
+                else // for parent node
                 {
                     SDFout lTest = LEFT.Test(testPos, minDist, out Object lObj);
                     SDFout rTest = RIGHT.Test(testPos, minDist, out Object rObj);
 
-                    // both of them will improve MIN - choose the best one
+                    // both of them will improve minDist - choose the best one
                     if(lTest.distance < minDist && rTest.distance < minDist)
                     {
                         if(lTest.distance < rTest.distance)
@@ -88,19 +99,19 @@ namespace Raymagic
                             return rTest;
                         }
                     }
-                    // only left will improve MIN
+                    // only left will improve minDist
                     else if(lTest.distance < minDist && rTest.distance >= minDist)
                     {
                         obj = lObj;
                         return lTest;
                     }
-                    // only right
+                    // only right will improve
                     else if(rTest.distance < minDist && lTest.distance >= minDist)
                     {
                         obj = rObj;
                         return rTest;
                     }
-                    // non of them will - return (mindist + 1 OR something big) because we didnt
+                    // non of them will improve - return (mindist + 1 OR something big) because we didnt
                     // find any wanted sdf collision
                 }
             }

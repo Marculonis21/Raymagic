@@ -8,6 +8,7 @@ namespace Raymagic
         public List<Object> staticMapObjects = new List<Object>();
         public List<Object> dynamicMapObjects = new List<Object>();
         public List<PhysicsObject> physicsMapObjects = new List<PhysicsObject>();
+        public List<Interactable> interactableObjectList = new List<Interactable>();
         public List<Light> mapLights = new List<Light>();
         public Vector3 playerSpawn;
 
