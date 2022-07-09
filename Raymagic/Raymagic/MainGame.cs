@@ -42,14 +42,21 @@ namespace Raymagic
 
             map = Map.instance;
             map.LoadMaps();
+
             UserInit();
 
             player = Player.instance;
-            map.portalableObjectList.Add(player);
-            map.portalableObjectList.AddRange(map.physicsObjectsList);
+
+            /* ((PhysicsTrigger)(map.physicsObjectsList[1])).onCollisionEvent += Test; */
+
             base.Initialize();
 
             GC.Collect();
+        }
+
+        protected void Test(Object obj)
+        {
+            Console.WriteLine("Triggered " + obj.ToString());
         }
 
         protected override void LoadContent()
