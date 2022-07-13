@@ -45,7 +45,7 @@ namespace Raymagic
 
         public static readonly Map instance = new Map();
 
-        public bool enabledUpdate = false;
+        public bool enabledUpdate = true;
         public float portalMomentumConstant = 0.96787f;
         public void Update(GameTime gameTime)
         {
@@ -62,8 +62,9 @@ namespace Raymagic
 
         public void LoadMaps()
         {
-            new BigRoom();
+            /* new BigRoom(); */
             new TestArea();
+            new Modelling();
         }
 
         public void SetMap(string id)
@@ -76,6 +77,11 @@ namespace Raymagic
             this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
             this.interactableObjectList = data.interactableObjectList;
             this.lightList = data.mapLights;
+
+            foreach (var item in interactableObjectList)
+            {
+                item.ObjectSetup();
+            }
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);
 
@@ -169,8 +175,7 @@ namespace Raymagic
 
         public Vector3 GetPlayerStart()
         {
-            Vector3 spawn = data.playerSpawn;
-            return new Vector3(spawn.X*100, spawn.Y*100, spawn.Z*100);
+            return data.playerSpawn;
         }
         
         // SERIALIZATION

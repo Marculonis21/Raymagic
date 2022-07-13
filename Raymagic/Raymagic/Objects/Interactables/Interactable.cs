@@ -2,13 +2,14 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public delegate void OnStateChange(int state);
+    public delegate void OnStateChangeEvent(Interactable obj, int state);
 
-    public class Interactable : Object
+    public abstract class Interactable : Object
     {
         public List<Object> modelStates {get; protected set;}
         public int state {get; protected set;}
-        public event OnStateChange stateChangeEvent;
+        public int stateCount {get; protected set;}
+        public event OnStateChangeEvent stateChangeEvent;
 
         protected bool playerControllable = false;
         protected float controlDistance = float.MaxValue;
@@ -17,9 +18,12 @@ namespace Raymagic
         {
             this.modelStates = new List<Object>();
             this.state = 0;
+            this.stateCount = 0;
             
             // !! have to create boudning box for the object !!
         }
+
+        public abstract void ObjectSetup();
 
         public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
@@ -33,10 +37,17 @@ namespace Raymagic
 
         public virtual void Interact()
         {
-            state = (state + 1) % modelStates.Count;
+            state = (state + 1) % stateCount;
             
-            stateChangeEvent?.Invoke(state);
+            OnStateChange(this, state);
         }
+
+        protected virtual void OnStateChange(Interactable obj, int state)
+        {
+            stateChangeEvent?.Invoke(obj, state);
+        }
+
+        public virtual void EventListener(Interactable obj, int state) { }
 
         public static void PlayerInteract(Vector3 playerPos)
         {

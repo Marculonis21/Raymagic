@@ -145,11 +145,16 @@ namespace Raymagic
 
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
             {
+                /* map.dynamicObjectList[0].childObjects[0].booleanStrength++; */
+                /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
                 /* map.enabledUpdate = true; */
                 /* map.interactableObjectList[0].Interact(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
             {
+                /* map.dynamicObjectList[0].childObjects[0].booleanStrength--; */
+                /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
+
                 /* map.interactableObjectList[0].Interact(); */
             }
 
@@ -308,11 +313,13 @@ namespace Raymagic
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
         }
+        public Vector3 feetPos;
+        public Vector3 capsuleBotPos;
         void FeetCollider(GameTime gameTime)
         {
             Vector3 headPos = this.position;
-            Vector3 feetPos = headPos + new Vector3(0,0,-1)*size.Y;
-            Vector3 capsuleBotPos = feetPos + new Vector3(0,0,1)*size.X/2;
+            this.feetPos = headPos + new Vector3(0,0,-1)*size.Y;
+            this.capsuleBotPos = feetPos + new Vector3(0,0,1)*size.X/2;
 
             // check from head down - size of the body, if collides with portal let him fall
             RayMarchingHelper.PhysicsRayMarch(new Ray(headPos, new Vector3(0,0,-1)), 5, size.X/2, out float fromHeadLen, out Vector3 _, out Object hObj, caller:this.model);
@@ -321,7 +328,6 @@ namespace Raymagic
             RayMarchingHelper.PhysicsRayMarch(new Ray(feetPos, new Vector3(0,0,-1)), 1, -1, out float fromFeetLen, out Vector3 _, out Object fObj, caller:this.model);
 
             RayMarchingHelper.PhysicsRayMarch(new Ray(capsuleBotPos, new Vector3(0,0,-1)), 1, -1, out float fromCapsBot, out Vector3 _, out Object cObj, caller:this.model);
-
 
             if ((fromFeetLen > 0 && fromCapsBot > size.X/2) ||
                 (fromFeetLen > size.X/4 && fromCapsBot < size.X/2) ||

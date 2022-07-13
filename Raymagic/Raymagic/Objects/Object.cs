@@ -83,6 +83,7 @@ namespace Raymagic
             foreach (Object child in childObjects)
             {
                 // need to pass the original (not transformed) testPos
+                
                 var childOut = child.SDF(testPos, minDist, physics);
                 var _out = SDFs.Combine(current.distance, childOut.distance, current.color, childOut.color, child.booleanOP, child.booleanStrength);
 
@@ -143,9 +144,12 @@ namespace Raymagic
             this.translationMatrix = TransformHelper.Translate(translationMatrix, newPosition);
             this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
 
-            foreach(Object obj in childObjects)
+            if (propagateToChildren)
             {
-                obj.TranslateAbsolute(newPosition+obj.childRelativePos, propagateToChildren);
+                foreach(Object obj in childObjects)
+                {
+                    obj.TranslateAbsolute(newPosition+obj.childRelativePos, propagateToChildren);
+                }
             }
         }
 
@@ -154,9 +158,12 @@ namespace Raymagic
             this.translationMatrix = TransformHelper.Translate(translationMatrix, translation);
             this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
 
-            foreach(Object obj in childObjects)
+            if (propagateToChildren)
             {
-                obj.Translate(translation, propagateToChildren);
+                foreach(Object obj in childObjects)
+                {
+                    obj.Translate(translation, propagateToChildren);
+                }
             }
         }
 

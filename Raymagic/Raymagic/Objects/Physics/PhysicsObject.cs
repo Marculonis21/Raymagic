@@ -18,6 +18,8 @@ namespace Raymagic
 
         public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1, false)
         {
+            this.isTrigger = false;
+
             this.position = position;
             this.size = size;
 

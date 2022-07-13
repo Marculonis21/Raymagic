@@ -36,6 +36,10 @@ namespace Raymagic
             {
                 Vector3 coords = testPos - map.mapOrigin;
 
+                SDFout test;
+                SDFout best = new SDFout(length, color);
+                ObjHitType type = ObjHitType.Static;
+
                 if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
                    (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
                    (int)(coords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
@@ -43,14 +47,14 @@ namespace Raymagic
                    (int)(coords.Y/map.distanceMapDetail) < 0 ||
                    (int)(coords.Z/map.distanceMapDetail) < 0)
                 {
-                    return;
+                }
+                else
+                {
+                    best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                           (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                           (int)Math.Abs(coords.Z/map.distanceMapDetail)];
                 }
 
-                ObjHitType type = ObjHitType.Static;
-                SDFout test;
-                SDFout best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
-                                              (int)Math.Abs(coords.Y/map.distanceMapDetail),
-                                              (int)Math.Abs(coords.Z/map.distanceMapDetail)];
                 if (depth < 5)
                 {
                     foreach(Portal portal in map.portalList)
@@ -72,7 +76,7 @@ namespace Raymagic
                 }
 
                 Object bestObj = null;
-                test = map.BVH.Test(testPos, best.distance, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, false, out Object dObj);
                 if(test.distance < best.distance)
                 {
                     best = test;
@@ -103,17 +107,6 @@ namespace Raymagic
                         type = ObjHitType.Dynamic;
                     }
                 }
-
-                /* foreach(var obj in map.interactableObjectList) */
-                /* { */
-                /*     test = obj.SDF(testPos, best.distance); */
-                /*     if(test.distance < best.distance) */
-                /*     { */
-                /*         best = test; */
-                /*         bestObj = obj; */
-                /*         type = ObjHitType.Dynamic; */
-                /*     } */
-                /* } */
 
                 foreach(Object iObj in map.infoObjectList)
                 {
@@ -219,7 +212,7 @@ namespace Raymagic
                     Console.WriteLine("LIGHT ERROR");
                 }
 
-                test = map.BVH.Test(testPos, best.distance, out Object _);
+                test = map.BVH.Test(testPos, best.distance, false, out Object _);
                 if(test.distance < best.distance)
                 {
                     best = test;
@@ -311,7 +304,7 @@ namespace Raymagic
                     }
                 }
 
-                test = map.BVH.Test(testPos, best.distance, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, true, out Object dObj);
                 if(test.distance < best.distance)
                 {
                     best = test;

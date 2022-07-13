@@ -8,8 +8,10 @@ namespace Raymagic
         {
             MapData data = new MapData();
 
-            Vector3 topCorner = new Vector3(500,500,300);
-            Vector3 botCorner = new Vector3(0,0,0);
+            data.topCorner = new Vector3(500,500,300);
+            data.botCorner = new Vector3(0,0,0);
+
+            data.playerSpawn = new Vector3(100,100,100);
 
             Box xBox = new Box(new Vector3(0,0,0),
                                new Vector3(500,20,20),
@@ -24,9 +26,6 @@ namespace Raymagic
             data.staticMapObjects.Add(xBox);
             data.staticMapObjects.Add(yBox);
             data.staticMapObjects.Add(zBox);
-
-            data.topCorner = topCorner;
-            data.botCorner = botCorner;
 
             Plane mainPlaneW = new Plane(new Vector3(0,0,0),
                                          new Vector3(0,0,1),
@@ -108,8 +107,6 @@ namespace Raymagic
 
             data.mapLights.Add(light);
 
-            data.playerSpawn = new Vector3(2,2,1);
-
             Box b = new Box(new Vector3(100,100,30),
                             new Vector3(200,200,20),
                             Color.Gray,
@@ -140,11 +137,11 @@ namespace Raymagic
                                           BooleanOP.INTERSECT), true);
             data.dynamicMapObjects.Add(ramp);
 
-            Button button = new Button(new Vector3(200,200,50), new Vector3(0, -1, 0));
-            button.stateChangeEvent += MainGame.TestMethod;
-            data.interactableObjectList.Add(button);
+            /* Button button = new Button(new Vector3(200,200,0), new Vector3(0, -1, 0)); */
+            /* button.stateChangeEvent += MainGame.TestMethod; */
+            /* data.interactableObjectList.Add(button); */
 
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,450,250), 25, Color.Green, Color.Gray)); */
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
             /* data.physicsMapObjects.Add(new PhysicsTrigger(new Vector3(100,100,100), 100)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,200), 25, Color.Violet)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(60,200,200), 25, Color.Orange)); */
@@ -155,6 +152,10 @@ namespace Raymagic
                                  Color.Gray, selectable:true);
 
             data.staticMapObjects.Add(boxbox);
+
+
+            /* Cylinder body = new Cylinder(new Vector3(100,100,30), new Vector3(0,0,1), 30, 60, Color.White, false, boundingBoxSize:new Vector3(1000,1000,1000)); */
+            /* body.AddChildObject(new Cylinder(new Vector3(100,100,35), new Vector3(0,0,1), 30, 50, Color.White, false, BooleanOP.DIFFERENCE), false); */
 
             /* Capsule body = new Capsule(new Vector3(400,400,0), */
             /*                         75/2, */ 
@@ -183,6 +184,8 @@ namespace Raymagic
             /*                           200, 50, Color.Orange); */
                                       
             /* data.staticMapObjects.Add(c); */
+
+            /* data.interactableObjectList.Add(new FloorButton(new Vector3(100,100,0))); */
 
             Map.instance.RegisterMap("testArea", data);
         }

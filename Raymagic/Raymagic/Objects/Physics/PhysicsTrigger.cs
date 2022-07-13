@@ -2,40 +2,57 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
-    public delegate void TriggerOnCollision(Object obj);
+    public delegate void CollisionTrigger(IPortalable obj, PhysicsTrigger trigger);
 
     public class PhysicsTrigger : PhysicsObject
     {
-        public event TriggerOnCollision onCollisionEvent;
+        public event CollisionTrigger onCollisionEnter;
+        public event CollisionTrigger onCollisionExit;
+
+        public List<IPortalable> inTriggerList {get; private set;} // IPortalable are all the objects worth triggering
 
         public PhysicsTrigger(Vector3 position, float size) : base(position, size, Color.Black, Color.Black)
         {
             this.isTrigger = true;
+            inTriggerList = new List<IPortalable>();
         }
 
         public new bool FindCollision(out Vector3 axis, out float length, out Object hitObj)
         {
-            Ray testRay = new Ray(this.Position, new Vector3());
+            length = float.MaxValue;
+            hitObj = null;
             axis = new Vector3();
 
-            RayMarchingHelper.PhysicsRayMarch(testRay, 1, size, out length, out Vector3 _, out hitObj, caller:this);
-
-            if (length <= this.size)
+            List<IPortalable> toRemove = new List<IPortalable>();
+            foreach (var obj in inTriggerList)
             {
-                if (hitObj is PhysicsObject) 
+                if (Vector3.Distance(this.position, obj.position) >= this.size)
                 {
-                    length = size - length;
-
-                    // trigger collision event
-                    onCollisionEvent?.Invoke(hitObj);
+                    toRemove.Add(obj);
+                    // invoke after removeItems
                 }
-
-                return true;
             }
-            else
+            inTriggerList.RemoveAll(x => toRemove.Contains(x));  
+            if (toRemove.Count > 0) 
             {
-                return false;
+                foreach (var obj in toRemove)
+                {
+                    onCollisionExit?.Invoke(obj, this);
+                }
             }
+
+            foreach (var obj in Map.instance.portalableObjectList)
+            {
+                if (inTriggerList.Contains(obj)) continue;
+
+                if (Vector3.Distance(this.position, obj.position) <= this.size)
+                {
+                    inTriggerList.Add(obj);
+                    onCollisionEnter?.Invoke(obj, this);
+                }
+            }
+
+            return false;
         }
     }
 }

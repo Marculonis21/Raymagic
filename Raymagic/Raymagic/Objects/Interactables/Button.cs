@@ -4,13 +4,25 @@ namespace Raymagic
 {
     public class Button : Interactable
     {
-        public Button(Vector3 position, Vector3 facing) : base(position)
+        Vector3 facing;
+        public Button(Vector3 position, Vector3 facing) : base(position + new Vector3(0,0,50))
         {
             this.playerControllable = true;
             this.controlDistance = 60;
 
+            this.stateCount = 2;
+            this.facing = facing;
+
             if (facing.Z != 0)
                 throw new Exception("Unable to make this kind of button - facing Z");
+
+        }
+
+        public override void ObjectSetup()
+        {
+            // offset for better modelling 
+            Vector3 position = this.Position + new Vector3(0,0,50) ;
+
             // stage 1
             Object bBase = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray, false);
 
@@ -35,12 +47,10 @@ namespace Raymagic
 
             modelStates.Add(bBase2);
 
-            this.boundingBoxSize = new Vector3(12,12,50);
-
+            this.boundingBoxSize = new Vector3(22,22,60);
             this.boundingBox = new Box(position + new Vector3(0,0,-25), 
                                        this.boundingBoxSize,
                                        Color.Black);
-
         }
 
         public override void Interact()
@@ -48,8 +58,9 @@ namespace Raymagic
             if (this.state == 0)
             {
                 base.Interact();
-                Task.Delay(250).ContinueWith(t1 => 
-                                             { while(Screen.instance.DrawPhase) { } }).ContinueWith(
+                // while avoids tearing
+                Task.Delay(100).ContinueWith(t1 => 
+                                             { while(Screen.instance.DrawPhase) { } }).ContinueWith( 
                                              t2 => ButtonUpAndOff());
             }
         }

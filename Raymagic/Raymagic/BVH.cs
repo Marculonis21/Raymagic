@@ -109,10 +109,10 @@ namespace Raymagic
             Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");
         }
 
-        public SDFout Test(Vector3 testPos, float minDist, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)
         {
             if(root != null)
-                return root.Test(testPos, minDist, out obj);
+                return root.Test(testPos, minDist, physics, out obj);
             else
             {
                 obj = null;

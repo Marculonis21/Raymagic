@@ -45,12 +45,12 @@ namespace Raymagic
             this.boundingBox = new Box(this.boundingBoxPosition, this.boundingBoxSize, Color.Red);
         }
 
-        public SDFout Test(Vector3 testPos, float minDist, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)
         {
             obj = null;
 
             // test node bounding box
-            SDFout test = this.boundingBox.SDF(testPos, minDist, false);
+            SDFout test = this.boundingBox.SDF(testPos, minDist, physics);
             if (test.distance < minDist)
             {
                 // if bounding box collided try the actuall node
@@ -59,11 +59,11 @@ namespace Raymagic
                     SDFout objTest;
                     if (obj is Interactable)
                     {
-                        objTest = (obj as Interactable).SDF(testPos, minDist, false);
+                        objTest = (obj as Interactable).SDF(testPos, minDist, physics);
                     }
                     else
                     {
-                        objTest = this.obj.SDF(testPos, minDist, false);
+                        objTest = this.obj.SDF(testPos, minDist, physics);
                     }
 
                     if(objTest.distance < minDist)
@@ -82,8 +82,8 @@ namespace Raymagic
                 }
                 else // for parent node
                 {
-                    SDFout lTest = LEFT.Test(testPos, minDist, out Object lObj);
-                    SDFout rTest = RIGHT.Test(testPos, minDist, out Object rObj);
+                    SDFout lTest = LEFT.Test(testPos, minDist, physics, out Object lObj);
+                    SDFout rTest = RIGHT.Test(testPos, minDist, physics, out Object rObj);
 
                     // both of them will improve minDist - choose the best one
                     if(lTest.distance < minDist && rTest.distance < minDist)
