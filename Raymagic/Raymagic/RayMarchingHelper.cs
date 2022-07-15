@@ -116,7 +116,7 @@ namespace Raymagic
                         best = test;
                         if(best.distance < 0.1f)
                         {
-                            color = Color.Red;
+                            color = best.color;
                             return;
                         }
                     }

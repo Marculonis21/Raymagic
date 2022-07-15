@@ -65,7 +65,7 @@ namespace Raymagic
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Pink, Color.MistyRose)); */
 
             Door door = new Door(new Vector3(200,100,0), new Vector3(0,1,0));
-            /* floorButton.stateChangeEvent += door.EventListener; */
+            floorButton.stateChangeEvent += door.EventListener;
             data.interactableObjectList.Add(door);
 
 

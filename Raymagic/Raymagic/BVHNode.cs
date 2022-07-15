@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Raymagic
@@ -24,25 +25,56 @@ namespace Raymagic
             this.boundingBox = obj.BoundingBox;
             this.boundingBoxSize = obj.BoundingBoxSize; 
             this.boundingBoxPosition = obj.BoundingBox.Position; 
+
         }
 
         public BVHNode(BVHNode LEFT, BVHNode RIGHT)
         {
-            this.LEFT = LEFT;
-            this.RIGHT = RIGHT;
+            if (Vector3.Distance(LEFT.boundingBoxPosition, new Vector3(0,0,0)) < Vector3.Distance(RIGHT.boundingBoxPosition, new Vector3(0,0,0)))
+            {
+                this.LEFT = LEFT;
+                this.RIGHT = RIGHT;
+            }
+            else
+            {
+
+                this.LEFT = RIGHT;
+                this.RIGHT = LEFT;
+            }
 
             this.isLeaf = false;
 
-            this.boundingBoxPosition = new Vector3(Math.Abs((LEFT.boundingBoxPosition.X + RIGHT.boundingBoxPosition.X)/2),
-                                                   Math.Abs((LEFT.boundingBoxPosition.Y + RIGHT.boundingBoxPosition.Y)/2),
-                                                   Math.Abs((LEFT.boundingBoxPosition.Z + RIGHT.boundingBoxPosition.Z)/2));
+            Vector3[] oc = new Vector3[] {
+                this.LEFT.boundingBoxPosition  - this.LEFT.boundingBoxSize/2,
+                this.LEFT.boundingBoxPosition  + this.LEFT.boundingBoxSize/2,            
+                this.RIGHT.boundingBoxPosition + this.RIGHT.boundingBoxSize/2,
+                this.RIGHT.boundingBoxPosition - this.RIGHT.boundingBoxSize/2,          
+            };
 
-            this.boundingBoxSize = Vector3.One*(LEFT.boundingBoxPosition - RIGHT.boundingBoxPosition).Length();
-            this.boundingBoxSize +=  new Vector3(LEFT.boundingBoxSize.X/2 + RIGHT.boundingBoxSize.X/2, 
-                                                 LEFT.boundingBoxSize.Y/2 + RIGHT.boundingBoxSize.Y/2,
-                                                 LEFT.boundingBoxSize.Z/2 + RIGHT.boundingBoxSize.Z/2);
+
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[0], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[1], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[2], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[3], 10, Color.Green)); */
+
+            var smallestX = (new float[] {oc[0].X,oc[1].X,oc[2].X,oc[3].X}).Min();
+            var smallestY = (new float[] {oc[0].Y,oc[1].Y,oc[2].Y,oc[3].Y}).Min();
+            var smallestZ = (new float[] {oc[0].Z,oc[1].Z,oc[2].Z,oc[3].Z}).Min();
+            var biggestX = (new float[] {oc[0].X,oc[1].X,oc[2].X,oc[3].X}).Max();
+            var biggestY = (new float[] {oc[0].Y,oc[1].Y,oc[2].Y,oc[3].Y}).Max();
+            var biggestZ = (new float[] {oc[0].Z,oc[1].Z,oc[2].Z,oc[3].Z}).Max();
+
+            this.boundingBoxSize = new Vector3(Math.Abs(smallestX-biggestX),
+                                               Math.Abs(smallestY-biggestY),
+                                               Math.Abs(smallestZ-biggestZ));
+
+            this.boundingBoxPosition = new Vector3(smallestX + this.boundingBoxSize.X/2,
+                                                   smallestY + this.boundingBoxSize.Y/2,
+                                                   smallestZ + this.boundingBoxSize.Z/2);
 
             this.boundingBox = new Box(this.boundingBoxPosition, this.boundingBoxSize, Color.Red);
+
+            /* Map.instance.infoObjectList.Add(this.boundingBox); */
         }
 
         public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)

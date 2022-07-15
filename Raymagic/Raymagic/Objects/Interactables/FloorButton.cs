@@ -41,7 +41,7 @@ namespace Raymagic
             this.modelStates.Add(button1);
             this.modelStates.Add(button2);
             
-            this.boundingBoxSize = new Vector3(80,80,30);
+            this.boundingBoxSize = new Vector3(90,90,30);
 
             this.boundingBox = new Box(this.Position + new Vector3(0,0,10), 
                                        this.boundingBoxSize,

@@ -13,7 +13,7 @@ namespace Raymagic
         public Door(Vector3 floorDoorPosition, Vector3 facing) : base(floorDoorPosition)
         {
             this.facing = facing;
-            this.right = Vector3.Cross(-facing, new Vector3(0,0,1));
+            this.right = Vector3.Cross(facing, new Vector3(0,0,1));
             this.stateCount = 2;
 
             if (facing.Z != 0)
@@ -51,7 +51,7 @@ namespace Raymagic
             doorPlates = new Object[2] {doorPlate1, doorPlate2};
 
             this.boundingBoxSize = facing * 6 + right * 120 + new Vector3(0,0,120);
-            this.boundingBox = new Box(this.Position + new Vector3(0,0,40),
+            this.boundingBox = new Box(this.Position + new Vector3(0,0,55),
                                        boundingBoxSize,
                                        Color.Black);
             /* Map.instance.staticObjectList.Add(boundingBox); */

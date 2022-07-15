@@ -72,7 +72,7 @@ namespace Raymagic
             this.data = maps[id];
             this.mapName = id;
             this.staticObjectList = data.staticMapObjects;
-            this.dynamicObjectList = data.dynamicMapObjects;
+            this.dynamicObjectList.AddRange(data.dynamicMapObjects);
             this.physicsObjectsList = data.physicsMapObjects;
             this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
             this.interactableObjectList = data.interactableObjectList;
