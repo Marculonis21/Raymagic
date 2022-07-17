@@ -36,7 +36,7 @@ namespace Raymagic
 
         public PhysicsSpace physicsSpace;
 
-        public float gravity = 3000f;
+        public float gravity = 2000f;
 
         private Map()
         {

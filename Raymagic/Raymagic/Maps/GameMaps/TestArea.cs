@@ -141,7 +141,7 @@ namespace Raymagic
             /* button.stateChangeEvent += MainGame.TestMethod; */
             /* data.interactableObjectList.Add(button); */
 
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
+            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray));
             /* data.physicsMapObjects.Add(new PhysicsTrigger(new Vector3(100,100,100), 100)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,200), 25, Color.Violet)); */
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(60,200,200), 25, Color.Orange)); */

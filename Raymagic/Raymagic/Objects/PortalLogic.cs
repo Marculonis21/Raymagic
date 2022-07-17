@@ -20,12 +20,13 @@ namespace Raymagic
 
                 if ((this.Position - item.position).Length() < testFieldSize)
                 {
-                    if (otherPortal.objectWatcher.Contains(item))
-                    {
-                        throw new Exception("I thought this would ruin our day - and it did");
-                    }
+                    /* if (otherPortal.objectWatcher.Contains(item)) */
+                    /* { */
+                    /*     throw new Exception("I thought this would ruin our day - and it did"); */
+                    /* } */
                     objectWatcher.Add(item);
                     objectLastDot.Add(Vector3.Dot(Vector3.Normalize(this.Position - item.position), this.normal));
+                    Console.WriteLine($"obj added {item}");
                 }
             }
         }
@@ -39,6 +40,7 @@ namespace Raymagic
                 if ((this.Position - item.position).Length() > testFieldSize+5)
                 {
                     toRemove.Add(item);
+                    Console.WriteLine($"obj removed {item}");
                 }
             }
 
@@ -88,7 +90,6 @@ namespace Raymagic
 
                     objectWatcher[i].RotateAbsolute(newRotK.ToVector3());
                     objectWatcher[i].TranslateAbsolute(this.otherPortal.Position + this.otherPortal.normal*10 + objectWatcher[i].lookDir * 5 * Vector3.Dot(this.otherPortal.normal, objectWatcher[i].lookDir));
-                    Console.WriteLine($"{velocityK}, {newVelK.ToVector3()}");
                     objectWatcher[i].SetVelocity(newVelK.ToVector3());
 
                     this.portalState = State.REACENTLYUSED;

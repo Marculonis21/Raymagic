@@ -11,7 +11,7 @@ namespace Raymagic
     public class PhysicsSpace
     {
         List<PhysicsObject> objects;
-        PhysicsSolver solver;
+        public PhysicsSolver solver {get; private set;}
 
         public PhysicsSpace(List<PhysicsObject> spaceObjects)
         {

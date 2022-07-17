@@ -22,28 +22,33 @@ namespace Raymagic
             }
         }
 
-        public void ApplyGravity()
+        void ApplyGravity()
         {
             var gravityVector = Map.instance.gravity*new Vector3(0,0,-1);
             foreach (var obj in objects)
             {
-                if (obj.isTrigger) continue;
+                if (obj.isTrigger || !obj.physicsEnabled) continue;
 
                 obj.ApplyForce(gravityVector);
             }
         }
 
-        public void UpdatePositions(float dt)
+        void UpdatePositions(float dt)
         {
             foreach (var obj in objects)
             {
-                if (obj.isTrigger) continue;
+                if (obj.isTrigger || !obj.physicsEnabled) continue;
 
                 obj.UpdatePosition(dt);
             }
         }
 
-        public void SolveCollisions()
+        public void ForceSolveCollision()
+        {
+            SolveCollisions();
+        }
+
+        void SolveCollisions()
         {
             foreach (var obj in objects)
             {
@@ -63,11 +68,10 @@ namespace Raymagic
                         obj.Translate(hitAxis*length);
                         collisionObject.Translate(-hitAxis*length);
                     }
-                    else if (collisionObject == Player.instance.model)
+                    else if (collisionObject == Player.instance.model && obj.physicsEnabled)
                     {
                         obj.Translate(hitAxis*length*0.15f);
                         Player.instance.TranslateAbsolute(Player.instance.position - hitAxis*length*0.85f);
-
                     }
                     else
                     {

@@ -160,9 +160,9 @@ namespace Raymagic
                 }
                 lPressed = rPressed = false;
             }
-            map.Update(gameTime);
 
             player.Update(gameTime);
+            map.Update(gameTime);
 
             /* float x = (float)Math.Cos(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
             /* float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */

@@ -18,13 +18,22 @@ namespace Raymagic
         public Vector3 lookDir {get; private set;}
 
         const float walkingSpeed = 2.5f;
-        float jumpStrength = 11f;
+        const float airControll = 0.05f;
+        const float jumpStrength = 11f;
+        const float grabDistance = 90;
         bool grounded = true;
+        PhysicsObject grabbing = null;
+        Object grabbingMocap = null;
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
 
         bool interactButtonDown = false;
+        bool grabButtonDown = false;
+
+        bool testONButtonDown = false;
+        bool testOFFButtonDown = false;
+
 
         public int cursorSize = 10;
 
@@ -46,6 +55,7 @@ namespace Raymagic
             playerControls.Add("right_move",    Keys.D);
             playerControls.Add("jump",          Keys.Space);
             playerControls.Add("interact",      Keys.E);
+            playerControls.Add("grab",          Keys.F);
             playerControls.Add("playerMode",    Keys.F1);
             playerControls.Add("godMode",       Keys.F2);
             playerControls.Add("god_up",        Keys.Space);
@@ -110,9 +120,11 @@ namespace Raymagic
             }
             else
             {
-                walkingVelocity *= 0.1f;
+                walkingVelocity *= airControll;
                 this.velocity = new Vector3(velocity.X+walkingVelocity.X, velocity.Y+walkingVelocity.Y, velocity.Z);
             }
+
+            this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
             // move model to "feet" position
             if (!GodMode)
@@ -120,8 +132,29 @@ namespace Raymagic
                 model.TranslateAbsolute(this.position + new Vector3(0,0,-1)*(size.Y/2) + new Vector3(0,0,-1)*(size.X/2));
             }
 
+            // KEYBOARD INTERACTS
             if (Keyboard.GetState().IsKeyDown(playerControls["jump"])) 
                 this.Jump(gameTime);
+
+            if (Keyboard.GetState().IsKeyDown(playerControls["interact"]) && !this.interactButtonDown)
+            {
+                this.interactButtonDown = true;
+                Interactable.PlayerInteract(this.position);
+            }
+            if (Keyboard.GetState().IsKeyUp(playerControls["interact"]))
+            {
+                this.interactButtonDown = false;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(playerControls["grab"]) && !this.grabButtonDown)
+            {
+                this.grabButtonDown = true;
+                this.Grab();
+            }
+            if (Keyboard.GetState().IsKeyUp(playerControls["grab"]))
+            {
+                this.grabButtonDown = false;
+            }
 
             if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
             {
@@ -134,7 +167,6 @@ namespace Raymagic
                 this.position = this.preGodPositionCache;
             }
 
-
             if(GodMode)
             {
                 if(Keyboard.GetState().IsKeyDown(playerControls["god_down"]))
@@ -143,32 +175,32 @@ namespace Raymagic
                     this.position += new Vector3(0,0,+2);
             }
 
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]))
+            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]) && !this.testONButtonDown)
             {
+                this.testONButtonDown = true;
+
                 /* map.dynamicObjectList[0].childObjects[0].booleanStrength++; */
                 /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
                 /* map.enabledUpdate = true; */
                 /* map.interactableObjectList[0].Interact(); */
             }
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]))
+            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {
+                this.testOFFButtonDown = true;
+
                 /* map.dynamicObjectList[0].childObjects[0].booleanStrength--; */
                 /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
 
                 /* map.interactableObjectList[0].Interact(); */
             }
-
-            if (Keyboard.GetState().IsKeyDown(playerControls["interact"]) && !this.interactButtonDown)
+            if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_ON"]))
             {
-                this.interactButtonDown = true;
-                Interactable.PlayerInteract(this.position);
+                this.testONButtonDown = false;
             }
-            if (Keyboard.GetState().IsKeyUp(playerControls["interact"]))
+            if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_OFF"]))
             {
-                this.interactButtonDown = false;
+                this.testOFFButtonDown = false;
             }
-
-            this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
             Mouse.SetPosition(500, 500);
         }
@@ -233,6 +265,10 @@ namespace Raymagic
         public void TranslateAbsolute(Vector3 newPosition)
         {
             this.position = newPosition;
+            if (grabbing != null)
+            {
+                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
+            }
         }
 
         public void SetVelocity(Vector3 newVelocity)
@@ -247,6 +283,53 @@ namespace Raymagic
             {
                 grounded = false;
                 this.velocity += new Vector3(0,0,1)*jumpStrength;
+            }
+        }
+        
+        public void Grab()
+        {
+            if (grabbing == null)
+            {
+                foreach (var pObj in Map.instance.physicsObjectsList)
+                {
+                    if (pObj.isTrigger) continue;
+
+                    if (Vector3.Distance(this.position, pObj.Position) <= grabDistance &&
+                        Vector3.Dot(this.lookDir, Vector3.Normalize(pObj.position - this.position)) > 0.7f)
+                    {
+                        pObj.physicsEnabled = false;
+
+                        grabbing = pObj;
+                        grabbingMocap = new Sphere(pObj.Position, 1, Color.Black);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Vector3 before = grabbingMocap.Position;
+                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
+                Vector3 after = grabbingMocap.Position;
+                grabbing.Translate(after - before);
+
+                grabbing.ClearVelocity();
+                grabbing.ClearForces();
+                grabbing.SetVelocity(this.velocity/4);
+                grabbing.SetVelocity((after-before)/30);
+
+                grabbing.physicsEnabled = true;
+                grabbing = null;
+                grabbingMocap = null;
+
+                /* grabbing.TranslateAbsolute(this.position + (this.lookDir * (grabDistance-10))); */ 
+                /* map.physicsSpace.solver.ForceSolveCollision(); */
+                /* grabbing.ClearVelocity(); */
+                /* grabbing.ClearForces(); */
+                /* grabbing.physicsEnabled = true; */ 
+            
+                /* grabbing.SetVelocity(this.velocity/4); */
+                /* grabbing.SetVelocity((grabbing.Position - grabbing.lastBeforeTranslate)/30); */
+                /* grabbing = null; */
             }
         }
 
@@ -268,6 +351,15 @@ namespace Raymagic
             }
 
             this.position += this.velocity;
+
+            if (grabbing != null && !GodMode)
+            {
+                Vector3 before = grabbingMocap.Position;
+                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
+                Vector3 after = grabbingMocap.Position;
+                grabbing.Translate(after - before);
+                grabbing.ClearVelocity();
+            }
 
             Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
             Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
