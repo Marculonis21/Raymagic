@@ -151,6 +151,8 @@ namespace Raymagic
                     float lightIntensity = 0;
                     foreach(Light light in map.lightList)
                     {
+                        if (Vector3.Distance(light.position, testPos) > 500) continue;
+
                         objectNormal = finalObj.SDF_normal(testPos);
                         startPos = testPos+objectNormal*2;
                         

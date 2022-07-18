@@ -1,0 +1,38 @@
+config
+{
+    name: showcase
+    playerSpawn: (100,100,100)
+    topCorner: (300,1000,200)
+    botCorner: (0,0,0)
+}
+
+static
+{
+    plane<floor>:(0,0,0)|(0,0,1)|Beige
+    plane<roof> :(0,0,198)|(0,0,-1)|Beige
+    plane<wall1>:
+    plane<wall2>: 
+    plane<wall3>: 
+    plane<wall4>: 
+}
+
+lights
+{
+    light:(125,100,175)|25
+    light:...
+    light:...
+    light:...
+}
+
+dynamics
+{
+    TESTVAR<vector>
+}
+
+physics
+{
+}
+
+interactables
+{
+}

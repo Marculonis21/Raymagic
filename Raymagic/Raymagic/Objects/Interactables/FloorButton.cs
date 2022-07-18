@@ -7,7 +7,7 @@ namespace Raymagic
         PhysicsTrigger buttonBallTrigger;
         PhysicsTrigger buttonPlayerTrigger;
 
-        public FloorButton(Vector3 position) : base(position)
+        public FloorButton(Vector3 position, Color secondaryColor) : base(position, secondaryColor)
         {
             this.stateCount = 2;
         }

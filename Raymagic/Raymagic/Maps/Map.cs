@@ -36,7 +36,7 @@ namespace Raymagic
 
         public PhysicsSpace physicsSpace;
 
-        public float gravity = 2000f;
+        public float gravity = 3000f;
 
         private Map()
         {
@@ -64,7 +64,7 @@ namespace Raymagic
         {
             /* new BigRoom(); */
             new TestArea();
-            new Modelling();
+            new Showcase();
         }
 
         public void SetMap(string id)

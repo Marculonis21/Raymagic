@@ -10,7 +10,7 @@ namespace Raymagic
 
         Vector3[] doorPlateClosed;
         Vector3[] doorPlateOpened;
-        public Door(Vector3 floorDoorPosition, Vector3 facing) : base(floorDoorPosition)
+        public Door(Vector3 floorDoorPosition, Vector3 facing, Color secondaryColor) : base(floorDoorPosition, secondaryColor)
         {
             this.facing = facing;
             this.right = Vector3.Cross(facing, new Vector3(0,0,1));
@@ -27,7 +27,7 @@ namespace Raymagic
             doorFrame.AddChildObject(new Plane( facing * 5,  facing, Color.Black, BooleanOP.INTERSECT), true);
             doorFrame.AddChildObject(new Plane(-facing * 5, -facing, Color.Black, BooleanOP.INTERSECT), true);
 
-            Object doorPlatesSideBar = new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Cyan, false);
+            Object doorPlatesSideBar = new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, secondaryColor, false);
             doorPlatesSideBar.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 91, 48, Color.Black, false, BooleanOP.DIFFERENCE), false);
             doorPlatesSideBar.AddChildObject(new Plane( facing * 4,  facing, Color.Black, BooleanOP.INTERSECT), true);
             doorPlatesSideBar.AddChildObject(new Plane(-facing * 4, -facing, Color.Black, BooleanOP.INTERSECT), true);

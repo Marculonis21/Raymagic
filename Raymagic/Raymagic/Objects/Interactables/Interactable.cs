@@ -14,11 +14,15 @@ namespace Raymagic
         protected bool playerControllable = false;
         protected float controlDistance = float.MaxValue;
 
-        public Interactable(Vector3 position) : base(position, Color.Black, false, new Vector3(), null, BooleanOP.NONE, 0, false)
+        protected Color secondaryColor;
+
+        public Interactable(Vector3 position, Color secondaryColor) : base(position, Color.Black, false, new Vector3(), null, BooleanOP.NONE, 0, false)
         {
             this.modelStates = new List<Object>();
             this.state = 0;
             this.stateCount = 0;
+
+            this.secondaryColor = secondaryColor;
             
             // !! have to create boudning box for the object !!
         }
