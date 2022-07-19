@@ -124,68 +124,23 @@ namespace Raymagic
                                         Color.Black,
                                         false, BooleanOP.SDIFFERENCE, 5), true);
 
-            /* data.dynamicMapObjects.Add(b); */
-
             Box ramp = new Box(new Vector3(50,400,50),
                                new Vector3(100,200,200),
-                               Color.LightGreen,
-                               false, boundingBoxSize:new Vector3(100,200,200), selectable:true);
+                               Color.LightGreen, selectable:true);
 
             ramp.AddChildObject(new Plane(new Vector3(0,0,0),
                                           new Vector3(0,-1,1),
                                           Color.Black,
                                           BooleanOP.INTERSECT), true);
-            data.dynamicMapObjects.Add(ramp);
-
-            /* Button button = new Button(new Vector3(200,200,0), new Vector3(0, -1, 0)); */
-            /* button.stateChangeEvent += MainGame.TestMethod; */
-            /* data.interactableObjectList.Add(button); */
+            data.staticMapObjects.Add(ramp);
 
             data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray));
-            /* data.physicsMapObjects.Add(new PhysicsTrigger(new Vector3(100,100,100), 100)); */
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,200), 25, Color.Violet)); */
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(60,200,200), 25, Color.Orange)); */
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(50,100,200), 25, Color.Aqua)); */
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
                                  Color.Gray, selectable:true);
 
             data.staticMapObjects.Add(boxbox);
-
-
-            /* Cylinder body = new Cylinder(new Vector3(100,100,30), new Vector3(0,0,1), 30, 60, Color.White, false, boundingBoxSize:new Vector3(1000,1000,1000)); */
-            /* body.AddChildObject(new Cylinder(new Vector3(100,100,35), new Vector3(0,0,1), 30, 50, Color.White, false, BooleanOP.DIFFERENCE), false); */
-
-            /* Capsule body = new Capsule(new Vector3(400,400,0), */
-            /*                         75/2, */ 
-            /*                         25, */ 
-            /*                         Color.Orange, */
-            /*                         false, */ 
-            /*                         boundingBoxSize: new Vector3(35,35,75)); */
-
-            /* Capsule topPart = new Capsule(new Vector3(0,0,-25), */
-            /*                               75/2, */
-            /*                               26, */
-            /*                               Color.White, */
-            /*                               false, */
-            /*                               boundingBoxSize: new Vector3(35,35,75)); */
-
-            /* topPart.AddChildObject(new Plane(new Vector3(0,0,75/4), */
-            /*                                  new Vector3(0,0,-1), */
-            /*                                  Color.Black, */
-            /*                                  booleanOP: BooleanOP.INTERSECT), true); */
-
-            /* body.AddChildObject(topPart, true); */
-                                  
-            /* data.dynamicMapObjects.Add(body); */
-
-            /* Cylinder c = new Cylinder(new Vector3(400,400,50), new Vector3(0,0,1), */
-            /*                           200, 50, Color.Orange); */
-                                      
-            /* data.staticMapObjects.Add(c); */
-
-            /* data.interactableObjectList.Add(new FloorButton(new Vector3(100,100,0))); */
 
             Map.instance.RegisterMap("testArea", data);
         }
