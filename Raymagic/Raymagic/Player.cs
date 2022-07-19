@@ -265,10 +265,10 @@ namespace Raymagic
         public void TranslateAbsolute(Vector3 newPosition)
         {
             this.position = newPosition;
-            if (grabbing != null)
-            {
-                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
-            }
+            /* if (grabbing != null) */
+            /* { */
+            /*     grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance))); */
+            /* } */
         }
 
         public void SetVelocity(Vector3 newVelocity)
@@ -307,10 +307,19 @@ namespace Raymagic
             }
             else
             {
-                Vector3 before = grabbingMocap.Position;
-                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
-                Vector3 after = grabbingMocap.Position;
-                grabbing.Translate(after - before);
+                Ray testRay = new Ray(this.position + this.lookDir * 60, this.lookDir);
+                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 30, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
+                if (HitObjectIsActivePortal(hitObj))
+                {
+                    Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
+                    RayMarchingHelper.PhysicsRayMarch(moreRay, 2, 30, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
+                    dirLength += dirLengthPortal;
+                    dirHit = dirHitPortal;
+                }
+
+                Vector3 before = grabbing.Position;
+                grabbing.TranslateAbsolute(dirHit);
+                Vector3 after = grabbing.Position;
 
                 grabbing.ClearVelocity();
                 grabbing.ClearForces();
@@ -320,16 +329,6 @@ namespace Raymagic
                 grabbing.physicsEnabled = true;
                 grabbing = null;
                 grabbingMocap = null;
-
-                /* grabbing.TranslateAbsolute(this.position + (this.lookDir * (grabDistance-10))); */ 
-                /* map.physicsSpace.solver.ForceSolveCollision(); */
-                /* grabbing.ClearVelocity(); */
-                /* grabbing.ClearForces(); */
-                /* grabbing.physicsEnabled = true; */ 
-            
-                /* grabbing.SetVelocity(this.velocity/4); */
-                /* grabbing.SetVelocity((grabbing.Position - grabbing.lastBeforeTranslate)/30); */
-                /* grabbing = null; */
             }
         }
 
@@ -354,10 +353,24 @@ namespace Raymagic
 
             if (grabbing != null && !GodMode)
             {
-                Vector3 before = grabbingMocap.Position;
-                grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance)));
-                Vector3 after = grabbingMocap.Position;
-                grabbing.Translate(after - before);
+                Ray testRay = new Ray(this.position + this.lookDir * 60, this.lookDir);
+                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 30, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
+                if (HitObjectIsActivePortal(hitObj))
+                {
+                    Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
+                    RayMarchingHelper.PhysicsRayMarch(moreRay, 2, 30, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
+                    dirLength += dirLengthPortal;
+                    dirHit = dirHitPortal;
+                }
+                /* grabbingMocap.TranslateAbsolute(grabbing.Position); */
+                /* Vector3 before = grabbingMocap.Position; */
+                /* grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance))); */
+                /* Vector3 after = grabbingMocap.Position; */
+                /* grabbing.Translate(after - before); */
+                /* grabbing.ClearVelocity(); */
+                /* Console.WriteLine($"{dirLength},{dirHit},{hitObj}"); */
+
+                grabbing.TranslateAbsolute(dirHit);
                 grabbing.ClearVelocity();
             }
 

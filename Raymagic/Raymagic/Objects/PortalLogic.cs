@@ -106,5 +106,24 @@ namespace Raymagic
 
             objectWatcher.RemoveAll(x => toRemove.Contains(x));
         }
+
+        public static Ray TransferRay(Portal IN, Ray ray, Vector3 hit)
+        {
+            Portal OUT = IN.otherPortal;
+
+            var lookDirK = ray.direction;
+            var rotB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
+            var newRotK = OUT.baseChangeMatrixInverse.Solve(rotB);
+
+            var translateK = IN.Position - hit;
+            var transB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
+            var newTransK = OUT.baseChangeMatrixInverse.Solve(transB);
+
+            Vector3 rayDir = newRotK.ToVector3();
+            // maybe adjust distances, good for tonight
+            Ray newRay = new Ray(OUT.Position + OUT.normal*10 + rayDir * 40, rayDir); 
+
+            return newRay;
+        }
     }
 }
