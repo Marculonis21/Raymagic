@@ -69,7 +69,6 @@ namespace Raymagic
             watch.Restart();
             int zoom = 450;
 
-
             player.GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight);
             
             // Parallel RAYMARCHING!!!
