@@ -23,7 +23,6 @@ namespace Raymagic
         const float grabDistance = 90;
         bool grounded = true;
         PhysicsObject grabbing = null;
-        Object grabbingMocap = null;
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
@@ -265,10 +264,6 @@ namespace Raymagic
         public void TranslateAbsolute(Vector3 newPosition)
         {
             this.position = newPosition;
-            /* if (grabbing != null) */
-            /* { */
-            /*     grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance))); */
-            /* } */
         }
 
         public void SetVelocity(Vector3 newVelocity)
@@ -300,35 +295,19 @@ namespace Raymagic
                         pObj.physicsEnabled = false;
 
                         grabbing = pObj;
-                        grabbingMocap = new Sphere(pObj.Position, 1, Color.Black);
                         break;
                     }
                 }
             }
             else
             {
-                Ray testRay = new Ray(this.position + this.lookDir * 60, this.lookDir);
-                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 30, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
-                if (HitObjectIsActivePortal(hitObj))
-                {
-                    Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
-                    RayMarchingHelper.PhysicsRayMarch(moreRay, 2, 30, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
-                    dirLength += dirLengthPortal;
-                    dirHit = dirHitPortal;
-                }
-
-                Vector3 before = grabbing.Position;
-                grabbing.TranslateAbsolute(dirHit);
-                Vector3 after = grabbing.Position;
-
                 grabbing.ClearVelocity();
                 grabbing.ClearForces();
                 grabbing.SetVelocity(this.velocity/4);
-                grabbing.SetVelocity((after-before)/30);
+                /* grabbing.SetVelocity((after-before)/30); */
 
                 grabbing.physicsEnabled = true;
                 grabbing = null;
-                grabbingMocap = null;
             }
         }
 
@@ -353,24 +332,37 @@ namespace Raymagic
 
             if (grabbing != null && !GodMode)
             {
-                Ray testRay = new Ray(this.position + this.lookDir * 60, this.lookDir);
-                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 30, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
-                if (HitObjectIsActivePortal(hitObj))
+                float startOffset = 40;
+                Ray testRay = new Ray(this.position + this.lookDir * startOffset, this.lookDir);
+                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 10, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
+
+                Vector3 grabPosition;
+                if (dirLength + startOffset <= grabDistance && HitObjectIsActivePortal(hitObj)) 
                 {
                     Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
-                    RayMarchingHelper.PhysicsRayMarch(moreRay, 2, 30, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
-                    dirLength += dirLengthPortal;
-                    dirHit = dirHitPortal;
-                }
-                /* grabbingMocap.TranslateAbsolute(grabbing.Position); */
-                /* Vector3 before = grabbingMocap.Position; */
-                /* grabbingMocap.TranslateAbsolute(this.position + (this.lookDir * (grabDistance))); */
-                /* Vector3 after = grabbingMocap.Position; */
-                /* grabbing.Translate(after - before); */
-                /* grabbing.ClearVelocity(); */
-                /* Console.WriteLine($"{dirLength},{dirHit},{hitObj}"); */
+                    RayMarchingHelper.PhysicsRayMarch(moreRay, 3, 10, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
 
-                grabbing.TranslateAbsolute(dirHit);
+                    var grabDistanceLeft = grabDistance - (dirLength + startOffset);
+                    
+                    if (dirLengthPortal <= grabDistanceLeft)
+                    {
+                        grabPosition = dirHitPortal;
+                    }
+                    else
+                    {
+                        grabPosition = moreRay.origin + moreRay.direction * grabDistanceLeft;
+                    }
+                }
+                else if(dirLength + startOffset <= grabDistance)
+                {
+                    grabPosition = this.position + this.lookDir * (dirLength + startOffset);
+                }
+                else
+                {
+                    grabPosition = this.position + this.lookDir * grabDistance;
+                }
+
+                grabbing.TranslateAbsolute(grabPosition);
                 grabbing.ClearVelocity();
             }
 
