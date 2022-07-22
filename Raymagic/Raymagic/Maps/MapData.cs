@@ -5,6 +5,7 @@ namespace Raymagic
 {
     public class MapData
     {
+        public string mapName;
         public List<Object> staticMapObjects = new List<Object>();
         public List<Object> dynamicMapObjects = new List<Object>();
         public List<PhysicsObject> physicsMapObjects = new List<PhysicsObject>();

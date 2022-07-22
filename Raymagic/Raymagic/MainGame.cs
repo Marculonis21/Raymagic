@@ -32,6 +32,8 @@ namespace Raymagic
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
+
+            Task.WaitAll(TxtMapCompiler.instance.CompileFile("./Maps/GameMaps/testModellingLanguage.map"));
         }
 
         protected override void Initialize()

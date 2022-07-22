@@ -1,0 +1,30 @@
+config
+{
+    name: testModellingLanguage
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+}
+
+lights
+{
+    light:(125,100,175)|25
+}
+
+dynamic
+{
+}
+
+physics
+{
+}
+
+interactables
+{
+}
