@@ -33,6 +33,9 @@ namespace Raymagic
         bool testONButtonDown = false;
         bool testOFFButtonDown = false;
 
+        bool pauseButtonDown = false;
+
+        public bool playerPause = false;
 
         public int cursorSize = 10;
 
@@ -55,6 +58,7 @@ namespace Raymagic
             playerControls.Add("jump",          Keys.Space);
             playerControls.Add("interact",      Keys.E);
             playerControls.Add("grab",          Keys.F);
+            playerControls.Add("pause",         Keys.Escape);
             playerControls.Add("playerMode",    Keys.F1);
             playerControls.Add("godMode",       Keys.F2);
             playerControls.Add("god_up",        Keys.Space);
@@ -88,8 +92,24 @@ namespace Raymagic
 
         int lastMouseX = 500;
         int lastMouseY = 500;
-        public void Controlls(GameTime gameTime, MouseState mouse)
+        public void Controlls(Game game, GameTime gameTime, MouseState mouse)
         {
+            if (game.IsActive)
+            {
+                if(Keyboard.GetState().IsKeyDown(playerControls["pause"]))
+                {
+                    this.pauseButtonDown = true;
+                }
+                if(!Keyboard.GetState().IsKeyDown(playerControls["pause"]) && this.pauseButtonDown)
+                {
+                    this.pauseButtonDown = false;
+                    this.playerPause = !this.playerPause;
+                    game.IsMouseVisible = this.playerPause;
+                }
+            }
+
+            if (!game.IsActive || playerPause) return;
+
             Vector2 walkingVelocity = new Vector2();
             if (Keyboard.GetState().IsKeyDown(playerControls["forward_move"])) 
                 walkingVelocity += new Vector2((float)Math.Cos(this.rotation.X*Math.PI/180)*2,
@@ -178,20 +198,13 @@ namespace Raymagic
             {
                 this.testONButtonDown = true;
 
-                /* map.dynamicObjectList[0].childObjects[0].booleanStrength++; */
-                /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
-                /* map.enabledUpdate = true; */
-                /* map.interactableObjectList[0].Interact(); */
+                map.ReloadMap();
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {
                 this.testOFFButtonDown = true;
-
-                /* map.dynamicObjectList[0].childObjects[0].booleanStrength--; */
-                /* Console.WriteLine(map.dynamicObjectList[0].childObjects[0].booleanStrength); */
-
-                /* map.interactableObjectList[0].Interact(); */
             }
+
             if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_ON"]))
             {
                 this.testONButtonDown = false;
@@ -200,6 +213,9 @@ namespace Raymagic
             {
                 this.testOFFButtonDown = false;
             }
+
+
+            PortalPlacement(mouse);
 
             Mouse.SetPosition(500, 500);
         }
@@ -439,6 +455,32 @@ namespace Raymagic
             {
                 grounded = true;
                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 0);
+            }
+        }
+
+        bool lPressed;
+        bool rPressed;
+        void PortalPlacement(MouseState mouse)
+        {
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                lPressed = true;
+            }
+            if (mouse.RightButton == ButtonState.Pressed)
+            {
+                rPressed = true;
+            }
+
+            if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
+            {
+                RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, this.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:this.model);
+                if (hitObj.IsSelectable)
+                {
+                    int type = lPressed ? 0 : 1;
+                    map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
+                    Console.WriteLine("added");
+                }
+                lPressed = rPressed = false;
             }
         }
 

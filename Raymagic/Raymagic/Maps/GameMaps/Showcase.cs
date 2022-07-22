@@ -7,6 +7,7 @@ namespace Raymagic
         public Showcase()
         {
             MapData data = new MapData();
+            data.mapName = "showcase";
 
             data.topCorner = new Vector3(300,1000,200);
             data.botCorner = new Vector3(0,0,0);
@@ -104,7 +105,7 @@ namespace Raymagic
             data.interactableObjectList.Add(door2);
             data.interactableObjectList.Add(door3);
 
-            Map.instance.RegisterMap("showcase", data);
+            Map.instance.RegisterMap(data.mapName, data);
         }
     }
 }

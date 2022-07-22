@@ -21,16 +21,15 @@ namespace Raymagic
         public override void ObjectSetup()
         {
             // offset for easier modelling 
-            Vector3 position = this.Position + new Vector3(0,0,50) ;
+            Vector3 position = this.Position;
 
             Object bBase = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray, false);
 
             facing.Normalize();
             bBase.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, false, BooleanOP.SDIFFERENCE, 1), true);
-            bBase.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 10.5f, this.secondaryColor, false), true);
+            bBase.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor, false), true);
 
             Map.instance.staticObjectList.Add(bBase);
-
 
             Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed, false);
             button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)));
@@ -41,7 +40,7 @@ namespace Raymagic
             modelStates.Add(button1);
             modelStates.Add(button2);
 
-            this.boundingBoxSize = new Vector3(10,10,10);
+            this.boundingBoxSize = new Vector3(30,30,100);
             this.boundingBox = new Box(position,
                                        this.boundingBoxSize,
                                        Color.Black);

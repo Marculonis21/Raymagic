@@ -16,9 +16,9 @@ namespace Raymagic
         List<string> possibleObjects;
         List<string> possibleOperations;
 
-        Dictionary<string, Object> declaredObjects = new Dictionary<string, Object>();
-        Dictionary<string, Tuple<PhysicsObject, Type>> declaredPhysicsObjects = new Dictionary<string, Tuple<PhysicsObject, Type>>();
-        Dictionary<string, Tuple<Interactable, Type>> declaredInteractableObjects = new Dictionary<string, Tuple<Interactable, Type>>();
+        Dictionary<string, Object> declaredObjects;
+        Dictionary<string, Tuple<PhysicsObject, Type>> declaredPhysicsObjects;
+        Dictionary<string, Tuple<Interactable, Type>> declaredInteractableObjects;
 
         enum ObjectCategory
         {
@@ -50,7 +50,7 @@ namespace Raymagic
                 "door"
             };
 
-            possibleObjects = new List<string>() {
+            possibleOperations = new List<string>() {
                 "rotateX",
                 "rotateY",
                 "rotateZ",
@@ -64,23 +64,49 @@ namespace Raymagic
 
         MapData data;
 
-        public async Task CompileFile(string path)
+        public async Task CompileFile(string path, bool full = true)
         {
             if (path == "") throw new ArgumentNullException("Compiler needs a map file input");
             if (!path.EndsWith(".map")) throw new ArgumentException("Incorrect file type - needs .map file type");
 
             string[] input = GetTextFromFile(path);
+
+            declaredObjects = new Dictionary<string, Object>();
+            declaredPhysicsObjects = new Dictionary<string, Tuple<PhysicsObject, Type>>();
+            declaredInteractableObjects = new Dictionary<string, Tuple<Interactable, Type>>();
+
             data = new MapData();
+            data.isCompiled = true;
+            data.path = path;
 
-            var tasks = new Task[6];
+            /* var tasks = new Task[6]; */
+            List<Task> tasks = new List<Task>();
 
-            tasks[0] = ParseConfigAsync(input);
-            tasks[1] = ParseStaticAsync(input);
-            /* tasks[2] = ParseDynamicAsync(input); */
-            tasks[3] = ParseLightsAsync(input);
+            tasks.Add(ParseConfigAsync(input));
+            tasks.Add(ParseLightsAsync(input));
+            tasks.Add(ParseDynamicAsync(input));
+            tasks.Add(ParsePhysicsAsync(input));
+            if (full)
+            {
+                // they contain static elements - needs full recompile
+                tasks.Add(ParseStaticAsync(input));
+                tasks.Add(ParseInteractableAsync(input));
+            }
 
-            await Task.WhenAll(tasks);
-            Console.WriteLine("done parse");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine($"Error while compiling {path}");
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            Console.WriteLine($"found dynamic {data.dynamicMapObjects.Count}");
+
+            Map.instance.RegisterMap(data.mapName, data);
         }
 
         private string[] GetTextFromFile(string path)
@@ -110,6 +136,9 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                /* Console.WriteLine($"config {i}"); */
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -140,7 +169,7 @@ namespace Raymagic
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
 
@@ -177,6 +206,9 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                /* Console.WriteLine($"static {i}"); */
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -193,13 +225,13 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, i, operationType, targetObject, operationContent);
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
 
@@ -221,6 +253,9 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                /* Console.WriteLine($"dynamic {i}"); */
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -238,13 +273,13 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.DYNAMIC, i, operationType, targetObject, operationContent);
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
 
@@ -263,6 +298,9 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                /* Console.WriteLine($"lights {i}"); */
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -281,12 +319,12 @@ namespace Raymagic
                     }
                     else
                     {
-                        throw new FormatException($"Format error line {i} - Cannot add object type '{objectType}' into lights block)");
+                        throw new FormatException($"Format error line {i+1} - Cannot add object type '{objectType}' into lights block)");
                     }
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
         }
@@ -307,6 +345,9 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                /* Console.WriteLine($"physics {i}"); */
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -317,14 +358,14 @@ namespace Raymagic
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    PhysicsObject pObj = (PhysicsObject)GetObjectFromData(ObjectCategory.PHYSICS, i, objectPart, paramPart, false, BooleanOP.NONE, 0, out Type type);
+                    PhysicsObject pObj = GetPhysicsObjectFromData(ObjectCategory.PHYSICS, i, objectPart, paramPart, false, BooleanOP.NONE, 0, out Type type);
 
                     declaredPhysicsObjects.Add(objectInfoName, new Tuple<PhysicsObject, Type>(pObj, type));
                     data.physicsMapObjects.Add(pObj);
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
         }
@@ -342,6 +383,8 @@ namespace Raymagic
 
             for (int i = start+1; i < end; i++)
             {
+                await Task.Yield();
+
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -352,14 +395,14 @@ namespace Raymagic
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    Interactable iObj = (Interactable)GetObjectFromData(ObjectCategory.INTERACTABLE, i, objectPart, paramPart, false, BooleanOP.NONE, 1, out Type type);
+                    Interactable iObj = GetInteractableObjectFromData(ObjectCategory.INTERACTABLE, i, objectPart, paramPart, false, BooleanOP.NONE, 1, out Type type);
                         
                     declaredInteractableObjects.Add(objectInfoName, new Tuple<Interactable, Type>(iObj, type));
                     data.interactableObjectList.Add(iObj);
                 }
                 else if (LineContainsOperation(line, out string operationType, out string _, out string[] operationContent))
                 {
-                    if (operationType != "connect") throw new FormatException($"Format error line {i} - Interactable object allow only 'connect' operation");
+                    if (operationType != "connect") throw new FormatException($"Format error line {i+1} - Interactable object allow only 'connect' operation");
 
                     string from = operationContent[0];
                     string to = operationContent[1];
@@ -367,10 +410,10 @@ namespace Raymagic
                     // connect: from -> to 
                     // input can be interactable or trigger - output must be interactabl
                     if (!declaredInteractableObjects.ContainsKey(from) && !declaredPhysicsObjects.ContainsKey(from)) 
-                        throw new FormatException($"Format error line {i} - 'From' connection object not found");
+                        throw new FormatException($"Format error line {i+1} - 'From' connection object not found");
 
                     if (!declaredInteractableObjects.ContainsKey(to))
-                        throw new FormatException($"Format error line {i} - 'To' connection object not found");
+                        throw new FormatException($"Format error line {i+1} - 'To' connection object not found");
 
                     // from is interactable
                     if (declaredInteractableObjects.ContainsKey(from))
@@ -393,8 +436,8 @@ namespace Raymagic
                             {
                                 var door = (toObj as Door);
 
-                                trigger.onCollisionEnter += door.TriggerEnterExit;
-                                trigger.onCollisionExit += door.TriggerEnterExit;
+                                trigger.onCollisionEnter += door.TriggerEnter;
+                                trigger.onCollisionExit += door.TriggerExit;
                             }
                             /* else if (toType == typeof(Spawner)) */
                             /* { */
@@ -402,14 +445,14 @@ namespace Raymagic
                         }
                         else
                         {
-                            throw new FormatException($"Format error line {i} - Cannot use physics ball as an event trigger");
+                            throw new FormatException($"Format error line {i+1} - Cannot use physics ball as an event trigger");
                         }
                         
                     }
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i} - Unknown input");
+                    throw new FormatException($"Format warning line {i+1} - Unknown input");
                 }
             }
         }
@@ -426,11 +469,18 @@ namespace Raymagic
                     if (input[i+1] == "{")
                     {
                         startEndRecord = new Tuple<int, int>(i+1, startEndRecord.Item2);
+                        brackets += 1;
+                        i += 1;
+                        continue;
                     }
                     else
                     {
-                        throw new FormatException($"{target} - missing opening at line {i} brackets");
+                        throw new FormatException($"{target} - missing opening at line {i+1} brackets");
                     }
+                }
+                else if (brackets == 0)
+                {
+                    continue;
                 }
 
                 switch (input[i])
@@ -460,13 +510,15 @@ namespace Raymagic
 
         private Object GetObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
         {
-            if (category == ObjectCategory.STATIC || category == ObjectCategory.DYNAMIC)
+            lineNum += 1;
+
+            Object obj;
+
+            var objectType = objectPart[0];
+            var objectInfoName = objectPart[1];
+
+            try
             {
-                Object obj;
-
-                var objectType = objectPart[0];
-                var objectInfoName = objectPart[1];
-
                 switch (objectType)
                 {
                     case "box":
@@ -474,7 +526,12 @@ namespace Raymagic
                             Vector3 position = GetVector3FromText(paramPart[0]);
                             Vector3 size = GetVector3FromText(paramPart[1]);
                             Color color = GetColorFromText(paramPart[2]);
-                            obj = new Box(position, size, color, staticObject, boolean, booleanStrength, info:objectInfoName);
+                            Vector3 boundingSize = new Vector3();
+                            if (category == ObjectCategory.DYNAMIC)
+                            {
+                                boundingSize = GetVector3FromText(paramPart[3]);
+                            }
+                            obj = new Box(position, size, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "box_frame":
@@ -483,7 +540,12 @@ namespace Raymagic
                             Vector3 size = GetVector3FromText(paramPart[1]);
                             float frameSize = float.Parse(paramPart[2]);
                             Color color = GetColorFromText(paramPart[3]);
-                            obj = new BoxFrame(position, size, frameSize, color, staticObject, boolean, booleanStrength, info:objectInfoName);
+                            Vector3 boundingSize = new Vector3();
+                            if (category == ObjectCategory.DYNAMIC)
+                            {
+                                boundingSize = GetVector3FromText(paramPart[4]);
+                            }
+                            obj = new BoxFrame(position, size, frameSize, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "capsule":
@@ -492,7 +554,12 @@ namespace Raymagic
                             float height = float.Parse(paramPart[1]);
                             float radius = float.Parse(paramPart[2]);
                             Color color = GetColorFromText(paramPart[3]);
-                            obj = new Capsule(position, height, radius, color, staticObject, boolean, booleanStrength, info:objectInfoName);
+                            Vector3 boundingSize = new Vector3();
+                            if (category == ObjectCategory.DYNAMIC)
+                            {
+                                boundingSize = GetVector3FromText(paramPart[4]);
+                            }
+                            obj = new Capsule(position, height, radius, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "cylinder":
@@ -502,7 +569,12 @@ namespace Raymagic
                             float height = float.Parse(paramPart[2]);
                             float radius = float.Parse(paramPart[3]);
                             Color color = GetColorFromText(paramPart[4]);
-                            obj = new Cylinder(position, baseNormal, height, radius, color, staticObject, boolean, booleanStrength, info:objectInfoName);
+                            Vector3 boundingSize = new Vector3();
+                            if (category == ObjectCategory.DYNAMIC)
+                            {
+                                boundingSize = GetVector3FromText(paramPart[5]);
+                            }
+                            obj = new Cylinder(position, baseNormal, height, radius, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "plane":
@@ -512,6 +584,7 @@ namespace Raymagic
                             Vector3 position = GetVector3FromText(paramPart[0]);
                             Vector3 normal = GetVector3FromText(paramPart[1]);
                             Color color = GetColorFromText(paramPart[2]);
+
                             obj = new Plane(position, normal, color, boolean, booleanStrength, info:objectInfoName);
                         }
                         break;
@@ -520,24 +593,40 @@ namespace Raymagic
                             Vector3 position = GetVector3FromText(paramPart[0]);
                             float size = float.Parse(paramPart[1]);
                             Color color = GetColorFromText(paramPart[2]);
-                            obj = new Sphere(position, size, color, staticObject, boolean, booleanStrength, info:objectInfoName);
+                            Vector3 boundingSize = new Vector3();
+                            if (category == ObjectCategory.DYNAMIC)
+                            {
+                                boundingSize = GetVector3FromText(paramPart[3]);
+                            }
+                            obj = new Sphere(position, size, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
 
                     default:
                         throw new FormatException($"Format error line {lineNum} - Cannot add this type of object as static object");
                 }
-
-                type = obj.GetType();
-                return obj;
             }
-            else if (category == ObjectCategory.PHYSICS)
+            catch (IndexOutOfRangeException)
             {
-                PhysicsObject pObj;
+                throw new FormatException($"Format error line {lineNum} - Missing some arguments");
+            }
 
-                var objectType = objectPart[0];
-                var objectInfoName = objectPart[1];
+            type = obj.GetType();
+            return obj;
 
+        }
+
+        private PhysicsObject GetPhysicsObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
+        {
+            lineNum += 1;
+
+            PhysicsObject pObj;
+
+            var objectType = objectPart[0];
+            var objectInfoName = objectPart[1];
+
+            try
+            {
                 if (objectType == "physics_object")
                 {
                     Vector3 position = GetVector3FromText(paramPart[0]);
@@ -555,17 +644,28 @@ namespace Raymagic
                 {
                     throw new FormatException($"Format error line {lineNum} - Cannot add object type '{objectType}' into lights block)");
                 }
-
-                type = pObj.GetType();
-                return pObj;
             }
-            else if (category == ObjectCategory.INTERACTABLE)
+            catch (IndexOutOfRangeException)
             {
-                Interactable iObj;
+                throw new FormatException($"Format error line {lineNum} - Missing some arguments");
+            }
 
-                var objectType = objectPart[0];
-                var objectInfoName = objectPart[1];
+            type = pObj.GetType();
+            return pObj;
 
+        }
+
+        private Interactable GetInteractableObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
+        {
+            lineNum += 1;
+
+            Interactable iObj;
+
+            var objectType = objectPart[0];
+            var objectInfoName = objectPart[1];
+
+            try
+            {
                 switch (objectType)
                 {
                     case "button":
@@ -597,12 +697,15 @@ namespace Raymagic
                     default:
                         throw new FormatException($"Format error line {lineNum} - Cannot add this type of object as dynamic object");
                 }
-
-                type = iObj.GetType();
-                return iObj;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new FormatException($"Format error line {lineNum} - Missing some arguments");
             }
 
-            throw new Exception("NON-EXHAUSTIVE PATTERN");
+            type = iObj.GetType();
+            return iObj;
+
         }
 
         private void AssignOperationFromData(ObjectCategory category, int lineNum, string operationType, string targetObject, string[] operationContent)
@@ -668,12 +771,11 @@ namespace Raymagic
                 var parts = line.Split(":", 2, StringSplitOptions.TrimEntries);
                 if (parts[0].Contains('[') && parts[0].Contains(']'))
                 {
-                    var split2 = parts[0].Split('[');
                     // name part
-                    objectPart[0] = split2[0];
+                    objectPart[0] = parts[0].Split('[')[0];
 
                     // info name part
-                    objectPart[1] = split2[1].Remove(']');
+                    objectPart[1] = parts[0].Split('[', ']')[1];
                 }
                 else
                 {
@@ -750,7 +852,8 @@ namespace Raymagic
         private Color GetColorFromText(string input)
         {
             CColor cc = CColor.FromName(input);
-            return new Color(cc.A, cc.R, cc.G, cc.B);
+            if (!cc.IsKnownColor) throw new FormatException($"Unknown color {input}");
+            return new Color(cc.R, cc.G, cc.B, cc.A);
         }
 
         private BooleanOP GetBooleanOPFromText(string input)

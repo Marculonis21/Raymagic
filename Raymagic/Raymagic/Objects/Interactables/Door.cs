@@ -90,10 +90,20 @@ namespace Raymagic
             Interact();
         }
 
-        public void TriggerEnterExit(IPortalable obj, PhysicsTrigger _)
+        public void TriggerEnter(IPortalable obj, PhysicsTrigger _)
         {
             if (obj is Player)
             {
+                this.state = 0;
+                Interact();
+            }
+        }
+
+        public void TriggerExit(IPortalable obj, PhysicsTrigger _)
+        {
+            if (obj is Player)
+            {
+                this.state = 1;
                 Interact();
             }
         }

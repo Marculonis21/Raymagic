@@ -32,8 +32,6 @@ namespace Raymagic
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
-
-            Task.WaitAll(TxtMapCompiler.instance.CompileFile("./Maps/GameMaps/testModellingLanguage.map"));
         }
 
         protected override void Initialize()
@@ -117,12 +115,10 @@ namespace Raymagic
             }
         }
 
-        bool lPressed = false;
-        bool rPressed = false;
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            /* if (Keyboard.GetState().IsKeyDown(Keys.Escape) && player.playerPause) */
+            /*     Exit(); */
 
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) detailSize = 1;
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) detailSize = 2; 
@@ -138,37 +134,11 @@ namespace Raymagic
             screen.SetDetailSize(detailSize);
 
             MouseState mouse = Mouse.GetState(this.Window);
-            player.Controlls(gameTime, mouse);
 
-            if (mouse.LeftButton == ButtonState.Pressed)
-            {
-                lPressed = true;
-            }
-            if (mouse.RightButton == ButtonState.Pressed)
-            {
-                rPressed = true;
-            }
-
-            Object outObj = null;
-            if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
-            {
-
-                RayMarchingHelper.PhysicsRayMarch(new Ray(player.position, player.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:player.model);
-                if (hitObj.IsSelectable)
-                {
-                    int type = lPressed ? 0 : 1;
-                    map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
-                    Console.WriteLine("added");
-                }
-                lPressed = rPressed = false;
-            }
+            player.Controlls(this, gameTime, mouse);
 
             player.Update(gameTime);
             map.Update(gameTime);
-
-            /* float x = (float)Math.Cos(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
-            /* float y = (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000f); */
-            /* map.lightList[0].position += new Vector3(x,y,0); */
 
             if (map.portalList[0] != null && map.portalList[1] != null)
             {

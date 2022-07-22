@@ -14,6 +14,8 @@ namespace Raymagic
         public Dictionary<string, MapData> maps {get; private set;}
         MapData data;
 
+        string txtMapsPath = "Maps/GameMaps/";
+
         public string mapName;
 
         public Vector3 mapSize;
@@ -57,22 +59,67 @@ namespace Raymagic
 
         public void RegisterMap(string id, MapData data)
         {
-            maps.Add(id, data);
+            if (maps.ContainsKey(id))
+            {
+                maps[id] = data;
+            }
+            else
+            {
+                maps.Add(id, data);
+            }
         }
 
         public void LoadMaps()
         {
-            /* new BigRoom(); */
             new TestArea();
             new Showcase();
+
+            string[] files = Directory.GetFiles(txtMapsPath, "*.map");
+
+            Console.WriteLine($"found {files.Length} files for TxtMapCompiler");
+            var compilerTasks = new Task[files.Length];
+            for (int i = 0; i < files.Length; i++)
+            {
+                compilerTasks[i] = TxtMapCompiler.instance.CompileFile(files[i]);
+            }
+
+            Task.WaitAll(compilerTasks);
+
+            if (files.Length > 0)
+                Console.WriteLine("Compilation process done");
+        }
+
+        public async void ReloadMap()
+        {
+            if (data.isCompiled)
+            {
+                await TxtMapCompiler.instance.CompileFile(data.path, false);
+
+                this.data = maps[this.data.mapName];
+
+                this.dynamicObjectList = data.dynamicMapObjects;
+                Console.WriteLine(data.dynamicMapObjects.Count);
+                this.physicsObjectsList = data.physicsMapObjects;
+                this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
+                this.lightList = data.mapLights;
+                this.physicsSpace = new PhysicsSpace(physicsObjectsList);
+
+                mapSize = data.topCorner - data.botCorner;
+                mapOrigin = data.botCorner;
+                mapTopCorner = data.topCorner;
+
+                BVH.BuildBVHDownUp();
+
+                Console.WriteLine("reloading done");
+            }
         }
 
         public void SetMap(string id)
         {
             this.data = maps[id];
-            this.mapName = id;
+            this.mapName = data.mapName;
             this.staticObjectList = data.staticMapObjects;
-            this.dynamicObjectList.AddRange(data.dynamicMapObjects);
+            this.dynamicObjectList = data.dynamicMapObjects;
             this.physicsObjectsList = data.physicsMapObjects;
             this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
             this.interactableObjectList = data.interactableObjectList;

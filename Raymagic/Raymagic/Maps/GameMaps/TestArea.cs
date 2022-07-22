@@ -7,6 +7,7 @@ namespace Raymagic
         public TestArea()
         {
             MapData data = new MapData();
+            data.mapName = "testArea";
 
             data.topCorner = new Vector3(500,500,300);
             data.botCorner = new Vector3(0,0,0);
@@ -142,7 +143,9 @@ namespace Raymagic
 
             data.staticMapObjects.Add(boxbox);
 
-            Map.instance.RegisterMap("testArea", data);
+            data.interactableObjectList.Add(new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue));
+
+            Map.instance.RegisterMap(data.mapName, data);
         }
     }
 }

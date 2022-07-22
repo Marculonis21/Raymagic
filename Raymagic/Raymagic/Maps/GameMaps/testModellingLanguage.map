@@ -10,6 +10,12 @@ static
 {
     plane[floor]:(0,0,0)|(0,0,1)|Beige
     plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+    # box[box]:(200,200,50)|(100,100,100)|Red
 }
 
 lights
@@ -19,12 +25,19 @@ lights
 
 dynamic
 {
+    box[db]:(100,100,70)|(50,50,50)|Blue|(50,50,50)
 }
 
 physics
 {
+    physics_object[ball]:(100,200,200)|Red|Blue
+    physics_trigger[doorTrigger]:(200,200,100)|100
 }
 
 interactables
 {
+    button[button1]:(150,100,0)|(-1,0,0)|Blue
+    door[door1]:(200,200,0)|(-1,0,0)|Blue
+    # connect: doorTrigger -> door1 
+    connect: button1 -> door1
 }
