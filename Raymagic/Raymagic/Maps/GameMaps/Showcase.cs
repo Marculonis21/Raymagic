@@ -56,19 +56,19 @@ namespace Raymagic
             data.staticMapObjects.Add(yBox);
             data.staticMapObjects.Add(zBox);
 
-            Light light1 = new Light(new Vector3(125,100,175),
+            Light light1 = new Light(new Vector3(125,100,175), Color.White,
                                     25);
 
-            Light light2 = new Light(new Vector3(125,300,175),
+            Light light2 = new Light(new Vector3(125,300,175), Color.White,
                                     25);
 
-            Light light3 = new Light(new Vector3(125,500,175),
+            Light light3 = new Light(new Vector3(125,500,175), Color.White,
                                     25);
 
-            Light light4 = new Light(new Vector3(125,700,175),
+            Light light4 = new Light(new Vector3(125,700,175), Color.White,
                                     25);
 
-            Light light5 = new Light(new Vector3(125,900,175),
+            Light light5 = new Light(new Vector3(125,900,175), Color.White,
                                     25);
 
             data.mapLights.Add(light1);

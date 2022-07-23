@@ -108,10 +108,11 @@ namespace Raymagic
             data.staticMapObjects.Add(_b3Frame);
 
 
-            Light light = new Light(new Vector3(300,300,200),
-                                    100);
+            Light light = new Light(new Vector3(250,250,280), Color.White,
+                                    40000);
 
             data.mapLights.Add(light);
+
 
             Box b = new Box(new Vector3(100,100,30),
                             new Vector3(200,200,20),

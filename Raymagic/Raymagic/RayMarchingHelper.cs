@@ -17,7 +17,6 @@ namespace Raymagic
 
     public static class RayMarchingHelper
     {
-        /* public static bool SpecularEnabled { get; set; } */
         enum ObjHitType
         {
             Static,
@@ -151,7 +150,7 @@ namespace Raymagic
                     float lightIntensity = 0;
                     foreach(Light light in map.lightList)
                     {
-                        if (Vector3.Distance(light.position, testPos) > 500) continue;
+                        if (Vector3.Distance(light.position, testPos) > 750) continue;
 
                         objectNormal = finalObj.SDF_normal(testPos);
                         startPos = testPos+objectNormal*2;
@@ -159,16 +158,23 @@ namespace Raymagic
                         float addIntensity = LightRayMarch(startPos, light);
                         if(addIntensity > 0)
                         {
-                            addIntensity += 0.001f*SpecularHighlight(ray, testPos, objectNormal, light.position);
+                            addIntensity += 0.2f*(float)Math.Pow(SpecularHighlight(ray, testPos, objectNormal, light.position), 2);
                         }
 
                         lightIntensity += addIntensity;
+
+                        lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
+                        Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
+
+                        color = new Color(color.R+addColor.R,
+                                          color.G+addColor.G,
+                                          color.B+addColor.B);
                     }
 
-                    lightIntensity = Math.Max(lightIntensity, 0.00025f); // try around something
-                    color = new Color(final.color.R*lightIntensity,
-                                      final.color.G*lightIntensity,
-                                      final.color.B*lightIntensity);
+                    /* lightIntensity = Math.Max(lightIntensity, 0.00025f); // try around something */
+                    /* color = new Color(final.color.R*lightIntensity, */
+                    /*                   final.color.G*lightIntensity, */
+                    /*                   final.color.B*lightIntensity); */
 
                     return;
                 }
@@ -183,7 +189,7 @@ namespace Raymagic
             Ray reflectionViewRay = new Ray(objectHitPos, reflectionDir);
 
             // "= how close is the reflection vector to the light vector)"
-            return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0);
+            return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0f);
         }
 
         public static float LightRayMarch(Vector3 position, Light light)
