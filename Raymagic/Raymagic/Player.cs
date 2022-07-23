@@ -197,12 +197,13 @@ namespace Raymagic
             {
                 this.testONButtonDown = true;
 
-                this.activeMapReload = !this.activeMapReload;
-                if (activeMapReload)
-                {
-                    MapReloadingAsync(500);
-                }
-                map.ReloadMap();
+                /* RayMarchingHelper.SpecularEnabled = !RayMarchingHelper.SpecularEnabled; */
+                /* this.activeMapReload = !this.activeMapReload; */
+                /* if (activeMapReload) */
+                /* { */
+                /*     MapReloadingAsync(500); */
+                /* } */
+                /* map.ReloadMap(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {

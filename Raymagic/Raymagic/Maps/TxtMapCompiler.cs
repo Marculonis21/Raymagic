@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using CColor = System.Drawing.Color;
+using System.Linq;
 
 namespace Raymagic
 {
@@ -99,10 +100,20 @@ namespace Raymagic
             }
             catch (FormatException e)
             {
-                Console.WriteLine($"Error while compiling {path}");
-                Console.WriteLine(e.Message);
+                if (full)
+                {
+                    Console.WriteLine($"Error while compiling {path}");
+                    Console.WriteLine(e.Message);
+                }
+                else
+                {
+                    Informer.instance.AddInfo("map_compilation1", $"Error while compiling {path}", true);
+                    Informer.instance.AddInfo("map_compilation2", e.Message, true);
+                }
                 return;
             }
+            Informer.instance.AddInfo("map_compilation1", $"Compiling done", true);
+            Informer.instance.AddInfo("map_compilation2", "", true);
 
             Map.instance.RegisterMap(data.mapName, data);
         }
@@ -286,7 +297,7 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, i, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, i, operationType, targetObject, operationContent);
                 }
@@ -327,7 +338,7 @@ namespace Raymagic
                     {
                         Vector3 position = GetVector3FromText(paramPart[0]);
                         float intensity = float.Parse(paramPart[1]);
-                        Light light = new Light(position, intensity);
+                        Light light = new Light(position, Color.White, intensity);
                         data.mapLights.Add(light);
                     }
                     else
@@ -776,9 +787,11 @@ namespace Raymagic
 
                             if (LineContainsObject(operationContent[2], lineNum, out string[] _objectPart, out string[] _paramPart))
                             {
+                                bool relativeTransform = bool.Parse(_paramPart.Last());
+                                _paramPart = _paramPart.SkipLast(1).ToArray();
                                 Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, op, opStrength, out Type type);
 
-                                target.AddChildObject(opObj, true);
+                                target.AddChildObject(opObj, relativeTransform);
                             }
                             else
                             {

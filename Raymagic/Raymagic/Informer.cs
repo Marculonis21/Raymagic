@@ -8,6 +8,7 @@ namespace Raymagic
     {
         Graphics graphics;
         Dictionary<string, string> infoList = new Dictionary<string, string>();
+        Dictionary<string, string> infoListPersistent = new Dictionary<string, string>();
         const int heightOffset = 15;
 
         //SINGLETON
@@ -21,18 +22,36 @@ namespace Raymagic
             this.graphics = graphics;
         }
 
-        public void AddInfo(string key, string info)
+        public void AddInfo(string key, string info, bool persistent=false)
         {
-            if(infoList.ContainsKey(key))
-                infoList[key] = info;
+            if (persistent)
+            {
+                if(infoListPersistent.ContainsKey(key))
+                    infoListPersistent[key] = info;
+                else
+                    infoListPersistent.Add(key,info);
+            }
+
             else
-                infoList.Add(key,info);
+            {
+                if(infoList.ContainsKey(key))
+                    infoList[key] = info;
+                else
+                    infoList.Add(key,info);
+            }
         }
 
         public void ShowInfo(Vector2 origin, SpriteFont font, Color color)
         {
             int count = 0;
             foreach(string s in infoList.Values)
+            {
+                graphics.DrawText(s, font, origin + new Vector2(0,1)*heightOffset*count, color, 0,0);
+                count++;
+            }
+            count += 2;
+
+            foreach(string s in infoListPersistent.Values)
             {
                 graphics.DrawText(s, font, origin + new Vector2(0,1)*heightOffset*count, color, 0,0);
                 count++;
