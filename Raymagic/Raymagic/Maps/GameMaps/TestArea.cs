@@ -77,6 +77,11 @@ namespace Raymagic
                                              10,
                                              Color.Green);
 
+            /* Sphere sphere = new Sphere(new Vector3(150,150,100), */
+            /*                            20, Color.Gold, boundingBoxSize:new Vector3(500,500,200)); */
+            /* sphere.AddChildObject(new Sphere(new Vector3(0,50,0), 10, Color.MistyRose), true); */
+            /* data.dynamicMapObjects.Add(sphere); */
+
             Box _b2 = new Box(new Vector3(300,300,60),
                               new Vector3(20,20,20),
                               Color.Blue);

@@ -8,10 +8,9 @@ namespace Raymagic
 {
     public abstract class Object
     {
-        protected Matrix<double> translationMatrix = Matrix.Create<double>(4,4);
-        protected Matrix<double> rotationMatrix = Matrix.Create<double>(4,4);
-        protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
+        protected Matrix<double> transformMatrix = Matrix.Create<double>(4,4);
 
+        // protected Matrix<double> transformInverse = Matrix.Create<double>(4,4);
         // transformInverseMatrix put to an array (for some reason those matrices have slower indexing) 
         // -> faster Transform()
         protected double[] inverse = new double[12]; 
@@ -25,7 +24,7 @@ namespace Raymagic
         protected Vector3 boundingBoxSize;
         protected bool boundingBoxVisible = false;
 
-        protected List<Object> childObjects = new List<Object>();
+        public List<Object> childObjects {get; protected set;}
         protected BooleanOP booleanOP;
         protected float booleanStrength;
 
@@ -33,19 +32,15 @@ namespace Raymagic
 
         public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
-            this.translationMatrix[0,0] = 1;
-            this.translationMatrix[1,1] = 1;
-            this.translationMatrix[2,2] = 1;
-            this.translationMatrix[3,3] = 1;
-
-            this.rotationMatrix[0,0] = 1;
-            this.rotationMatrix[1,1] = 1;
-            this.rotationMatrix[2,2] = 1;
-            this.rotationMatrix[3,3] = 1;
+            this.transformMatrix[0,0] = 1;
+            this.transformMatrix[1,1] = 1;
+            this.transformMatrix[2,2] = 1;
+            this.transformMatrix[3,3] = 1;
 
             this.color = color;
             this.selectable = selectable;
             this.info = info;
+            this.childObjects = new List<Object>();
 
             this.Translate(position);
             this.childRelativePos = position;
@@ -66,8 +61,9 @@ namespace Raymagic
         {
             if(relativeTransform)
             {
-                child.Translate(this.Position);
-                child.rotationMatrix = this.rotationMatrix;
+                child.transformMatrix = this.transformMatrix.Clone();
+                child.inverse = TransformHelper.GetInverse(child.transformMatrix);
+                child.Translate(child.childRelativePos);
             }
 
             childObjects.Add(child);
@@ -134,12 +130,10 @@ namespace Raymagic
 
         public void TranslateAbsolute(Vector3 newPosition, bool propagateToChildren=true)
         {
-            this.translationMatrix[3,0] = 0;
-            this.translationMatrix[3,1] = 0;
-            this.translationMatrix[3,2] = 0;
+            Vector3 diff = newPosition - this.Position;
 
-            this.translationMatrix = TransformHelper.Translate(translationMatrix, newPosition);
-            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+            this.transformMatrix = TransformHelper.Translate(transformMatrix, diff);
+            this.inverse = TransformHelper.GetInverse(this.transformMatrix);
 
             if (propagateToChildren)
             {
@@ -152,8 +146,8 @@ namespace Raymagic
 
         public void Translate(Vector3 translation, bool propagateToChildren=true)
         {
-            this.translationMatrix = TransformHelper.Translate(translationMatrix, translation);
-            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+            this.transformMatrix = TransformHelper.Translate(transformMatrix, translation);
+            this.inverse = TransformHelper.GetInverse(transformMatrix);
 
             if (propagateToChildren)
             {
@@ -164,25 +158,43 @@ namespace Raymagic
             }
         }
 
-        public void Rotate(float angle, string axis)
+        public void Rotate(float angle, string axis, Vector3 pivotPosition)
         {
-            this.rotationMatrix = TransformHelper.Rotate(this.rotationMatrix, angle, axis);
-            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+            if (pivotPosition == Vector3.Zero)
+            {
+                this.transformMatrix = TransformHelper.Rotate(this.transformMatrix, angle, axis);
+            }
+            else
+            {
+                Translate(-pivotPosition);
+                this.transformMatrix = TransformHelper.Rotate(this.transformMatrix, angle, axis);
+                Translate(pivotPosition);
+            }
+            this.inverse = TransformHelper.GetInverse(transformMatrix);
 
             foreach(Object obj in childObjects)
             {
-                obj.Rotate(angle, axis);
+                obj.Rotate(angle, axis, pivotPosition);
             }
         }
 
-        public void Rotate(float angle, Vector3 axis)
+        public void Rotate(float angle, Vector3 axis, Vector3 pivotPosition)
         {
-            this.rotationMatrix = TransformHelper.Rotate(this.rotationMatrix, angle, axis);
-            this.inverse = TransformHelper.GetInverse(translationMatrix, rotationMatrix);
+            if (pivotPosition == Vector3.Zero)
+            {
+                this.transformMatrix = TransformHelper.Rotate(this.transformMatrix, angle, axis);
+            }
+            else
+            {
+                Translate(-pivotPosition);
+                this.transformMatrix = TransformHelper.Rotate(this.transformMatrix, angle, axis);
+                Translate(pivotPosition);
+            }
+            this.inverse = TransformHelper.GetInverse(transformMatrix);
 
             foreach(Object obj in childObjects)
             {
-                obj.Rotate(angle, axis);
+                obj.Rotate(angle, axis, pivotPosition);
             }
         }
         
@@ -196,9 +208,9 @@ namespace Raymagic
         {
             get 
             {
-                return new Vector3((float)this.translationMatrix[3,0], 
-                                   (float)this.translationMatrix[3,1], 
-                                   (float)this.translationMatrix[3,2]);
+                return new Vector3((float)this.transformMatrix[3,0], 
+                                   (float)this.transformMatrix[3,1], 
+                                   (float)this.transformMatrix[3,2]);
             }
         }
 

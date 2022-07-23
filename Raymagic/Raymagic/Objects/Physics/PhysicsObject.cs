@@ -68,7 +68,7 @@ namespace Raymagic
                 {
                     float angle = (velocity.Length() / this.size) * (float)(180f / Math.PI);
 
-                    this.Rotate(angle, rightDir);
+                    this.Rotate(angle, rightDir, this.Position);
                 }
             }
         }

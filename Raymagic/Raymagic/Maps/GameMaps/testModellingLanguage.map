@@ -25,8 +25,21 @@ lights
 
 dynamic
 {
-    box[lifterBase]:(150,150,10)|(110,110,20)|White|(110,110,50)
-    boolean: lifterBase: difference: box:(150,150,20)|(100,100,20)|Black
+    box[line1] :(150,150,10)|(100,10,20)|Yellow|(100,100,20)
+    boolean: line1: union: box:(0, 10,0)|(100,10,20)|Black
+    boolean: line1: union: box:(0, 20,0)|(100,10,20)|Yellow
+    boolean: line1: union: box:(0, 30,0)|(100,10,20)|Black|
+    boolean: line1: union: box:(0, 40,0)|(100,10,20)|Yellow
+    boolean: line1: union: box:(0, 50,0)|(100,10,20)|Black|
+    boolean: line1: union: box:(0,-10,0)|(100,10,20)|Black
+    boolean: line1: union: box:(0,-20,0)|(100,10,20)|Yellow
+    boolean: line1: union: box:(0,-30,0)|(100,10,20)|Black
+    boolean: line1: union: box:(0,-40,0)|(100,10,20)|Yellow
+    boolean: line1: union: box:(0,-50,0)|(100,10,20)|Black
+    rotateZ: line1: 45 
+    # box[lifterBase]:(150,150,10)|(110,110,20)|White|(110,110,50)
+    # boolean: lifterBase: difference: box:(0,0,0)|(100,100,45)|Black
+    # boolean: lifterBase: union: box:(0,0,0)|(100,100,4)|Gray
 }
 
 physics

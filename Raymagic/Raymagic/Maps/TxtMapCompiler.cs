@@ -288,7 +288,7 @@ namespace Raymagic
                 {
                     if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
-                    AssignOperationFromData(ObjectCategory.DYNAMIC, i, operationType, targetObject, operationContent);
+                    AssignOperationFromData(ObjectCategory.STATIC, i, operationType, targetObject, operationContent);
                 }
                 else    
                 {
@@ -746,26 +746,26 @@ namespace Raymagic
                     case "rotateX":
                         {
                             float angle = float.Parse(operationContent[0]);
-                            target.Rotate(angle, "x");
+                            target.Rotate(angle, "x", target.Position);
                         }
                         break;
                     case "rotateY":
                         {
                             float angle = float.Parse(operationContent[0]);
-                            target.Rotate(angle, "y");
+                            target.Rotate(angle, "y", target.Position);
                         }
                         break;
                     case "rotateZ":
                         {
                             float angle = float.Parse(operationContent[0]);
-                            target.Rotate(angle, "z");
+                            target.Rotate(angle, "z", target.Position);
                         }
                         break;
                     case "rotate":
                         {
                             float angle = float.Parse(operationContent[0]);
                             Vector3 axis = GetVector3FromText(operationContent[1]);
-                            target.Rotate(angle, axis);
+                            target.Rotate(angle, axis, target.Position);
                         }
                         break;
                     case "boolean":
@@ -872,10 +872,9 @@ namespace Raymagic
                             string opStrength = "";
                             if (objContentSplit[1].StartsWith("smooth"))
                             {
-                                
-                                var _opSetting = objContentSplit[1].Split('[');
+                                var _opSetting = objContentSplit[1].Split('[', ']');
                                 op = _opSetting[0];
-                                opStrength = _opSetting[1].Remove(']');
+                                opStrength = _opSetting[1];
                             }
                             else
                             {

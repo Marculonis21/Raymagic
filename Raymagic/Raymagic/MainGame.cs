@@ -150,6 +150,8 @@ namespace Raymagic
             player.Update(gameTime);
             map.Update(gameTime);
 
+            /* map.dynamicObjectList[0].Rotate(1f,"Z", new Vector3(200,200,100)); */
+            /* map.dynamicObjectList[0].childObjects[0].Rotate(2f,"Z", map.dynamicObjectList[0].Position); */
 
             base.Update(gameTime);
         }

@@ -255,6 +255,16 @@ namespace Raymagic
             lookDir = new Vector3((float)_x,(float)_y,(float)_z);
             lookDir.Normalize();
 
+            if (grabbing != null)
+            {
+                var right = Vector3.Cross(lookDir, new Vector3(0,0,1));
+                var up = new Vector3(0,0,1);
+
+                grabbing.Rotate(-rot.X, up, this.position);
+                grabbing.Rotate(rot.Y, right, this.position);
+            }
+            
+
             Informer.instance.AddInfo("playerRot", "LookDir: " + lookDir.ToString());
         }
 
@@ -527,7 +537,7 @@ namespace Raymagic
         {
             while (this.activeMapReload)
             {
-                map.ReloadMap();
+                await Task.Run(() => { while(Screen.instance.DrawPhase) { } } ).ContinueWith( t1 => map.ReloadMap() );
                 await Task.Delay(reloadTime);
             }
         }

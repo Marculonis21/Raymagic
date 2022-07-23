@@ -76,10 +76,10 @@ namespace Raymagic
             return matrix;
         }
 
-        public static double[] GetInverse(Matrix<double> translationMatrix, Matrix<double> rotationMatrix)
+        public static double[] GetInverse(Matrix<double> transformMatrix)
         {
             /* return (rotationMatrix * translationMatrix).GetInverse(); */
-            Matrix<double> inverse = (rotationMatrix * translationMatrix).GetInverse();
+            Matrix<double> inverse = transformMatrix.GetInverse();
             return new double[12] {
                 inverse[0,0],
                 inverse[0,1],

@@ -37,11 +37,11 @@ namespace Raymagic
             /* Map.instance.staticObjectList.Add(bBase); */
 
             Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed);
-            button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)));
+            button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)),button1.Position);
             bBase1.AddChildObject(button1, false);
 
             Object button2 = new Cylinder(position + new Vector3(0,0,-3), new Vector3(0,0,1), 5, 8, Color.Red);
-            button2.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)));
+            button2.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)), button2.Position);
             bBase2.AddChildObject(button2, false);
 
             modelStates.Add(bBase1);

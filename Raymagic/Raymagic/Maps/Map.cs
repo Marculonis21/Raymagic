@@ -72,21 +72,21 @@ namespace Raymagic
         public void LoadMaps()
         {
             new TestArea();
-            new Showcase();
+            /* new Showcase(); */
 
-            string[] files = Directory.GetFiles(txtMapsPath, "*.map");
+            /* string[] files = Directory.GetFiles(txtMapsPath, "*.map"); */
 
-            Console.WriteLine($"found {files.Length} files for TxtMapCompiler");
-            var compilerTasks = new Task[files.Length];
-            for (int i = 0; i < files.Length; i++)
-            {
-                compilerTasks[i] = TxtMapCompiler.instance.CompileFile(files[i]);
-            }
+            /* Console.WriteLine($"found {files.Length} files for TxtMapCompiler"); */
+            /* var compilerTasks = new Task[files.Length]; */
+            /* for (int i = 0; i < files.Length; i++) */
+            /* { */
+            /*     compilerTasks[i] = TxtMapCompiler.instance.CompileFile(files[i]); */
+            /* } */
 
-            Task.WaitAll(compilerTasks);
+            /* Task.WaitAll(compilerTasks); */
 
-            if (files.Length > 0)
-                Console.WriteLine("Compilation process done");
+            /* if (files.Length > 0) */
+            /*     Console.WriteLine("Compilation process done"); */
         }
 
         public async void ReloadMap()
@@ -108,6 +108,7 @@ namespace Raymagic
                 mapOrigin = data.botCorner;
                 mapTopCorner = data.topCorner;
 
+                this.BVH = new BVH();
                 BVH.BuildBVHDownUp(false);
             }
         }
