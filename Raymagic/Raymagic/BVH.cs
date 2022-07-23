@@ -19,7 +19,7 @@ namespace Raymagic
                 root.Print(0);
         }
 
-        public void BuildBVHDownUp()
+        public void BuildBVHDownUp(bool infoPrint=true)
         {
             List<Object> dList = new List<Object>(Map.instance.dynamicObjectList);
             dList.AddRange(Map.instance.interactableObjectList);
@@ -28,7 +28,11 @@ namespace Raymagic
 
             List<BVHNode> tmpNodes = new List<BVHNode>();
 
-            Console.WriteLine("Building BVH");
+            if (infoPrint)
+            {
+                Console.WriteLine("Building BVH");
+            }
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -104,9 +108,13 @@ namespace Raymagic
             }
 
             this.root = tmpNodes[0]; // root is the last node
+            /* Map.instance.infoObjectList.Add(this.root.boundingBox); */
 
             sw.Stop();
-            Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");
+            if (infoPrint)
+            {
+                Console.WriteLine($"BVH done - {sw.ElapsedMilliseconds}ms");
+            }
         }
 
         public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)

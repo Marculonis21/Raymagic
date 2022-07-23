@@ -98,19 +98,17 @@ namespace Raymagic
                 this.data = maps[this.data.mapName];
 
                 this.dynamicObjectList = data.dynamicMapObjects;
-                Console.WriteLine(data.dynamicMapObjects.Count);
                 this.physicsObjectsList = data.physicsMapObjects;
                 this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
                 this.lightList = data.mapLights;
                 this.physicsSpace = new PhysicsSpace(physicsObjectsList);
+                this.infoObjectList = new List<Object>();
 
                 mapSize = data.topCorner - data.botCorner;
                 mapOrigin = data.botCorner;
                 mapTopCorner = data.topCorner;
 
-                BVH.BuildBVHDownUp();
-
-                Console.WriteLine("reloading done");
+                BVH.BuildBVHDownUp(false);
             }
         }
 

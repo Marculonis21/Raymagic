@@ -25,19 +25,19 @@ lights
 
 dynamic
 {
-    box[db]:(100,100,70)|(50,50,50)|Blue|(50,50,50)
+    box[lifterBase]:(150,150,10)|(110,110,20)|White|(110,110,50)
+    boolean: lifterBase: difference: box:(150,150,20)|(100,100,20)|Black
 }
 
 physics
 {
-    physics_object[ball]:(100,200,200)|Red|Blue
-    physics_trigger[doorTrigger]:(200,200,100)|100
+    # physics_trigger[doorTrigger]:(200,200,100)|100
 }
 
 interactables
 {
-    button[button1]:(150,100,0)|(-1,0,0)|Blue
-    door[door1]:(200,200,0)|(-1,0,0)|Blue
+    # button[button1]:(150,100,0)|(-1,0,0)|Blue
+    # door[door1]:(200,200,0)|(-1,0,0)|Blue
     # connect: doorTrigger -> door1 
-    connect: button1 -> door1
+    # connect: button1 -> door1
 }

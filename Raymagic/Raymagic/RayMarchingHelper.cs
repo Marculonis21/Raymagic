@@ -203,15 +203,20 @@ namespace Raymagic
 
                 SDFout test;
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
-                try
+                if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
+                   (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
+                   (int)(coords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
+                   (int)(coords.X/map.distanceMapDetail) < 0 ||
+                   (int)(coords.Y/map.distanceMapDetail) < 0 ||
+                   (int)(coords.Z/map.distanceMapDetail) < 0)
+                {
+                    /* Console.WriteLine("LIGHT ERROR"); */
+                }
+                else
                 {
                     best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
                                            (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                            (int)Math.Abs(coords.Z/map.distanceMapDetail)];
-                }
-                catch (IndexOutOfRangeException e)
-                {
-                    Console.WriteLine("LIGHT ERROR");
                 }
 
                 test = map.BVH.Test(testPos, best.distance, false, out Object _);

@@ -93,18 +93,16 @@ namespace Raymagic
                 tasks.Add(ParseInteractableAsync(input));
             }
 
-            try
-            {
+            /* try */
+            /* { */
                 await Task.WhenAll(tasks);
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine($"Error while compiling {path}");
-                Console.WriteLine(e.Message);
-                return;
-            }
-
-            Console.WriteLine($"found dynamic {data.dynamicMapObjects.Count}");
+            /* } */
+            /* catch (FormatException e) */
+            /* { */
+            /*     Console.WriteLine($"Error while compiling {path}"); */
+            /*     Console.WriteLine(e.Message); */
+            /*     return; */
+            /* } */
 
             Map.instance.RegisterMap(data.mapName, data);
         }
@@ -214,16 +212,23 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, out objectPart, out paramPart))
+                if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
                     objectInfoName = objectPart[1];
 
                     Object obj = GetObjectFromData(ObjectCategory.STATIC, i, objectPart, paramPart, true, BooleanOP.NONE, 0, out Type type);
 
-                    declaredObjects.Add(objectInfoName, obj);
+                    try
+                    {
+                        declaredObjects.Add(objectInfoName, obj);
+                    }
+                    catch (ArgumentException)
+                    {
+                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                    }
                     objectList.Add(obj);
                 }
-                else if (LineContainsOperation(line, out string operationType, out string targetObject, out string[] operationContent))
+                else if (LineContainsOperation(line, i, out string operationType, out string targetObject, out string[] operationContent))
                 {
                     if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
@@ -261,17 +266,25 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, out objectPart, out paramPart))
+                if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
                     Object obj = GetObjectFromData(ObjectCategory.DYNAMIC, i, objectPart, paramPart, false, BooleanOP.NONE, 0, out Type type);
 
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    declaredObjects.Add(objectInfoName, obj);
+                    try
+                    {
+                        declaredObjects.Add(objectInfoName, obj);
+                    }
+                    catch (ArgumentException)
+                    {
+                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                    }
+
                     objectList.Add(obj);
                 }
-                else if (LineContainsOperation(line, out string operationType, out string targetObject, out string[] operationContent))
+                else if (LineContainsOperation(line, i, out string operationType, out string targetObject, out string[] operationContent))
                 {
                     if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
 
@@ -306,7 +319,7 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, out objectPart, out paramPart))
+                if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
 
@@ -353,14 +366,21 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, out objectPart, out paramPart))
+                if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    PhysicsObject pObj = GetPhysicsObjectFromData(ObjectCategory.PHYSICS, i, objectPart, paramPart, false, BooleanOP.NONE, 0, out Type type);
+                    PhysicsObject pObj = GetPhysicsObjectFromData(ObjectCategory.PHYSICS, i, objectPart, paramPart, out Type type);
 
-                    declaredPhysicsObjects.Add(objectInfoName, new Tuple<PhysicsObject, Type>(pObj, type));
+                    try
+                    {
+                        declaredPhysicsObjects.Add(objectInfoName, new Tuple<PhysicsObject, Type>(pObj, type));
+                    }
+                    catch (ArgumentException)
+                    {
+                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                    }
                     data.physicsMapObjects.Add(pObj);
                 }
                 else
@@ -390,17 +410,24 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, out objectPart, out paramPart))
+                if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    Interactable iObj = GetInteractableObjectFromData(ObjectCategory.INTERACTABLE, i, objectPart, paramPart, false, BooleanOP.NONE, 1, out Type type);
+                    Interactable iObj = GetInteractableObjectFromData(ObjectCategory.INTERACTABLE, i, objectPart, paramPart, out Type type);
                         
-                    declaredInteractableObjects.Add(objectInfoName, new Tuple<Interactable, Type>(iObj, type));
+                    try
+                    {
+                        declaredInteractableObjects.Add(objectInfoName, new Tuple<Interactable, Type>(iObj, type));
+                    }
+                    catch (ArgumentException)
+                    {
+                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                    }
                     data.interactableObjectList.Add(iObj);
                 }
-                else if (LineContainsOperation(line, out string operationType, out string _, out string[] operationContent))
+                else if (LineContainsOperation(line, i, out string operationType, out string _, out string[] operationContent))
                 {
                     if (operationType != "connect") throw new FormatException($"Format error line {i+1} - Interactable object allow only 'connect' operation");
 
@@ -608,7 +635,7 @@ namespace Raymagic
             }
             catch (IndexOutOfRangeException)
             {
-                throw new FormatException($"Format error line {lineNum} - Missing some arguments");
+                throw new FormatException($"Format error line {lineNum} - Missing some arguments while declaring object");
             }
 
             type = obj.GetType();
@@ -616,7 +643,7 @@ namespace Raymagic
 
         }
 
-        private PhysicsObject GetPhysicsObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
+        private PhysicsObject GetPhysicsObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, out Type type)
         {
             lineNum += 1;
 
@@ -655,7 +682,7 @@ namespace Raymagic
 
         }
 
-        private Interactable GetInteractableObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
+        private Interactable GetInteractableObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, out Type type)
         {
             lineNum += 1;
 
@@ -712,131 +739,175 @@ namespace Raymagic
         {
             Object target = declaredObjects[targetObject];
 
-            switch (operationType)
+            try
             {
-                case "rotateX":
-                    {
-                        float angle = float.Parse(operationContent[0]);
-                        target.Rotate(angle, "x");
-                    }
-                    break;
-                case "rotateY":
-                    {
-                        float angle = float.Parse(operationContent[0]);
-                        target.Rotate(angle, "y");
-                    }
-                    break;
-                case "rotateZ":
-                    {
-                        float angle = float.Parse(operationContent[0]);
-                        target.Rotate(angle, "z");
-                    }
-                    break;
-                case "rotate":
-                    {
-                        float angle = float.Parse(operationContent[0]);
-                        Vector3 axis = GetVector3FromText(operationContent[1]);
-                        target.Rotate(angle, axis);
-                    }
-                    break;
-                case "boolean":
-                    {
-                        BooleanOP op = GetBooleanOPFromText(operationContent[0]);
-                        float opStrength = float.Parse(operationContent[1]);
-
-                        if (LineContainsObject(operationContent[2], out string[] _objectPart, out string[] _paramPart))
+                switch (operationType)
+                {
+                    case "rotateX":
                         {
-                            Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, category == ObjectCategory.STATIC, op, opStrength, out Type type);
-
-                            target.AddChildObject(opObj, true);
+                            float angle = float.Parse(operationContent[0]);
+                            target.Rotate(angle, "x");
                         }
-                        else
+                        break;
+                    case "rotateY":
                         {
-                            throw new FormatException($"Format error line {lineNum} - Boolean object declaration not parsed");
+                            float angle = float.Parse(operationContent[0]);
+                            target.Rotate(angle, "y");
                         }
+                        break;
+                    case "rotateZ":
+                        {
+                            float angle = float.Parse(operationContent[0]);
+                            target.Rotate(angle, "z");
+                        }
+                        break;
+                    case "rotate":
+                        {
+                            float angle = float.Parse(operationContent[0]);
+                            Vector3 axis = GetVector3FromText(operationContent[1]);
+                            target.Rotate(angle, axis);
+                        }
+                        break;
+                    case "boolean":
+                        {
+                            BooleanOP op = GetBooleanOPFromText(operationContent[0]);
+                            float opStrength = 1;
+                            float.TryParse(operationContent[1], out opStrength);
 
-                    }
-                    break;
-                default:
-                    break;
+                            if (LineContainsObject(operationContent[2], lineNum, out string[] _objectPart, out string[] _paramPart))
+                            {
+                                Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, category == ObjectCategory.STATIC, op, opStrength, out Type type);
+
+                                target.AddChildObject(opObj, true);
+                            }
+                            else
+                            {
+                                throw new FormatException($"Format error line {lineNum} - Boolean object declaration couldn not be parsed");
+                            }
+
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                throw new FormatException($"Format error line {lineNum} - Missing arguments");
             }
         }
 
-        private bool LineContainsObject(string line, out string[] objectPart, out string[] paramPart)
+        private bool LineContainsObject(string line, int lineNum, out string[] objectPart, out string[] paramPart)
         {
+            lineNum += 1;
+
             objectPart = new string[2];
             paramPart = new string[0];
             if (line.Contains(":"))
             {
-                var parts = line.Split(":", 2, StringSplitOptions.TrimEntries);
-                if (parts[0].Contains('[') && parts[0].Contains(']'))
+                try
                 {
-                    // name part
-                    objectPart[0] = parts[0].Split('[')[0];
+                    var parts = line.Split(":", 2, StringSplitOptions.TrimEntries);
+                    if (parts[0].Contains('[') && parts[0].Contains(']'))
+                    {
+                        // name part
+                        objectPart[0] = parts[0].Split('[')[0];
 
-                    // info name part
-                    objectPart[1] = parts[0].Split('[', ']')[1];
+                        // info name part
+                        objectPart[1] = parts[0].Split('[', ']')[1];
+                    }
+                    else
+                    {
+                        // name part without info name
+                        objectPart[0] = parts[0];
+                    }
+
+                    if (!possibleObjects.Contains(objectPart[0])) 
+                        return false;
+
+                    paramPart = parts[1].Split("|", StringSplitOptions.TrimEntries);
                 }
-                else
+                catch (IndexOutOfRangeException)
                 {
-                    // name part without info name
-                    objectPart[0] = parts[0];
+                    throw new FormatException($"Format error line {lineNum} - incorrect format for object (correct: object_type*[object_info_name]*:object_attribute|...|...)");
                 }
-
-                if (!possibleObjects.Contains(objectPart[0])) 
-                    return false;
-
-                paramPart = parts[1].Split("|", StringSplitOptions.TrimEntries);
+            }
+            else
+            {
+                return false;
             }
 
             return true;
         }
 
-        private bool LineContainsOperation(string line, out string operationType, out string targetObject, out string[] operationContent) {
+        private bool LineContainsOperation(string line, int lineNum, out string operationType, out string targetObject, out string[] operationContent) 
+        {
+            lineNum += 1;
             operationType = "";
             targetObject = "";
             operationContent = new string[0];
 
             if (line.Contains(":"))
             {
-                var parts = line.Split(":", 2, StringSplitOptions.TrimEntries);
-                if (possibleOperations.Contains(parts[0]))
+                try
                 {
-                    operationType = parts[0];
-                    operationContent = parts[1].Split('|', StringSplitOptions.TrimEntries);
-
-                    if (operationType.StartsWith("rotate")) // rotate: box: 10|(0,0,1)
+                    var parts = line.Split(":", 2, StringSplitOptions.TrimEntries);
+                    if (possibleOperations.Contains(parts[0]))
                     {
-                        var split = parts[1].Split(":", 2);
-                        targetObject = split[0];
-                        operationContent = split[1].Split('|', StringSplitOptions.TrimEntries);
+                        operationType = parts[0];
+                        operationContent = parts[1].Split('|', StringSplitOptions.TrimEntries);
+
+                        if (operationType.StartsWith("rotate")) // rotate: box: 10|(0,0,1)
+                        {
+                            var split = parts[1].Split(":", 2);
+                            targetObject = split[0];
+                            operationContent = split[1].Split('|', StringSplitOptions.TrimEntries);
+                        }
+                        if (operationType == "boolean") // boolean: box: op[1.0]: plane:(,,)|(0,0,)
+                        {
+                            var objContentSplit = parts[1].Split(":", 3, StringSplitOptions.TrimEntries);
+                            // box: op: plane: ...
+
+                            string op = "";
+                            string opStrength = "";
+                            if (objContentSplit[1].StartsWith("smooth"))
+                            {
+                                
+                                var _opSetting = objContentSplit[1].Split('[');
+                                op = _opSetting[0];
+                                opStrength = _opSetting[1].Remove(']');
+                            }
+                            else
+                            {
+                                op = objContentSplit[1];
+                            }
+
+                            targetObject = objContentSplit[0];
+                            operationContent = new string[] {
+                                op, 
+                                opStrength,
+                                objContentSplit[2]
+                            };
+                        }
+                        else if (operationType == "connect")// connect: mButton -> inDoor
+                        {
+                            var objects = parts[1].Split("->", 2, StringSplitOptions.TrimEntries);
+                            operationContent = objects;
+                        }
                     }
-                    if (operationType == "boolean") // boolean: box: op[1.0]: plane:(,,)|(0,0,)
+                    else
                     {
-                        var objContentSplit = parts[1].Split(":", 3, StringSplitOptions.TrimEntries);
-                        // box: op: plane: ...
-
-                        var _opSetting = objContentSplit[1].Split('[');
-                        string op = _opSetting[0];
-                        string opStrength = _opSetting[1].Remove(']');
-
-                        targetObject = objContentSplit[0];
-                        operationContent = new string[] {
-                            op, 
-                            opStrength,
-                            objContentSplit[2]
-                        };
-                    }
-                    else if (operationType == "connect")// connect: mButton -> inDoor
-                    {
-                        var objects = parts[1].Split("->", 2, StringSplitOptions.TrimEntries);
-                        operationContent = objects;
+                        return false;
                     }
                 }
-                else
+                catch (IndexOutOfRangeException)
                 {
-                    return false;
+                    throw new FormatException($"Format error line {lineNum} - incorrect format for operation (correct: operation:...)");
                 }
+            }
+            else
+            {
+                return false;
             }
 
             return true;

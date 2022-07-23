@@ -11,6 +11,8 @@ namespace Raymagic
         Graphics graphics;
         Player player = Player.instance;
 
+        Color[,] colorBuffer;
+
         Point screenDimensions;
         int detailSize;
 
@@ -28,8 +30,7 @@ namespace Raymagic
             this.screenDimensions = screenDimensions;
             this.detailSize = detailSize;
 
-            this.colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
-            /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
+            this.colorBuffer = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
 
             this.watch = new Stopwatch();
         }
@@ -38,8 +39,7 @@ namespace Raymagic
         {
             if(detailSize != this.detailSize)
             {
-                this.colors = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
-                /* float[,] lengths = new float[screenDimensions.X/detailSize,screenDimensions.Y/detailSize]; */
+                this.colorBuffer = new Color[screenDimensions.X/detailSize,screenDimensions.Y/detailSize];
 
                 GC.Collect();
             }
@@ -47,8 +47,6 @@ namespace Raymagic
             this.detailSize = detailSize;
 
         }
-
-        Color[,] colors;
 
         public void DrawGame()
         {
@@ -71,8 +69,10 @@ namespace Raymagic
 
             player.GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight);
             
+            int rayCount = (screenDimensions.Y/detailSize) * (screenDimensions.X/detailSize);
+
             // Parallel RAYMARCHING!!!
-            Parallel.For(0, (screenDimensions.Y/detailSize) * (screenDimensions.X/detailSize),new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i =>
+            Parallel.For(0, rayCount,new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i =>
             {
                 int y = i / (screenDimensions.X/detailSize);
                 int x = i % (screenDimensions.X/detailSize);
@@ -84,8 +84,28 @@ namespace Raymagic
                 Vector3 rayDir = (player.position + player.lookDir*zoom + viewPlaneRight*_x*detailSize + viewPlaneUp*_y*detailSize) - player.position;
 
                 RayMarchingHelper.RayMarch(new Ray(player.position, rayDir), out float length, out Color Color);
-                colors[x,y] = Color;
+                colorBuffer[x,y] = Color;
             }); 
+
+            // PROGRESSIVE RENDERING
+            /* Random random = new Random(); */
+            /* Parallel.For(0, rayCount/4,new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i => */
+            /* { */
+            /*     int _i = random.Next(0, (screenDimensions.Y/detailSize) * (screenDimensions.X/detailSize)); */
+            /*     int y = _i / (screenDimensions.X/detailSize); */
+            /*     int x = _i % (screenDimensions.X/detailSize); */
+
+            /*     // get ray dir from camera through view plane (detailSize) "rectangles" */
+            /*     float _x = x - (screenDimensions.X/detailSize)/2; */
+            /*     float _y = y - (screenDimensions.Y/detailSize)/2; */
+
+            /*     Vector3 rayDir = (player.position + player.lookDir*zoom + viewPlaneRight*_x*detailSize + viewPlaneUp*_y*detailSize) - player.position; */
+
+            /*     RayMarchingHelper.RayMarch(new Ray(player.position, rayDir), out float length, out Color Color); */
+            /*     colorBuffer[x,y] += Color.ToVector3(); */
+            /*     Console.WriteLine(colorBuffer[x,y]); */
+            /*     bufferCount[x,y]++; */
+            /* }); */ 
 
             watch.Stop();
         }
@@ -101,7 +121,7 @@ namespace Raymagic
                 {
                     graphics.DrawRectangle(new Point(x*detailSize,y*detailSize), 
                                            detailSize,detailSize, 
-                                           colors[x,y]);
+                                           colorBuffer[x,y]);
                 }
         }
 

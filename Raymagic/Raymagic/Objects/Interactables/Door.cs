@@ -23,6 +23,7 @@ namespace Raymagic
         public override void ObjectSetup()
         {
             Object doorFrame = new Capsule(this.Position + new Vector3(0,0, -45-45), 70, 65, Color.DarkGray, false);
+            doorFrame.AddChildObject(new Sphere(this.Position + new Vector3(0, 0, 100), 15, secondaryColor, false));
             doorFrame.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, false, BooleanOP.DIFFERENCE), false);
             doorFrame.AddChildObject(new Plane( facing * 5,  facing, Color.Black, BooleanOP.INTERSECT), true);
             doorFrame.AddChildObject(new Plane(-facing * 5, -facing, Color.Black, BooleanOP.INTERSECT), true);
@@ -34,8 +35,6 @@ namespace Raymagic
             doorFrame.AddChildObject(doorPlatesSideBar, false);
 
             Map.instance.staticObjectList.Add(doorFrame);
-            /* this.modelStates.Add(doorFrame); // frame is the same when closed and opened */
-            /* this.modelStates.Add(doorFrame); // frame is the same when closed and opened */
 
             this.doorPlateClosed = new Vector3[] {this.Position + right* 40 + new Vector3(0, 0, 55),
                                                   this.Position + right*-40 + new Vector3(0, 0 ,55)};
@@ -54,7 +53,7 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position + new Vector3(0,0,55),
                                        boundingBoxSize,
                                        Color.Black);
-            /* Map.instance.staticObjectList.Add(boundingBox); */
+            /* Map.instance.infoObjectList.Add(boundingBox); */
         }
 
         public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)

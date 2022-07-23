@@ -137,9 +137,6 @@ namespace Raymagic
 
             player.Controlls(this, gameTime, mouse);
 
-            player.Update(gameTime);
-            map.Update(gameTime);
-
             if (map.portalList[0] != null && map.portalList[1] != null)
             {
                 foreach (var portal in map.portalList)
@@ -149,6 +146,10 @@ namespace Raymagic
                     portal.OnFieldEnter();
                 }
             }
+
+            player.Update(gameTime);
+            map.Update(gameTime);
+
 
             base.Update(gameTime);
         }

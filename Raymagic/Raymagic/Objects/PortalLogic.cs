@@ -26,7 +26,7 @@ namespace Raymagic
                     /* } */
                     objectWatcher.Add(item);
                     objectLastDot.Add(Vector3.Dot(Vector3.Normalize(this.Position - item.position), this.normal));
-                    Console.WriteLine($"obj added {item}");
+                    Console.WriteLine($"{this.color} obj added {item}");
                 }
             }
         }
@@ -40,7 +40,7 @@ namespace Raymagic
                 if ((this.Position - item.position).Length() > testFieldSize+5)
                 {
                     toRemove.Add(item);
-                    Console.WriteLine($"obj removed {item}");
+                    Console.WriteLine($"{this.color} obj removed {item}");
                 }
             }
 
@@ -71,6 +71,12 @@ namespace Raymagic
             for (int i = 0; i < objectWatcher.Count; i++)
             {
                 var thisDot = Vector3.Dot(Vector3.Normalize(this.Position - objectWatcher[i].position), this.normal);
+                if (i >= objectLastDot.Count)
+                {
+                    Console.WriteLine($"it happened {this.color}");
+                    break;
+                }
+
                 if ((thisDot < 0 && objectLastDot[i] > 0) ||
                     (thisDot > 0 && objectLastDot[i] < 0))
                 {

@@ -36,6 +36,7 @@ namespace Raymagic
         bool pauseButtonDown = false;
 
         public bool playerPause = false;
+        public bool activeMapReload = false;
 
         public int cursorSize = 10;
 
@@ -198,6 +199,11 @@ namespace Raymagic
             {
                 this.testONButtonDown = true;
 
+                this.activeMapReload = !this.activeMapReload;
+                if (activeMapReload)
+                {
+                    MapReloadingAsync(500);
+                }
                 map.ReloadMap();
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
@@ -317,10 +323,13 @@ namespace Raymagic
             }
             else
             {
+                Vector3 before = grabbing.Position;
+                GrabbingUpdate();
+                Vector3 after = grabbing.Position;
                 grabbing.ClearVelocity();
                 grabbing.ClearForces();
                 grabbing.SetVelocity(this.velocity/4);
-                /* grabbing.SetVelocity((after-before)/30); */
+                grabbing.SetVelocity((after-before)/30);
 
                 grabbing.physicsEnabled = true;
                 grabbing = null;
@@ -348,44 +357,49 @@ namespace Raymagic
 
             if (grabbing != null && !GodMode)
             {
-                float startOffset = 40;
-                Ray testRay = new Ray(this.position + this.lookDir * startOffset, this.lookDir);
-                RayMarchingHelper.PhysicsRayMarch(testRay, 3, 10, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
-
-                Vector3 grabPosition;
-                if (dirLength + startOffset <= grabDistance && HitObjectIsActivePortal(hitObj)) 
-                {
-                    Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
-                    RayMarchingHelper.PhysicsRayMarch(moreRay, 3, 10, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
-
-                    var grabDistanceLeft = grabDistance - (dirLength + startOffset);
-                    
-                    if (dirLengthPortal <= grabDistanceLeft)
-                    {
-                        grabPosition = dirHitPortal;
-                    }
-                    else
-                    {
-                        grabPosition = moreRay.origin + moreRay.direction * grabDistanceLeft;
-                    }
-                }
-                else if(dirLength + startOffset <= grabDistance)
-                {
-                    grabPosition = this.position + this.lookDir * (dirLength + startOffset);
-                }
-                else
-                {
-                    grabPosition = this.position + this.lookDir * grabDistance;
-                }
-
-                grabbing.TranslateAbsolute(grabPosition);
-                grabbing.ClearVelocity();
+                GrabbingUpdate();
             }
 
             Informer.instance.AddInfo("playerPos", "Player POS: " + this.position.ToString());
             Informer.instance.AddInfo("playerFeet", "Player feet: " + (this.position + new Vector3(0,0,-1)*size.Y).ToString());
             Informer.instance.AddInfo("playerVelocity", "Player velocity: " + this.velocity);
             Informer.instance.AddInfo("playerGroundedState", "Player grounded: " + this.grounded);
+        }
+
+        void GrabbingUpdate()
+        {
+            float startOffset = 40;
+            Ray testRay = new Ray(this.position + this.lookDir * startOffset, this.lookDir);
+            RayMarchingHelper.PhysicsRayMarch(testRay, 3, 10, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
+
+            Vector3 grabPosition;
+            if (dirLength + startOffset <= grabDistance && HitObjectIsActivePortal(hitObj)) 
+            {
+                Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
+                RayMarchingHelper.PhysicsRayMarch(moreRay, 3, 10, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
+
+                var grabDistanceLeft = grabDistance - (dirLength + startOffset);
+                
+                if (dirLengthPortal <= grabDistanceLeft)
+                {
+                    grabPosition = dirHitPortal;
+                }
+                else
+                {
+                    grabPosition = moreRay.origin + moreRay.direction * grabDistanceLeft;
+                }
+            }
+            else if(dirLength + startOffset <= grabDistance)
+            {
+                grabPosition = this.position + this.lookDir * (dirLength + startOffset);
+            }
+            else
+            {
+                grabPosition = this.position + this.lookDir * grabDistance;
+            }
+
+            grabbing.TranslateAbsolute(grabPosition);
+            grabbing.ClearVelocity();
         }
 
         void BodyCollider(GameTime gameTime)
@@ -509,6 +523,15 @@ namespace Raymagic
 
             viewPlaneUp = Vector3.Normalize(playerLookPerpenUP);
             viewPlaneRight = Vector3.Normalize(playerLookPerpenSIDE);
+        }
+
+        async Task MapReloadingAsync(int reloadTime)
+        {
+            while (this.activeMapReload)
+            {
+                map.ReloadMap();
+                await Task.Delay(reloadTime);
+            }
         }
     }
 }
