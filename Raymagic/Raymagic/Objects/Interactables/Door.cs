@@ -22,14 +22,14 @@ namespace Raymagic
 
         public override void ObjectSetup()
         {
-            Object doorFrame = new Capsule(this.Position + new Vector3(0,0, -45-45), 70, 65, Color.DarkGray, false);
-            doorFrame.AddChildObject(new Sphere(this.Position + new Vector3(0, 0, 100), 15, secondaryColor, false));
-            doorFrame.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, false, BooleanOP.DIFFERENCE), false);
+            Object doorFrame = new Capsule(this.Position + new Vector3(0,0, -45-45), 70, 65, Color.DarkGray);
+            doorFrame.AddChildObject(new Sphere(this.Position + new Vector3(0, 0, 100), 15, secondaryColor));
+            doorFrame.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, BooleanOP.DIFFERENCE), false);
             doorFrame.AddChildObject(new Plane( facing * 5,  facing, Color.Black, BooleanOP.INTERSECT), true);
             doorFrame.AddChildObject(new Plane(-facing * 5, -facing, Color.Black, BooleanOP.INTERSECT), true);
 
-            Object doorPlatesSideBar = new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, secondaryColor, false);
-            doorPlatesSideBar.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 91, 48, Color.Black, false, BooleanOP.DIFFERENCE), false);
+            Object doorPlatesSideBar = new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, secondaryColor);
+            doorPlatesSideBar.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 91, 48, Color.Black, BooleanOP.DIFFERENCE), false);
             doorPlatesSideBar.AddChildObject(new Plane( facing * 4,  facing, Color.Black, BooleanOP.INTERSECT), true);
             doorPlatesSideBar.AddChildObject(new Plane(-facing * 4, -facing, Color.Black, BooleanOP.INTERSECT), true);
             doorFrame.AddChildObject(doorPlatesSideBar, false);
@@ -42,10 +42,10 @@ namespace Raymagic
             this.doorPlateOpened = new Vector3[] {this.Position + right* 40 + new Vector3(0, 0, 55) + right* 44f,
                                                   this.Position + right*-40 + new Vector3(0, 0 ,55) + right*-44f};
 
-            Object doorPlate1 = new Box(doorPlateClosed[0], facing*3 + right*80 + new Vector3(0,0,110), Color.Gray, false);
-            Object doorPlate2 = new Box(doorPlateClosed[1], facing*3 + right*80 + new Vector3(0,0,110), Color.Gray, false);
-            doorPlate1.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, false, BooleanOP.INTERSECT), false);
-            doorPlate2.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, false, BooleanOP.INTERSECT), false);
+            Object doorPlate1 = new Box(doorPlateClosed[0], facing*3 + right*80 + new Vector3(0,0,110), Color.Gray);
+            Object doorPlate2 = new Box(doorPlateClosed[1], facing*3 + right*80 + new Vector3(0,0,110), Color.Gray);
+            doorPlate1.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, BooleanOP.INTERSECT), false);
+            doorPlate2.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, BooleanOP.INTERSECT), false);
 
             doorPlates = new Object[2] {doorPlate1, doorPlate2};
 

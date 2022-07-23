@@ -18,7 +18,7 @@ namespace Raymagic
 
         public float size {get; private set;}
 
-        public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1, false)
+        public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1)
         {
             this.isTrigger = false;
             this.physicsEnabled = true;
@@ -36,8 +36,7 @@ namespace Raymagic
 
             Sphere sphere2 = new Sphere(new Vector3(), 
                                         size, 
-                                        color2,
-                                        false);
+                                        color2);
 
             sphere2.AddChildObject(new Plane(new Vector3(),
                                              new Vector3(-1,0,0),

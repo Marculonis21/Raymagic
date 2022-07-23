@@ -16,7 +16,7 @@ namespace Raymagic
 
         protected Color secondaryColor;
 
-        public Interactable(Vector3 position, Color secondaryColor) : base(position, Color.Black, false, new Vector3(), null, BooleanOP.NONE, 0, false)
+        public Interactable(Vector3 position, Color secondaryColor) : base(position, Color.Black, new Vector3(), null, BooleanOP.NONE, 0, false)
         {
             this.modelStates = new List<Object>();
             this.state = 0;

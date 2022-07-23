@@ -93,16 +93,16 @@ namespace Raymagic
                 tasks.Add(ParseInteractableAsync(input));
             }
 
-            /* try */
-            /* { */
+            try
+            {
                 await Task.WhenAll(tasks);
-            /* } */
-            /* catch (FormatException e) */
-            /* { */
-            /*     Console.WriteLine($"Error while compiling {path}"); */
-            /*     Console.WriteLine(e.Message); */
-            /*     return; */
-            /* } */
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine($"Error while compiling {path}");
+                Console.WriteLine(e.Message);
+                return;
+            }
 
             Map.instance.RegisterMap(data.mapName, data);
         }
@@ -216,7 +216,7 @@ namespace Raymagic
                 {
                     objectInfoName = objectPart[1];
 
-                    Object obj = GetObjectFromData(ObjectCategory.STATIC, i, objectPart, paramPart, true, BooleanOP.NONE, 0, out Type type);
+                    Object obj = GetObjectFromData(ObjectCategory.STATIC, i, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
 
                     try
                     {
@@ -268,7 +268,7 @@ namespace Raymagic
 
                 if (LineContainsObject(line, i, out objectPart, out paramPart))
                 {
-                    Object obj = GetObjectFromData(ObjectCategory.DYNAMIC, i, objectPart, paramPart, false, BooleanOP.NONE, 0, out Type type);
+                    Object obj = GetObjectFromData(ObjectCategory.DYNAMIC, i, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
 
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
@@ -535,7 +535,7 @@ namespace Raymagic
             return startEndRecord;
         }
 
-        private Object GetObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, bool staticObject, BooleanOP boolean, float booleanStrength, out Type type)
+        private Object GetObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, BooleanOP boolean, float booleanStrength, out Type type)
         {
             lineNum += 1;
 
@@ -558,7 +558,7 @@ namespace Raymagic
                             {
                                 boundingSize = GetVector3FromText(paramPart[3]);
                             }
-                            obj = new Box(position, size, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj = new Box(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "box_frame":
@@ -572,7 +572,7 @@ namespace Raymagic
                             {
                                 boundingSize = GetVector3FromText(paramPart[4]);
                             }
-                            obj = new BoxFrame(position, size, frameSize, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj = new BoxFrame(position, size, frameSize, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "capsule":
@@ -586,7 +586,7 @@ namespace Raymagic
                             {
                                 boundingSize = GetVector3FromText(paramPart[4]);
                             }
-                            obj = new Capsule(position, height, radius, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj = new Capsule(position, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "cylinder":
@@ -601,7 +601,7 @@ namespace Raymagic
                             {
                                 boundingSize = GetVector3FromText(paramPart[5]);
                             }
-                            obj = new Cylinder(position, baseNormal, height, radius, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj = new Cylinder(position, baseNormal, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "plane":
@@ -625,7 +625,7 @@ namespace Raymagic
                             {
                                 boundingSize = GetVector3FromText(paramPart[3]);
                             }
-                            obj = new Sphere(position, size, color, staticObject, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj = new Sphere(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
 
@@ -776,7 +776,7 @@ namespace Raymagic
 
                             if (LineContainsObject(operationContent[2], lineNum, out string[] _objectPart, out string[] _paramPart))
                             {
-                                Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, category == ObjectCategory.STATIC, op, opStrength, out Type type);
+                                Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, op, opStrength, out Type type);
 
                                 target.AddChildObject(opObj, true);
                             }

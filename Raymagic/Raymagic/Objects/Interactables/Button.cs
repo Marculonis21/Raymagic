@@ -24,23 +24,23 @@ namespace Raymagic
             Vector3 position = this.Position;
             facing.Normalize();
 
-            Object bBase1 = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray, false);
+            Object bBase1 = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray);
 
-            bBase1.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, false, BooleanOP.SDIFFERENCE, 1), true);
-            bBase1.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor, false), true);
+            bBase1.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, BooleanOP.SDIFFERENCE, 1), true);
+            bBase1.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor), true);
 
-            Object bBase2 = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray, false);
+            Object bBase2 = new Cylinder(position, new Vector3(0,0,1), 50, 10, Color.Gray);
 
-            bBase2.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, false, BooleanOP.SDIFFERENCE, 1), true);
-            bBase2.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor, false), true);
+            bBase2.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, BooleanOP.SDIFFERENCE, 1), true);
+            bBase2.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor), true);
 
             /* Map.instance.staticObjectList.Add(bBase); */
 
-            Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed, false);
+            Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed);
             button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)));
             bBase1.AddChildObject(button1, false);
 
-            Object button2 = new Cylinder(position + new Vector3(0,0,-3), new Vector3(0,0,1), 5, 8, Color.Red, false);
+            Object button2 = new Cylinder(position + new Vector3(0,0,-3), new Vector3(0,0,1), 5, 8, Color.Red);
             button2.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)));
             bBase2.AddChildObject(button2, false);
 

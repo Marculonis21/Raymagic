@@ -7,7 +7,7 @@ namespace Raymagic
         Vector3 size;
         float frameSize;
 
-        public BoxFrame(Vector3 position, Vector3 size, float frameSize, Color color, bool staticObject = true, BooleanOP booleanOP=BooleanOP.NONE, float booleanStrength=1, Vector3 boundingBoxSize = new Vector3(), bool selectable=false, string info="") : base(position, color, staticObject, boundingBoxSize, info, booleanOP, booleanStrength, selectable)
+        public BoxFrame(Vector3 position, Vector3 size, float frameSize, Color color, BooleanOP booleanOP=BooleanOP.NONE, float booleanStrength=1, Vector3 boundingBoxSize = new Vector3(), bool selectable=false, string info="") : base(position, color, boundingBoxSize, info, booleanOP, booleanStrength, selectable)
         {
             this.size = size;
             this.frameSize = frameSize;

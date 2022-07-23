@@ -111,19 +111,17 @@ namespace Raymagic
             Box b = new Box(new Vector3(100,100,30),
                             new Vector3(200,200,20),
                             Color.Gray,
-                            false,
                             boundingBoxSize: new Vector3(210,210,300), selectable:true);
 
             b.AddChildObject(new Sphere(new Vector3(0,0,40),
                                         45,
                                         Color.Green,
-                                        false,
                                         BooleanOP.SUNION, 40), true);
 
             b.AddChildObject(new Sphere(new Vector3(40,40,40),
                                         40,
                                         Color.Black,
-                                        false, BooleanOP.SDIFFERENCE, 5), true);
+                                        BooleanOP.SDIFFERENCE, 5), true);
 
             Box ramp = new Box(new Vector3(50,400,50),
                                new Vector3(100,200,200),

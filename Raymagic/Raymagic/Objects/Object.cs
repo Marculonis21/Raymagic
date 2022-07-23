@@ -25,15 +25,13 @@ namespace Raymagic
         protected Vector3 boundingBoxSize;
         protected bool boundingBoxVisible = false;
 
-        protected bool staticObject;
-
         protected List<Object> childObjects = new List<Object>();
         protected BooleanOP booleanOP;
         protected float booleanStrength;
 
         protected bool selectable; 
 
-        public Object(Vector3 position, Color color, bool staticObject, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
+        public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
             this.translationMatrix[0,0] = 1;
             this.translationMatrix[1,1] = 1;
@@ -46,7 +44,6 @@ namespace Raymagic
             this.rotationMatrix[3,3] = 1;
 
             this.color = color;
-            this.staticObject = staticObject;
             this.selectable = selectable;
             this.info = info;
 
@@ -206,7 +203,6 @@ namespace Raymagic
         }
 
         public string Info { get => info; }
-        public bool IsStatic { get => staticObject; }
         public bool IsSelectable { get => selectable; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }

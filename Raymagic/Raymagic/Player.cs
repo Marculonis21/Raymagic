@@ -71,13 +71,11 @@ namespace Raymagic
             this.model = new Capsule(new Vector3(400,400,0),
                                      size.Y/2, 
                                      size.X, 
-                                     Color.Orange,
-                                     false);
+                                     Color.Orange);
             Capsule topPart = new Capsule(new Vector3(0,0,-size.X),
                                           75/2,
                                           26,
-                                          Color.White,
-                                          false);
+                                          Color.White);
 
             topPart.AddChildObject(new Plane(new Vector3(0,0,75/4),
                                              new Vector3(0,0,-1),
