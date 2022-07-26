@@ -20,7 +20,7 @@ static
 
 lights
 {
-    light:(125,100,175)|25
+    light:(125,100,175)|White|10000
 }
 
 dynamic

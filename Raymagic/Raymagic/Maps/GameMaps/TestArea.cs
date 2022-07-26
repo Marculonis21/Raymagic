@@ -139,7 +139,7 @@ namespace Raymagic
                                           BooleanOP.INTERSECT), true);
             data.staticMapObjects.Add(ramp);
 
-            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray));
+            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
@@ -147,7 +147,13 @@ namespace Raymagic
 
             data.staticMapObjects.Add(boxbox);
 
-            data.interactableObjectList.Add(new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue));
+            Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue);
+            data.interactableObjectList.Add(button);
+
+            Lifter lifter = new Lifter(new Vector3(200,200,0), 150, Color.Blue);
+            button.stateChangeEvent += lifter.EventListener;
+                
+            data.interactableObjectList.Add(lifter);
 
             Map.instance.RegisterMap(data.mapName, data);
         }

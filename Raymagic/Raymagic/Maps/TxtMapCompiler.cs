@@ -143,12 +143,14 @@ namespace Raymagic
             partsFound.Add("top_corner",false);
             partsFound.Add("bot_corner",false);
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"config {i}"); */
                 await Task.Yield();
 
                 var line = input[i];
+                lineNum = i+1;
 
                 if (line.StartsWith("#")) continue;
 
@@ -162,23 +164,23 @@ namespace Raymagic
                 {
                     partsFound["player_spawn"] = true;
                     var spawn = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
-                    data.playerSpawn = GetVector3FromText(spawn);
+                    data.playerSpawn = GetVector3FromText(spawn, lineNum);
                 }
                 else if (line.StartsWith("top_corner:"))
                 {
                     partsFound["top_corner"] = true;
                     var tc = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
-                    data.topCorner = GetVector3FromText(tc);
+                    data.topCorner = GetVector3FromText(tc, lineNum);
                 }
                 else if (line.StartsWith("bot_corner:"))
                 {
                     partsFound["bot_corner"] = true;
                     var bc = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
-                    data.botCorner = GetVector3FromText(bc);
+                    data.botCorner = GetVector3FromText(bc, lineNum);
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown config input - needs name, player_spawn, top_corner, bot_corner");
                 }
             }
 
@@ -213,21 +215,23 @@ namespace Raymagic
             string objectType;
             string objectInfoName;
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"static {i}"); */
                 await Task.Yield();
+                lineNum = i+1;
 
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, i, out objectPart, out paramPart))
+                if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
                     objectInfoName = objectPart[1];
 
-                    Object obj = GetObjectFromData(ObjectCategory.STATIC, i, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
+                    Object obj = GetObjectFromData(ObjectCategory.STATIC, lineNum, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
 
                     try
                     {
@@ -235,19 +239,19 @@ namespace Raymagic
                     }
                     catch (ArgumentException)
                     {
-                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                        throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
                     objectList.Add(obj);
                 }
-                else if (LineContainsOperation(line, i, out string operationType, out string targetObject, out string[] operationContent))
+                else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
-                    AssignOperationFromData(ObjectCategory.STATIC, i, operationType, targetObject, operationContent);
+                    AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown input");
                 }
             }
 
@@ -267,19 +271,21 @@ namespace Raymagic
             string objectType;
             string objectInfoName;
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"dynamic {i}"); */
                 await Task.Yield();
+                lineNum = i+1;
 
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, i, out objectPart, out paramPart))
+                if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
-                    Object obj = GetObjectFromData(ObjectCategory.DYNAMIC, i, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
+                    Object obj = GetObjectFromData(ObjectCategory.DYNAMIC, lineNum, objectPart, paramPart, BooleanOP.NONE, 0, out Type type);
 
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
@@ -290,20 +296,20 @@ namespace Raymagic
                     }
                     catch (ArgumentException)
                     {
-                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                        throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
 
                     objectList.Add(obj);
                 }
-                else if (LineContainsOperation(line, i, out string operationType, out string targetObject, out string[] operationContent))
+                else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {i+1} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
-                    AssignOperationFromData(ObjectCategory.STATIC, i, operationType, targetObject, operationContent);
+                    AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown input");
                 }
             }
 
@@ -320,8 +326,11 @@ namespace Raymagic
 
             string objectType;
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
+                lineNum = i+1;
+
                 /* Console.WriteLine($"lights {i}"); */
                 await Task.Yield();
 
@@ -330,25 +339,26 @@ namespace Raymagic
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, i, out objectPart, out paramPart))
+                if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
 
                     if (objectType == "light")
                     {
-                        Vector3 position = GetVector3FromText(paramPart[0]);
-                        float intensity = float.Parse(paramPart[1]);
-                        Light light = new Light(position, Color.White, intensity);
+                        Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                        Color color = GetColorFromText(paramPart[1], lineNum);
+                        float intensity = float.Parse(paramPart[2]);
+                        Light light = new Light(position, color, intensity);
                         data.mapLights.Add(light);
                     }
                     else
                     {
-                        throw new FormatException($"Format error line {i+1} - Cannot add object type '{objectType}' into lights block)");
+                        throw new FormatException($"Format error line {lineNum} - Cannot add object type '{objectType}' into lights block)");
                     }
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Lights block can have only objects of type light");
                 }
             }
         }
@@ -367,22 +377,24 @@ namespace Raymagic
             string objectType;
             string objectInfoName;
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"physics {i}"); */
                 await Task.Yield();
+                lineNum = i+1;
 
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, i, out objectPart, out paramPart))
+                if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    PhysicsObject pObj = GetPhysicsObjectFromData(ObjectCategory.PHYSICS, i, objectPart, paramPart, out Type type);
+                    PhysicsObject pObj = GetPhysicsObjectFromData(ObjectCategory.PHYSICS, lineNum, objectPart, paramPart, out Type type);
 
                     try
                     {
@@ -390,13 +402,13 @@ namespace Raymagic
                     }
                     catch (ArgumentException)
                     {
-                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                        throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
                     data.physicsMapObjects.Add(pObj);
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown input");
                 }
             }
         }
@@ -412,21 +424,23 @@ namespace Raymagic
             string objectType;
             string objectInfoName;
 
+            int lineNum;
             for (int i = start+1; i < end; i++)
             {
                 await Task.Yield();
+                lineNum = i+1;
 
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
 
-                if (LineContainsObject(line, i, out objectPart, out paramPart))
+                if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
                     objectType = objectPart[0];
                     objectInfoName = objectPart[1];
 
-                    Interactable iObj = GetInteractableObjectFromData(ObjectCategory.INTERACTABLE, i, objectPart, paramPart, out Type type);
+                    Interactable iObj = GetInteractableObjectFromData(ObjectCategory.INTERACTABLE, lineNum, objectPart, paramPart, out Type type);
                         
                     try
                     {
@@ -434,13 +448,13 @@ namespace Raymagic
                     }
                     catch (ArgumentException)
                     {
-                        throw new FormatException($"Format error line {i+1} - multiple objects cannot share info name");
+                        throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
                     data.interactableObjectList.Add(iObj);
                 }
-                else if (LineContainsOperation(line, i, out string operationType, out string _, out string[] operationContent))
+                else if (LineContainsOperation(line, lineNum, out string operationType, out string _, out string[] operationContent))
                 {
-                    if (operationType != "connect") throw new FormatException($"Format error line {i+1} - Interactable object allow only 'connect' operation");
+                    if (operationType != "connect") throw new FormatException($"Format error line {lineNum} - Interactable object allow only 'connect' operation");
 
                     string from = operationContent[0];
                     string to = operationContent[1];
@@ -448,10 +462,10 @@ namespace Raymagic
                     // connect: from -> to 
                     // input can be interactable or trigger - output must be interactabl
                     if (!declaredInteractableObjects.ContainsKey(from) && !declaredPhysicsObjects.ContainsKey(from)) 
-                        throw new FormatException($"Format error line {i+1} - 'From' connection object not found");
+                        throw new FormatException($"Format error line {lineNum} - 'From' connection object not found");
 
                     if (!declaredInteractableObjects.ContainsKey(to))
-                        throw new FormatException($"Format error line {i+1} - 'To' connection object not found");
+                        throw new FormatException($"Format error line {lineNum} - 'To' connection object not found");
 
                     // from is interactable
                     if (declaredInteractableObjects.ContainsKey(from))
@@ -483,14 +497,14 @@ namespace Raymagic
                         }
                         else
                         {
-                            throw new FormatException($"Format error line {i+1} - Cannot use physics ball as an event trigger");
+                            throw new FormatException($"Format error line {lineNum} - Cannot use physics ball as an event trigger");
                         }
                         
                     }
                 }
                 else
                 {
-                    throw new FormatException($"Format warning line {i+1} - Unknown input");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown input");
                 }
             }
         }
@@ -548,8 +562,6 @@ namespace Raymagic
 
         private Object GetObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, BooleanOP boolean, float booleanStrength, out Type type)
         {
-            lineNum += 1;
-
             Object obj;
 
             var objectType = objectPart[0];
@@ -561,56 +573,56 @@ namespace Raymagic
                 {
                     case "box":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 size = GetVector3FromText(paramPart[1]);
-                            Color color = GetColorFromText(paramPart[2]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 size = GetVector3FromText(paramPart[1], lineNum);
+                            Color color = GetColorFromText(paramPart[2], lineNum);
                             Vector3 boundingSize = new Vector3();
                             if (category == ObjectCategory.DYNAMIC)
                             {
-                                boundingSize = GetVector3FromText(paramPart[3]);
+                                boundingSize = GetVector3FromText(paramPart[3], lineNum);
                             }
                             obj = new Box(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "box_frame":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 size = GetVector3FromText(paramPart[1]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 size = GetVector3FromText(paramPart[1], lineNum);
                             float frameSize = float.Parse(paramPart[2]);
-                            Color color = GetColorFromText(paramPart[3]);
+                            Color color = GetColorFromText(paramPart[3], lineNum);
                             Vector3 boundingSize = new Vector3();
                             if (category == ObjectCategory.DYNAMIC)
                             {
-                                boundingSize = GetVector3FromText(paramPart[4]);
+                                boundingSize = GetVector3FromText(paramPart[4], lineNum);
                             }
                             obj = new BoxFrame(position, size, frameSize, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "capsule":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             float height = float.Parse(paramPart[1]);
                             float radius = float.Parse(paramPart[2]);
-                            Color color = GetColorFromText(paramPart[3]);
+                            Color color = GetColorFromText(paramPart[3], lineNum);
                             Vector3 boundingSize = new Vector3();
                             if (category == ObjectCategory.DYNAMIC)
                             {
-                                boundingSize = GetVector3FromText(paramPart[4]);
+                                boundingSize = GetVector3FromText(paramPart[4], lineNum);
                             }
                             obj = new Capsule(position, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
                         break;
                     case "cylinder":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 baseNormal = GetVector3FromText(paramPart[1]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 baseNormal = GetVector3FromText(paramPart[1], lineNum);
                             float height = float.Parse(paramPart[2]);
                             float radius = float.Parse(paramPart[3]);
-                            Color color = GetColorFromText(paramPart[4]);
+                            Color color = GetColorFromText(paramPart[4], lineNum);
                             Vector3 boundingSize = new Vector3();
                             if (category == ObjectCategory.DYNAMIC)
                             {
-                                boundingSize = GetVector3FromText(paramPart[5]);
+                                boundingSize = GetVector3FromText(paramPart[5], lineNum);
                             }
                             obj = new Cylinder(position, baseNormal, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
@@ -619,22 +631,22 @@ namespace Raymagic
                         {
                             if (category == ObjectCategory.DYNAMIC) throw new FormatException($"Format error line {lineNum} - Cannot add plane as dynamic object");
 
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 normal = GetVector3FromText(paramPart[1]);
-                            Color color = GetColorFromText(paramPart[2]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
+                            Color color = GetColorFromText(paramPart[2], lineNum);
 
                             obj = new Plane(position, normal, color, boolean, booleanStrength, info:objectInfoName);
                         }
                         break;
                     case "sphere":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             float size = float.Parse(paramPart[1]);
-                            Color color = GetColorFromText(paramPart[2]);
+                            Color color = GetColorFromText(paramPart[2], lineNum);
                             Vector3 boundingSize = new Vector3();
                             if (category == ObjectCategory.DYNAMIC)
                             {
-                                boundingSize = GetVector3FromText(paramPart[3]);
+                                boundingSize = GetVector3FromText(paramPart[3], lineNum);
                             }
                             obj = new Sphere(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
                         }
@@ -656,8 +668,6 @@ namespace Raymagic
 
         private PhysicsObject GetPhysicsObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, out Type type)
         {
-            lineNum += 1;
-
             PhysicsObject pObj;
 
             var objectType = objectPart[0];
@@ -667,14 +677,14 @@ namespace Raymagic
             {
                 if (objectType == "physics_object")
                 {
-                    Vector3 position = GetVector3FromText(paramPart[0]);
-                    Color color1 = GetColorFromText(paramPart[1]);
-                    Color color2 = GetColorFromText(paramPart[2]);
+                    Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                    Color color1 = GetColorFromText(paramPart[1], lineNum);
+                    Color color2 = GetColorFromText(paramPart[2], lineNum);
                     pObj = new PhysicsObject(position, 25, color1, color2);
                 }
                 else if (objectType == "physics_trigger")
                 {
-                    Vector3 position = GetVector3FromText(paramPart[0]);
+                    Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                     float size = float.Parse(paramPart[1]);
                     pObj = new PhysicsTrigger(position, size);
                 }
@@ -695,8 +705,6 @@ namespace Raymagic
 
         private Interactable GetInteractableObjectFromData(ObjectCategory category, int lineNum, string[] objectPart, string[] paramPart, out Type type)
         {
-            lineNum += 1;
-
             Interactable iObj;
 
             var objectType = objectPart[0];
@@ -708,26 +716,26 @@ namespace Raymagic
                 {
                     case "button":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 facing = GetVector3FromText(paramPart[1]);
-                            Color color = GetColorFromText(paramPart[2]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
+                            Color color = GetColorFromText(paramPart[2], lineNum);
                             iObj = new Button(position, facing, color);
                         }
                         break;
 
                     case "floor_button":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Color color = GetColorFromText(paramPart[1]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Color color = GetColorFromText(paramPart[1], lineNum);
                             iObj = new FloorButton(position, color);
                         }
                         break;
 
                     case "door":
                         {
-                            Vector3 position = GetVector3FromText(paramPart[0]);
-                            Vector3 facing = GetVector3FromText(paramPart[1]);
-                            Color color = GetColorFromText(paramPart[2]);
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
+                            Color color = GetColorFromText(paramPart[2], lineNum);
                             iObj = new Door(position, facing, color);
                         }
                         break;
@@ -757,25 +765,45 @@ namespace Raymagic
                     case "rotateX":
                         {
                             float angle = float.Parse(operationContent[0]);
+                            Vector3 pivot = target.Position;
+                            if (operationContent.Length > 1)
+                            {
+                                pivot = GetVector3FromText(operationContent[1], lineNum);
+                            }
                             target.Rotate(angle, "x", target.Position);
                         }
                         break;
                     case "rotateY":
                         {
                             float angle = float.Parse(operationContent[0]);
+                            Vector3 pivot = target.Position;
+                            if (operationContent.Length > 1)
+                            {
+                                pivot = GetVector3FromText(operationContent[1], lineNum);
+                            }
                             target.Rotate(angle, "y", target.Position);
                         }
                         break;
                     case "rotateZ":
                         {
                             float angle = float.Parse(operationContent[0]);
+                            Vector3 pivot = target.Position;
+                            if (operationContent.Length > 1)
+                            {
+                                pivot = GetVector3FromText(operationContent[1], lineNum);
+                            }
                             target.Rotate(angle, "z", target.Position);
                         }
                         break;
                     case "rotate":
                         {
                             float angle = float.Parse(operationContent[0]);
-                            Vector3 axis = GetVector3FromText(operationContent[1]);
+                            Vector3 axis = GetVector3FromText(operationContent[1], lineNum);
+                            Vector3 pivot = target.Position;
+                            if (operationContent.Length > 2)
+                            {
+                                pivot = GetVector3FromText(operationContent[2], lineNum);
+                            }
                             target.Rotate(angle, axis, target.Position);
                         }
                         break;
@@ -804,16 +832,26 @@ namespace Raymagic
                         break;
                 }
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
-                throw new FormatException($"Format error line {lineNum} - Missing arguments");
+                switch (operationType)
+                {
+                    case "rotateX":
+                        throw new FormatException($"Format error line {lineNum} - rotateX operation missing arguments (correct: rotateX: object|angle|(pivot))");
+                    case "rotateY":
+                        throw new FormatException($"Format error line {lineNum} - rotateY operation missing arguments (correct: rotateY: object|angle|(pivot))");
+                    case "rotateZ":
+                        throw new FormatException($"Format error line {lineNum} - rotateZ operation missing arguments (correct: rotateZ: object|angle|(pivot))");
+                    case "rotate":
+                        throw new FormatException($"Format error line {lineNum} - rotate operation missing arguments (correct: rotate: object|angle|axis|(pivot))");
+                    case "boolean":
+                        throw new FormatException($"Format error line {lineNum} - boolean operation missing arguments (correct: boolean: object: operation([smooth_op_strenght]: operation_object_declaration:|..|..)");
+                }
             }
         }
 
         private bool LineContainsObject(string line, int lineNum, out string[] objectPart, out string[] paramPart)
         {
-            lineNum += 1;
-
             objectPart = new string[2];
             paramPart = new string[0];
             if (line.Contains(":"))
@@ -855,7 +893,6 @@ namespace Raymagic
 
         private bool LineContainsOperation(string line, int lineNum, out string operationType, out string targetObject, out string[] operationContent) 
         {
-            lineNum += 1;
             operationType = "";
             targetObject = "";
             operationContent = new string[0];
@@ -925,17 +962,29 @@ namespace Raymagic
             return true;
         }
 
-        private Vector3 GetVector3FromText(string input)
+        private Vector3 GetVector3FromText(string input, int lineNum)
         {
             input = input.Trim(new char[] {' ', '(', ')'});
             var values = input.Split(",", 3, StringSplitOptions.TrimEntries);
-            return new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+            try
+            {
+                var vector = new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+                return vector;
+            }
+            catch (FormatException)
+            {
+                throw new FormatException($"Format error line {lineNum} - incorrect vector format (correct: (float,float,float))");;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new FormatException($"Format error line {lineNum} - vector needs 3 float values");
+            }
         }
 
-        private Color GetColorFromText(string input)
+        private Color GetColorFromText(string input, int lineNum)
         {
             CColor cc = CColor.FromName(input);
-            if (!cc.IsKnownColor) throw new FormatException($"Unknown color {input}");
+            if (!cc.IsKnownColor) throw new FormatException($"Format error line {lineNum} - Unknown color {input}");
             return new Color(cc.R, cc.G, cc.B, cc.A);
         }
 
