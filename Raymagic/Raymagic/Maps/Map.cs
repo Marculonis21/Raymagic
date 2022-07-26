@@ -22,7 +22,7 @@ namespace Raymagic
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
         public float distanceMapDetail;
-        public SDFout[,,] distanceMap;
+        public DMValue[,,] distanceMap;
 
         public List<Object> staticObjectList = new List<Object>();
         public List<Object> dynamicObjectList = new List<Object>();
@@ -150,9 +150,9 @@ namespace Raymagic
             }
 
             /* Maps/{name}-{distanceMapDetail}.dm */
-            distanceMap = new SDFout[(int)(mapSize.X/distanceMapDetail), 
-                                     (int)(mapSize.Y/distanceMapDetail),
-                                     (int)(mapSize.Z/distanceMapDetail)];
+            distanceMap = new DMValue[(int)(mapSize.X/distanceMapDetail), 
+                                      (int)(mapSize.Y/distanceMapDetail),
+                                      (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine("");
             BVH.BuildBVHDownUp();
@@ -200,16 +200,22 @@ namespace Raymagic
 
                     SDFout test;
                     SDFout best = new SDFout(float.MaxValue, Color.Pink);
+                    int bestObjIndex = 0;
+                    int index = 0;
                     foreach(Object obj in this.staticObjectList)
                     {
                         test = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
                                                                y*distanceMapDetail, 
                                                                z*distanceMapDetail), best.distance);
                         if(test.distance < best.distance)
+                        {
                             best = test;
+                            bestObjIndex = index;
+                        }
+                        index++;
                     }
 
-                    distanceMap[x,y,z] = best;
+                    distanceMap[x,y,z] = new DMValue(bestObjIndex, best);
                 });
             }
 

@@ -38,6 +38,7 @@ namespace Raymagic
                 SDFout test;
                 SDFout best = new SDFout(length, color);
                 ObjHitType type = ObjHitType.Static;
+                Object staticObject = null;
 
                 if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
                    (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
@@ -49,9 +50,12 @@ namespace Raymagic
                 }
                 else
                 {
-                    best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
-                                           (int)Math.Abs(coords.Y/map.distanceMapDetail),
-                                           (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+                    DMValue dmValue = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                                      (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                                      (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+
+                    staticObject = map.staticObjectList[dmValue.objIndex];
+                    best = dmValue.sdfValue;
                 }
 
                 if (depth < 5)
@@ -128,15 +132,8 @@ namespace Raymagic
 
                     if(type == ObjHitType.Static)
                     {
-                        foreach(Object obj in map.staticObjectList)
-                        {
-                            var _test = obj.SDF(testPos, best.distance+10);
-                            if(_test.distance <= final.distance)
-                            {
-                                final = _test;
-                                finalObj = obj;
-                            }
-                        }
+                        final = best;
+                        finalObj = staticObject;
                     }
                     else if(type == ObjHitType.Dynamic)
                     {
@@ -171,11 +168,6 @@ namespace Raymagic
                                           color.B+addColor.B);
                     }
 
-                    /* lightIntensity = Math.Max(lightIntensity, 0.00025f); // try around something */
-                    /* color = new Color(final.color.R*lightIntensity, */
-                    /*                   final.color.G*lightIntensity, */
-                    /*                   final.color.B*lightIntensity); */
-
                     return;
                 }
 
@@ -209,6 +201,7 @@ namespace Raymagic
 
                 SDFout test;
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
+
                 if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
                    (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
                    (int)(coords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
@@ -216,13 +209,14 @@ namespace Raymagic
                    (int)(coords.Y/map.distanceMapDetail) < 0 ||
                    (int)(coords.Z/map.distanceMapDetail) < 0)
                 {
-                    /* Console.WriteLine("LIGHT ERROR"); */
                 }
                 else
                 {
-                    best = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
-                                           (int)Math.Abs(coords.Y/map.distanceMapDetail),
-                                           (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+                    DMValue dmValue = map.distanceMap[(int)Math.Abs(coords.X/map.distanceMapDetail),
+                                                      (int)Math.Abs(coords.Y/map.distanceMapDetail),
+                                                      (int)Math.Abs(coords.Z/map.distanceMapDetail)];
+
+                    best = dmValue.sdfValue;
                 }
 
                 test = map.BVH.Test(testPos, best.distance, false, out Object _);
@@ -247,15 +241,6 @@ namespace Raymagic
                         best = test;
                     }
                 }
-
-                /* foreach(var obj in map.interactableObjectList) */
-                /* { */
-                /*     test = obj.SDF(testPos, best.distance); */
-                /*     if(test.distance < best.distance) */
-                /*     { */
-                /*         best = test; */
-                /*     } */
-                /* } */
 
                 float lightDst = light.DistanceFrom(testPos);
                 if(lightDst < best.distance)
@@ -306,6 +291,7 @@ namespace Raymagic
                     }
                 }
 
+                // needed for precision
                 foreach(Object obj in map.staticObjectList)
                 {
                     test = obj.SDF(testPos, best.distance, physics:true);

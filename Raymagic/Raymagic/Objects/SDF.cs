@@ -26,6 +26,18 @@ namespace Raymagic
         }
     }
 
+    public struct DMValue
+    {
+        public int objIndex {get; private set;}
+        public SDFout sdfValue {get; private set;}
+
+        public DMValue(int objIndex, SDFout sdfValue)
+        {
+            this.objIndex = objIndex;
+            this.sdfValue = sdfValue;
+        }
+    }
+
     public class SDFs
     {
         public static SDFout Combine(float objA, float objB, Color colorA, Color colorB, BooleanOP op, float opStrength)

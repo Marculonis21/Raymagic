@@ -26,6 +26,7 @@ namespace Raymagic
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
+        Vector3 preGodVelocityCache;
 
         bool interactButtonDown = false;
         bool grabButtonDown = false;
@@ -177,12 +178,16 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
             {
                 GodMode = true;
+                this.velocity = 
                 this.preGodPositionCache = this.position;
+                this.preGodVelocityCache = this.velocity;
+                this.velocity = new Vector3(0,0,0);
             }
             if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
             {
                 GodMode = false;
                 this.position = this.preGodPositionCache;
+                this.velocity = this.preGodVelocityCache;
             }
 
             if(GodMode)
