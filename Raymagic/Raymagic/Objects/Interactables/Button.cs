@@ -47,8 +47,8 @@ namespace Raymagic
             modelStates.Add(bBase1);
             modelStates.Add(bBase2);
 
-            this.boundingBoxSize = new Vector3(30,30,100);
-            this.boundingBox = new Box(position,
+            this.boundingBoxSize = new Vector3(30,30,50);
+            this.boundingBox = new Box(this.Position - new Vector3(0,0,boundingBoxSize.Z/2),
                                        this.boundingBoxSize,
                                        Color.Black);
         }

@@ -6,6 +6,7 @@ namespace Raymagic
     {
         Cylinder piston;
         Plane difPlane;
+        const float lifterSpeed = 4;
 
         /* float pistonMaxHeight = 100; */
         float[] pistonStartStopHeights = new float[2]; 
@@ -52,8 +53,8 @@ namespace Raymagic
             Box pistonTop = new Box(new Vector3(0,0,2),new Vector3(80,80,4),Color.Gray);
             piston.AddChildObject(pistonTop, true);
 
-            this.boundingBoxSize = new Vector3(90,90, pistonStartStopHeights[1]);
-            this.boundingBox = new Box(this.Position + new Vector3(0,0,pistonStartStopHeights[1]/2),
+            this.boundingBoxSize = new Vector3(90,90, pistonStartStopHeights[1]+4);
+            this.boundingBox = new Box(this.Position + new Vector3(0,0,boundingBoxSize.Z/2),
                                        this.boundingBoxSize,
                                        Color.Yellow);
         }
@@ -114,7 +115,7 @@ namespace Raymagic
             {
                 if (state == 0) break; // state was changed to close
 
-                piston.Translate(new Vector3(0,0,1) * 2, true);
+                piston.Translate(new Vector3(0,0,1) * lifterSpeed, true);
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
             }
         }
@@ -125,7 +126,7 @@ namespace Raymagic
             {
                 if (state == 1) break; // state was changed to close
 
-                piston.Translate(new Vector3(0,0,1) * -2, true);
+                piston.Translate(new Vector3(0,0,1) * -lifterSpeed, true);
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
             }
         }
