@@ -219,7 +219,7 @@ namespace Raymagic
                 this.testONButtonDown = true;
 
                 // long running task? thread feels better - completely separated
-                new Thread(() => map.PreLoadMap("showcase")).Start();
+                /* new Thread(() => map.PreLoadMap("showcase")).Start(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {

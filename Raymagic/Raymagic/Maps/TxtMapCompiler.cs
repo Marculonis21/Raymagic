@@ -58,6 +58,7 @@ namespace Raymagic
                 "rotateZ",
                 "rotate",
                 "repeat",
+                "symmetry",
                 "connect",
                 "boolean"
             };
@@ -834,6 +835,14 @@ namespace Raymagic
                             target.SetRepetition(repetitionLimit, repetitionDistance);
                         }
                         break;
+                    case "symmetry":
+                        {
+                            string symmetryOptions = operationContent[0].ToUpper();
+                            Vector3 symmetryPlaneOffset = GetVector3FromText(operationContent[1], lineNum);
+
+                            target.SetSymmetry(symmetryOptions, symmetryPlaneOffset);
+                        }
+                        break;
                     case "boolean":
                         {
                             BooleanOP op = GetBooleanOPFromText(operationContent[0]);
@@ -934,7 +943,7 @@ namespace Raymagic
                         operationType = parts[0];
                         operationContent = parts[1].Split('|', StringSplitOptions.TrimEntries);
 
-                        if (operationType.StartsWith("rotate") || operationType.StartsWith("repeat")) // rotate: box: 10|(0,0,1)
+                        if (operationType.StartsWith("rotate") || operationType.StartsWith("repeat") || operationType.StartsWith("symmetry")) // rotate: box: 10|(0,0,1)
                         {
                             var split = parts[1].Split(":", 2);
                             targetObject = split[0];

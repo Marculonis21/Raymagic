@@ -23,6 +23,7 @@ namespace Raymagic
             Dynamic,
         }
  
+        /* public static bool gammaEnabled = false; */
         public static void RayMarch(Ray ray, out float length, out Color color, int depth=0)
         {
             Map map = Map.instance;
@@ -160,12 +161,23 @@ namespace Raymagic
 
                         lightIntensity += addIntensity;
 
-                        lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
+                        lightIntensity = Math.Max(lightIntensity, 0.02f); // try around something
                         Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
                         color = new Color(color.R+addColor.R,
                                           color.G+addColor.G,
                                           color.B+addColor.B);
+
+                        /* if (gammaEnabled) */
+                        /* { */
+                        /*     Vector3 v = color.ToVector3(); */
+                        /*     Vector3 corrected = new Vector3((float)Math.Pow(v.X, 1f/2.2f), */
+                        /*                                     (float)Math.Pow(v.Y, 1f/2.2f), */
+                        /*                                     (float)Math.Pow(v.Z, 1f/2.2f)); */
+                        /*     color = corrected.ToColor(); */
+                            
+                        /* } */
+                        
                     }
 
                     return;
@@ -182,6 +194,35 @@ namespace Raymagic
 
             // "= how close is the reflection vector to the light vector)"
             return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0f);
+        }
+
+        /* float ambientOcclusion (float3 pos, float3 normal) */
+        /* { */
+        /*     float sum = 0; */
+        /*     for (int i = 0; i < _AOSteps; i ++) */
+        /*     { */
+        /*         float3 p = pos + normal * (i+1) * _AOStepSize; */
+        /*         sum    += map(p); */
+        /*     } */
+        /*     return sum / (_AOStep * _AOStepSize); */
+        /* } */
+
+        const int AOSteps = 10;
+        /* const float AOStepSize = 5f; */
+        private static float AmbientOcclusion(Vector3 pos, Vector3 normal)
+        {
+            float occ = 0f;
+            float sca = 1f;
+            for (int i = 0; i < AOSteps; i++)
+            {
+                float h = 2 + 2 * i/4;
+                Vector3 test = pos + normal * h;
+                PhysicsRayMarch(new Ray(test, test-pos), 1, -1, out float dist, out Vector3 _, out Object _);
+                occ += (h-dist)*sca;
+                sca *= 0.95f;
+            }
+
+            return Math.Clamp(1 - 3*occ, 0, 1);
         }
 
         public static float LightRayMarch(Vector3 position, Light light)

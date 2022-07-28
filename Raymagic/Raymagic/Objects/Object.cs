@@ -34,6 +34,12 @@ namespace Raymagic
         protected Vector3 repetitionLimit = new Vector3();
         protected float repetitionDistance= 1;
 
+        public bool symmetryEnabled = false;
+        public string symmetryOptions = "";
+        public Vector3 symmetryPlaneOffset = new Vector3();
+        /* protected Vector3 repetitionLimit = new Vector3(); */
+        /* protected float repetitionDistance= 1; */
+
         public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
             this.transformMatrix[0,0] = 1;
@@ -85,6 +91,18 @@ namespace Raymagic
             }
         }
 
+        public void SetSymmetry(string symmetryOptions, Vector3 symmetryPlaneOffset)
+        {
+            this.symmetryEnabled = true;
+            this.symmetryOptions = symmetryOptions;
+            this.symmetryPlaneOffset = symmetryPlaneOffset;
+
+            /* foreach (Object child in childObjects) */
+            /* { */
+            /*     child.SetSymmetry(symmetryOptions, symmetryPlaneOffset+(this.Position-child.Position), true); */
+            /* } */
+        }
+
         public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
             Vector3 transformedTestPos = Transform(testPos);
@@ -92,6 +110,16 @@ namespace Raymagic
             if (repetitionEnabled)
             {
                 transformedTestPos = TransformHelper.RepeatLimit(transformedTestPos, repetitionDistance, repetitionLimit);
+            }
+
+            if (symmetryEnabled)
+            {
+                transformedTestPos.Deconstruct(out float x, out float y, out float z);
+                if (symmetryOptions.Contains("X")) x = Math.Abs(x) - symmetryPlaneOffset.X;
+                if (symmetryOptions.Contains("Y")) y = Math.Abs(y) - symmetryPlaneOffset.Y;
+                if (symmetryOptions.Contains("Z")) z = Math.Abs(z) - symmetryPlaneOffset.Z;
+
+                transformedTestPos = new Vector3(x,y,z);
             }
 
             SDFout current = new SDFout(SDFDistance(transformedTestPos), this.color);
