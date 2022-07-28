@@ -154,6 +154,11 @@ namespace Raymagic
             /* map.dynamicObjectList[0].childObjects[0].Rotate(2f,"Z", map.dynamicObjectList[0].Position); */
 
             base.Update(gameTime);
+
+            if (map.mapPreloading)
+            {
+                Task.Delay(20);
+            }
         }
         
         protected override void Draw(GameTime gameTime)

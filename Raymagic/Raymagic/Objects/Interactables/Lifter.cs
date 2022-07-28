@@ -21,31 +21,20 @@ namespace Raymagic
         public override void ObjectSetup()
         {
             Vector3 position = this.Position + new Vector3(0,0,10);
-            Vector3 lineSize = new Vector3(150,10,20);
+            Vector3 lineSize = new Vector3(150,5,20);
 
-            Box line = new Box(position, lineSize, secondaryColor);
-            line.AddChildObject(new Box(new Vector3(0, 10,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0, 20,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0, 30,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0, 40,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0, 50,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0, 60,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0, 70,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0,-10,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0,-20,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0,-30,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0,-40,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0,-50,0), lineSize, Color.Black),    true);
-            line.AddChildObject(new Box(new Vector3(0,-60,0), lineSize, secondaryColor), true);
-            line.AddChildObject(new Box(new Vector3(0,-70,0), lineSize, Color.Black),    true);
+            Box line1 = new Box(position, lineSize, secondaryColor);
+            Box line2 = new Box(new Vector3(0,5,0), lineSize, Color.Black);
+            line1.AddChildObject(line2, true);
+            line1.SetRepetition(new Vector3(0,10,0), 10);
+            
+            line1.Rotate(45, "Z", line1.Position);
 
-            line.Rotate(45, "Z", line.Position);
+            line1.AddChildObject(new Box(this.Position + new Vector3(0,0,3), new Vector3(100,100,6), Color.Black, BooleanOP.INTERSECT), false);
+            line1.AddChildObject(new Box(this.Position + new Vector3(0,0,20), new Vector3(90,90,45), Color.Black, BooleanOP.DIFFERENCE), false);
+            line1.AddChildObject(new Box(this.Position, new Vector3(100,100,4), Color.Gray), false);
 
-            line.AddChildObject(new Box(this.Position + new Vector3(0,0,3), new Vector3(100,100,6), Color.Black, BooleanOP.INTERSECT), false);
-            line.AddChildObject(new Box(this.Position + new Vector3(0,0,20), new Vector3(90,90,45), Color.Black, BooleanOP.DIFFERENCE), false);
-            line.AddChildObject(new Box(this.Position, new Vector3(100,100,4), Color.Gray), false);
-
-            Map.instance.staticObjectList.Add(line);
+            Map.instance.staticObjectList.Add(line1);
 
             piston = new Cylinder(this.Position + new Vector3(0,0,pistonStartStopHeights[0]), new Vector3(0,0,1), pistonStartStopHeights[1], 15, Color.DarkGray);
             difPlane = new Plane(this.Position, new Vector3(0,0,1), Color.Black);

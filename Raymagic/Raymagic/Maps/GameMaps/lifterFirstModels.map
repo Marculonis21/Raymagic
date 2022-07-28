@@ -1,0 +1,65 @@
+config
+{
+    name: lifterFirstModel
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+    # box[box]:(200,200,50)|(100,100,100)|Red
+}
+
+lights
+{
+    light:(125,100,175)|White|10000
+}
+
+dynamic
+{
+    box[line1] :(150,150,10)|(150,5,20)|Yellow|(150,150,20)
+    boolean: line1: union: box:(0,5,0)|(150,5,20)|Black|True
+    symetry: line1: (0,10,0)|10
+    # boolean: line1: union: box:(0, 10,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0, 20,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0, 30,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0, 40,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0, 50,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0, 60,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0, 70,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0,-10,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0,-20,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0,-30,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0,-40,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0,-50,0)|(150,10,20)|Black |True
+    # boolean: line1: union: box:(0,-60,0)|(150,10,20)|Yellow|True
+    # boolean: line1: union: box:(0,-70,0)|(150,10,20)|Black |True
+    rotateZ: line1: 45 
+
+    boolean: line1: intersect: box:(150,150,5)|(100,100,10)|Black|False
+    boolean: line1: difference: box:(150,150,20)|(90,90,45)|Black|False
+    boolean: line1: union: box:(150,150,0)|(100,100,4)|Gray|False
+
+    # cylinder[piston]:(150,150,0)|(0,0,-1)|60|15|DarkBlue|(110,110,400)
+    # boolean: piston: union: box:(150,150,62)|(80,80,4)|Gray|False
+}
+
+physics
+{
+    # physics_trigger[doorTrigger]:(200,200,100)|100
+}
+
+interactables
+{
+    # button[button1]:(150,100,0)|(-1,0,0)|Blue
+    # door[door1]:(200,200,0)|(-1,0,0)|Blue
+    # connect: doorTrigger -> door1 
+    # connect: button1 -> door1
+}

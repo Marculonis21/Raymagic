@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -26,10 +27,11 @@ namespace Raymagic
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
-        Vector3 preGodVelocityCache;
 
         bool interactButtonDown = false;
         bool grabButtonDown = false;
+
+        bool activeModelButtonDown = false;
 
         bool testONButtonDown = false;
         bool testOFFButtonDown = false;
@@ -63,6 +65,7 @@ namespace Raymagic
             playerControls.Add("pause",         Keys.Escape);
             playerControls.Add("playerMode",    Keys.F1);
             playerControls.Add("godMode",       Keys.F2);
+            playerControls.Add("activeModel",   Keys.F12);
             playerControls.Add("god_up",        Keys.Space);
             playerControls.Add("god_down",      Keys.LeftControl);
 
@@ -178,16 +181,29 @@ namespace Raymagic
             if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
             {
                 GodMode = true;
-                this.velocity = 
                 this.preGodPositionCache = this.position;
-                this.preGodVelocityCache = this.velocity;
                 this.velocity = new Vector3(0,0,0);
             }
             if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
             {
                 GodMode = false;
                 this.position = this.preGodPositionCache;
-                this.velocity = this.preGodVelocityCache;
+                this.velocity = new Vector3(0,0,0);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(playerControls["activeModel"]) && !activeModelButtonDown)
+            {
+                activeModelButtonDown = true;
+
+                this.activeMapReload = !this.activeMapReload;
+                if (activeMapReload)
+                {
+                    MapReloadingAsync(500);
+                }
+            }
+            if (!Keyboard.GetState().IsKeyDown(playerControls["activeModel"]))
+            {
+                activeModelButtonDown = false;
             }
 
             if(GodMode)
@@ -202,13 +218,8 @@ namespace Raymagic
             {
                 this.testONButtonDown = true;
 
-                /* RayMarchingHelper.SpecularEnabled = !RayMarchingHelper.SpecularEnabled; */
-                this.activeMapReload = !this.activeMapReload;
-                if (activeMapReload)
-                {
-                    MapReloadingAsync(500);
-                }
-                map.ReloadMap();
+                // long running task? thread feels better - completely separated
+                new Thread(() => map.PreLoadMap("showcase")).Start();
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {

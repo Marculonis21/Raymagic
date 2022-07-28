@@ -137,6 +137,7 @@ namespace Raymagic
                                           new Vector3(0,-1,1),
                                           Color.Black,
                                           BooleanOP.INTERSECT), true);
+
             data.staticMapObjects.Add(ramp);
 
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */

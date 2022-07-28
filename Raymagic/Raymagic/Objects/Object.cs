@@ -30,6 +30,10 @@ namespace Raymagic
 
         protected bool selectable; 
 
+        protected bool repetitionEnabled = false;
+        protected Vector3 repetitionLimit = new Vector3();
+        protected float repetitionDistance= 1;
+
         public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
             this.transformMatrix[0,0] = 1;
@@ -69,9 +73,28 @@ namespace Raymagic
             childObjects.Add(child);
         }
 
+        public void SetRepetition(Vector3 repetitionLimit, float repetitionDistance)
+        {
+            this.repetitionEnabled = true;
+            this.repetitionLimit = repetitionLimit;
+            this.repetitionDistance = repetitionDistance;
+
+            foreach (Object child in childObjects)
+            {
+                child.SetRepetition(repetitionLimit, repetitionDistance);
+            }
+        }
+
         public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
-            SDFout current = new SDFout(SDFDistance(Transform(testPos)), this.color);
+            Vector3 transformedTestPos = Transform(testPos);
+
+            if (repetitionEnabled)
+            {
+                transformedTestPos = TransformHelper.RepeatLimit(transformedTestPos, repetitionDistance, repetitionLimit);
+            }
+
+            SDFout current = new SDFout(SDFDistance(transformedTestPos), this.color);
 
             foreach (Object child in childObjects)
             {

@@ -96,13 +96,19 @@ namespace Raymagic
             };
 
         }
+        
+        public static Vector3 RepeatLimit(Vector3 pos, float c, Vector3 limits)
+        {
+            Vector3 _v = pos/c;
+            Vector3 _out = new Vector3((float)Math.Clamp(Math.Round(_v.X), (-limits).X, limits.X),
+                                       (float)Math.Clamp(Math.Round(_v.Y), (-limits).Y, limits.Y),
+                                       (float)Math.Clamp(Math.Round(_v.Z), (-limits).Z, limits.Z));
+            return pos-c*_out;
+        }
+
 
         public static Vector3 Transform(Vector3 orig, double[] transformInverse)
         {
-            /* return new Vector3((float)((orig.X*transformInverse[0,0]) + (orig.Y*transformInverse[1,0]) + (orig.Z*transformInverse[2,0]) + (1*transformInverse[3,0])), */
-            /*                    (float)((orig.X*transformInverse[0,1]) + (orig.Y*transformInverse[1,1]) + (orig.Z*transformInverse[2,1]) + (1*transformInverse[3,1])), */
-            /*                    (float)((orig.X*transformInverse[0,2]) + (orig.Y*transformInverse[1,2]) + (orig.Z*transformInverse[2,2]) + (1*transformInverse[3,2]))); */
-
             return new Vector3((float)((orig.X*transformInverse[0]) + (orig.Y*transformInverse[3]) + (orig.Z*transformInverse[6]) + (1*transformInverse[9])),
                                (float)((orig.X*transformInverse[1]) + (orig.Y*transformInverse[4]) + (orig.Z*transformInverse[7]) + (1*transformInverse[10])),
                                (float)((orig.X*transformInverse[2]) + (orig.Y*transformInverse[5]) + (orig.Z*transformInverse[8]) + (1*transformInverse[11])));

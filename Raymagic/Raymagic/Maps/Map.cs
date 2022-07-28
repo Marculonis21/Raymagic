@@ -77,13 +77,10 @@ namespace Raymagic
             string[] files = Directory.GetFiles(txtMapsPath, "*.map");
 
             Console.WriteLine($"found {files.Length} files for TxtMapCompiler");
-            var compilerTasks = new Task[files.Length];
             for (int i = 0; i < files.Length; i++)
             {
-                compilerTasks[i] = TxtMapCompiler.instance.CompileFile(files[i]);
+                Task.WaitAll(TxtMapCompiler.instance.CompileFile(files[i]));
             }
-
-            Task.WaitAll(compilerTasks);
 
             if (files.Length > 0)
                 Console.WriteLine("Compilation process done");
@@ -166,7 +163,8 @@ namespace Raymagic
                 if(input == "L" || input == "l")
                 {
                     Console.WriteLine("Loading from file...");
-                    LoadDistanceMap(id, this.distanceMapDetail);
+                    this.distanceMap = LoadDistanceMap(id, this.distanceMapDetail, this.distanceMap);
+                    GC.Collect();
 
                     return;
                 }
@@ -225,6 +223,42 @@ namespace Raymagic
             Console.CursorVisible = true;
         }
 
+        public bool mapPreloading = false;
+        public void PreLoadMap(string id)
+        {
+            mapPreloading = true;
+            var _data = maps[id];
+            var _mapName = _data.mapName;
+            var _staticObjectList   = _data.staticMapObjects;
+            var _dynamicObjectList  = _data.dynamicMapObjects;
+            var _physicsObjectsList = _data.physicsMapObjects;
+            var _portalableObjectList = new List<IPortalable>();
+            _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger));
+            var _interactableObjectList = _data.interactableObjectList;
+            var _lightList = _data.mapLights;
+
+            /* foreach (var item in _interactableObjectList) */
+            /* { */
+            /*     item.ObjectSetup(); */
+            /* } */
+
+            /* BVH.BuildBVHDownUp(); */
+
+            var _physicsSpace = new PhysicsSpace(physicsObjectsList);
+
+            var _mapSize      = _data.topCorner - _data.botCorner;
+            var _mapOrigin    = _data.botCorner;
+            var _mapTopCorner = _data.topCorner;
+
+            var _distanceMap = new DMValue[(int)(_mapSize.X/distanceMapDetail), 
+                                           (int)(_mapSize.Y/distanceMapDetail),
+                                           (int)(_mapSize.Z/distanceMapDetail)];
+
+            _distanceMap = LoadDistanceMap(id, distanceMapDetail, _distanceMap);
+
+            mapPreloading = false;
+        }
+
         public Vector3 GetPlayerStart()
         {
             return data.playerSpawn;
@@ -247,7 +281,7 @@ namespace Raymagic
             GC.Collect();
         }
 
-        public void LoadDistanceMap(string name, float distanceMapDetail)
+        public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[,,] distanceMap)
         {
             try
             {
@@ -256,17 +290,19 @@ namespace Raymagic
                 SaveContainer saveContainer = (SaveContainer)formatter.Deserialize(stream);  
                 stream.Close(); 
 
-                this.distanceMap = saveContainer.Deserialize(this.distanceMap);
+                distanceMap = saveContainer.Deserialize(distanceMap);
 
                 Console.WriteLine($"Distance map Maps/Data/{name}-{distanceMapDetail}.dm loaded");
                 saveContainer = null;
 
-                GC.Collect();
+                return distanceMap;
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("unable to load");
             }
+
+            return null;
         }
     }
 }

@@ -48,7 +48,8 @@ namespace Raymagic
 
                 "button",
                 "floor_button",
-                "door"
+                "door",
+                "lifter"
             };
 
             possibleOperations = new List<string>() {
@@ -56,6 +57,7 @@ namespace Raymagic
                 "rotateY",
                 "rotateZ",
                 "rotate",
+                "repeat",
                 "connect",
                 "boolean"
             };
@@ -97,6 +99,12 @@ namespace Raymagic
             try
             {
                 await Task.WhenAll(tasks);
+
+                if (!full)
+                {
+                    Informer.instance.AddInfo("map_compilation1", $"Compiling done", true);
+                    Informer.instance.AddInfo("map_compilation2", "", true);
+                }
             }
             catch (FormatException e)
             {
@@ -112,8 +120,6 @@ namespace Raymagic
                 }
                 return;
             }
-            Informer.instance.AddInfo("map_compilation1", $"Compiling done", true);
-            Informer.instance.AddInfo("map_compilation2", "", true);
 
             Map.instance.RegisterMap(data.mapName, data);
         }
@@ -491,9 +497,13 @@ namespace Raymagic
                                 trigger.onCollisionEnter += door.TriggerEnter;
                                 trigger.onCollisionExit += door.TriggerExit;
                             }
-                            /* else if (toType == typeof(Spawner)) */
-                            /* { */
-                            /* } */
+                            else if (toType == typeof(Lifter))
+                            {
+                                var lifter = (toObj as Lifter);
+
+                                trigger.onCollisionEnter += lifter.TriggerEnter;
+                                trigger.onCollisionExit += lifter.TriggerExit;
+                            }
                         }
                         else
                         {
@@ -739,6 +749,15 @@ namespace Raymagic
                             iObj = new Door(position, facing, color);
                         }
                         break;
+
+                    case "lifter":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            float maxHeight = float.Parse(paramPart[1]);
+                            Color secondaryColor = GetColorFromText(paramPart[2], lineNum);
+                            iObj = new Lifter(position, maxHeight, secondaryColor);
+                        }
+                        break;
                         
                     default:
                         throw new FormatException($"Format error line {lineNum} - Cannot add this type of object as dynamic object");
@@ -805,6 +824,14 @@ namespace Raymagic
                                 pivot = GetVector3FromText(operationContent[2], lineNum);
                             }
                             target.Rotate(angle, axis, target.Position);
+                        }
+                        break;
+                    case "repeat":
+                        {
+                            Vector3 repetitionLimit = GetVector3FromText(operationContent[0], lineNum);
+                            float repetitionDistance = float.Parse(operationContent[1]);
+
+                            target.SetRepetition(repetitionLimit, repetitionDistance);
                         }
                         break;
                     case "boolean":
@@ -907,7 +934,7 @@ namespace Raymagic
                         operationType = parts[0];
                         operationContent = parts[1].Split('|', StringSplitOptions.TrimEntries);
 
-                        if (operationType.StartsWith("rotate")) // rotate: box: 10|(0,0,1)
+                        if (operationType.StartsWith("rotate") || operationType.StartsWith("repeat")) // rotate: box: 10|(0,0,1)
                         {
                             var split = parts[1].Split(":", 2);
                             targetObject = split[0];

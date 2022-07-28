@@ -51,11 +51,10 @@ namespace Raymagic
                 this.RIGHT.boundingBoxPosition - this.RIGHT.boundingBoxSize/2,          
             };
 
-
-            Map.instance.infoObjectList.Add(new Sphere(oc[0], 10, Color.Green));
-            Map.instance.infoObjectList.Add(new Sphere(oc[1], 10, Color.Green));
-            Map.instance.infoObjectList.Add(new Sphere(oc[2], 10, Color.Green));
-            Map.instance.infoObjectList.Add(new Sphere(oc[3], 10, Color.Green));
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[0], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[1], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[2], 10, Color.Green)); */
+            /* Map.instance.infoObjectList.Add(new Sphere(oc[3], 10, Color.Green)); */
 
             var smallestX = (new float[] {oc[0].X,oc[1].X,oc[2].X,oc[3].X}).Min();
             var smallestY = (new float[] {oc[0].Y,oc[1].Y,oc[2].Y,oc[3].Y}).Min();
