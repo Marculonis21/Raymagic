@@ -110,6 +110,18 @@ namespace Raymagic
             }
         }
 
+        public bool activeMapReload = false;
+        public async Task MapReloadingAsync(int reloadTime)
+        {
+            while (this.activeMapReload)
+            {
+                await Task.Run(() => { while(Screen.instance.DrawPhase) { } } ).ContinueWith( t1 => ReloadMap() );
+                await Task.Delay(reloadTime);
+            }
+            Informer.instance.RemoveInfo("map_compilation1");
+            Informer.instance.RemoveInfo("map_compilation2");
+        }
+
         public void SetMap(string id)
         {
             this.data = maps[id];

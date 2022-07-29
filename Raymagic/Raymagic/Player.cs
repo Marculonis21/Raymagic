@@ -39,7 +39,6 @@ namespace Raymagic
         bool pauseButtonDown = false;
 
         public bool playerPause = false;
-        public bool activeMapReload = false;
 
         public int cursorSize = 10;
 
@@ -195,10 +194,10 @@ namespace Raymagic
             {
                 activeModelButtonDown = true;
 
-                this.activeMapReload = !this.activeMapReload;
-                if (activeMapReload)
+                map.activeMapReload = !map.activeMapReload;
+                if (map.activeMapReload)
                 {
-                    MapReloadingAsync(500);
+                    map.MapReloadingAsync(500);
                 }
             }
             if (!Keyboard.GetState().IsKeyDown(playerControls["activeModel"]))
@@ -548,15 +547,6 @@ namespace Raymagic
 
             viewPlaneUp = Vector3.Normalize(playerLookPerpenUP);
             viewPlaneRight = Vector3.Normalize(playerLookPerpenSIDE);
-        }
-
-        async Task MapReloadingAsync(int reloadTime)
-        {
-            while (this.activeMapReload)
-            {
-                await Task.Run(() => { while(Screen.instance.DrawPhase) { } } ).ContinueWith( t1 => map.ReloadMap() );
-                await Task.Delay(reloadTime);
-            }
         }
     }
 }

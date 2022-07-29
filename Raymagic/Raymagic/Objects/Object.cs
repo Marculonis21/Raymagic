@@ -20,6 +20,8 @@ namespace Raymagic
         protected Color color;
         protected string info;
 
+        public bool transparent;
+
         protected Box boundingBox;
         protected Vector3 boundingBoxSize;
         protected bool boundingBoxVisible = false;
@@ -37,8 +39,6 @@ namespace Raymagic
         public bool symmetryEnabled = false;
         public string symmetryOptions = "";
         public Vector3 symmetryPlaneOffset = new Vector3();
-        /* protected Vector3 repetitionLimit = new Vector3(); */
-        /* protected float repetitionDistance= 1; */
 
         public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
         {
@@ -97,15 +97,15 @@ namespace Raymagic
             this.symmetryOptions = symmetryOptions;
             this.symmetryPlaneOffset = symmetryPlaneOffset;
 
-            /* foreach (Object child in childObjects) */
-            /* { */
-            /*     child.SetSymmetry(symmetryOptions, symmetryPlaneOffset+(this.Position-child.Position), true); */
-            /* } */
+            foreach (Object child in childObjects)
+            {
+                child.SetSymmetry(symmetryOptions, symmetryPlaneOffset);
+            }
         }
 
         public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
-            Vector3 transformedTestPos = Transform(testPos);
+            Vector3 transformedTestPos = Transform(testPos);    
 
             if (repetitionEnabled)
             {
@@ -269,5 +269,6 @@ namespace Raymagic
         public bool IsSelectable { get => selectable; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }
+        public bool IsTransparent { get => transparent; }
     }
 }

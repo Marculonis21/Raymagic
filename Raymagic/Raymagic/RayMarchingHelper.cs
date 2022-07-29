@@ -28,6 +28,10 @@ namespace Raymagic
         {
             Map map = Map.instance;
             color = Color.Black;
+            Color transparentColor = Color.White;
+            float transparentDepth = 0;
+            float transparentStep = 0.25f;
+
             length = float.MaxValue;
 
             Vector3 testPos = ray.origin;
@@ -141,11 +145,20 @@ namespace Raymagic
                         final = best;
                         finalObj = bestObj;
                     }
-
                     Vector3 startPos;
                     Vector3 objectNormal;
 
                     float lightIntensity = 0;
+
+                    if (finalObj.IsTransparent)
+                    {
+                        testPos += ray.direction*transparentStep;
+                        transparentColor = finalObj.Color;
+                        transparentDepth += 1;
+                        iter -= 1;
+                        continue;
+                    }
+
                     foreach(Light light in map.lightList)
                     {
                         if (Vector3.Distance(light.position, testPos) > 750) continue;
@@ -161,12 +174,20 @@ namespace Raymagic
 
                         lightIntensity += addIntensity;
 
-                        lightIntensity = Math.Max(lightIntensity, 0.02f); // try around something
+                        lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
                         Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
                         color = new Color(color.R+addColor.R,
                                           color.G+addColor.G,
                                           color.B+addColor.B);
+
+                        if (transparentDepth > 0)
+                        {
+                            Vector3 c = color.ToVector3();
+                            float T = (float)Math.Exp(-(transparentStep*transparentDepth) * 0.075f); 
+                            Vector3 _c = c * T + transparentColor.ToVector3() * (1-T);
+                            color = _c.ToColor();
+                        }
 
                         /* if (gammaEnabled) */
                         /* { */
@@ -175,9 +196,7 @@ namespace Raymagic
                         /*                                     (float)Math.Pow(v.Y, 1f/2.2f), */
                         /*                                     (float)Math.Pow(v.Z, 1f/2.2f)); */
                         /*     color = corrected.ToColor(); */
-                            
                         /* } */
-                        
                     }
 
                     return;
@@ -257,11 +276,14 @@ namespace Raymagic
                                                       (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                                       (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
-                    best = dmValue.sdfValue;
+                    if (!map.staticObjectList[dmValue.objIndex].IsTransparent)
+                    {
+                        best = dmValue.sdfValue;
+                    }
                 }
 
-                test = map.BVH.Test(testPos, best.distance, false, out Object _);
-                if(test.distance < best.distance)
+                test = map.BVH.Test(testPos, best.distance, false, out Object dObj);
+                if(test.distance < best.distance &&  !dObj.IsTransparent)
                 {
                     best = test;
                 }
@@ -274,7 +296,7 @@ namespace Raymagic
 
                 foreach(var obj in map.physicsObjectsList)
                 {
-                    if (obj.isTrigger) continue;
+                    if (obj.isTrigger || obj.IsTransparent) continue;
 
                     test = obj.SDF(testPos, best.distance);
                     if(test.distance < best.distance)

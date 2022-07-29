@@ -148,13 +148,21 @@ namespace Raymagic
 
             data.staticMapObjects.Add(boxbox);
 
-            Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue);
-            data.interactableObjectList.Add(button);
+            /* Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue); */
+            /* data.interactableObjectList.Add(button); */
 
-            Lifter lifter = new Lifter(new Vector3(200,200,0), 150, Color.Blue);
-            button.stateChangeEvent += lifter.EventListener;
+            /* Lifter lifter = new Lifter(new Vector3(200,200,0), 150, Color.Blue); */
+            /* button.stateChangeEvent += lifter.EventListener; */
                 
-            data.interactableObjectList.Add(lifter);
+            /* data.interactableObjectList.Add(lifter); */
+
+            Box window = new Box(new Vector3(100,200,50), new Vector3(6,100,100), Color.Gray, boundingBoxSize:new Vector3(50,100,100));
+            window.transparent = true;
+            data.dynamicMapObjects.Add(window);
+
+            Box window2 = new Box(new Vector3(200,200,50), new Vector3(6,100,100), Color.Gray, boundingBoxSize:new Vector3(50,100,100));
+            window2.transparent = true;
+            data.dynamicMapObjects.Add(window2);
 
             Map.instance.RegisterMap(data.mapName, data);
         }

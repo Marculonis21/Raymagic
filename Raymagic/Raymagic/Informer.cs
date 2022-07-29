@@ -40,6 +40,18 @@ namespace Raymagic
                     infoList.Add(key,info);
             }
         }
+        public void RemoveInfo(string key)
+        {
+            if (infoListPersistent.ContainsKey(key))
+            {
+                infoListPersistent.Remove(key);
+            }
+
+            if (infoList.ContainsKey(key))
+            {
+                infoList.Remove(key);
+            }
+        }
 
         public void ShowInfo(Vector2 origin, SpriteFont font, Color color)
         {
