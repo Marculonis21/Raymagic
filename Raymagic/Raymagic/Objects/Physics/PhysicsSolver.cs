@@ -11,20 +11,20 @@ namespace Raymagic
         {
             this.objects = objects;
 
-            int subSteps = 4;
-            float subDt = dt/subSteps;
+            /* int subSteps = 4; */
+            /* float subDt = dt/subSteps; */
 
-            for (int i = 0; i < subSteps; i++)
-            {
+            /* for (int i = 0; i < subSteps; i++) */
+            /* { */
                 ApplyGravity();
                 SolveCollisions();
-                UpdatePositions(subDt);
-            }
+                UpdatePositions(dt);
+            /* } */
         }
 
         void ApplyGravity()
         {
-            var gravityVector = Map.instance.gravity*new Vector3(0,0,-1);
+            var gravityVector = (Map.instance.gravity*new Vector3(0,0,-1));
             foreach (var obj in objects)
             {
                 if (obj.isTrigger || !obj.physicsEnabled) continue;
@@ -82,7 +82,8 @@ namespace Raymagic
                         // touching ground - apply env forces - friction
                         
                         float N =  Map.instance.gravity * 1;
-                        float frictionForce = N*0.15f;
+                        /* float frictionForce = N*0.15f; */
+                        float frictionForce = N*0.075f;
 
                         Vector3 velDir = Vector3.Normalize(obj.velocity);
                         if (float.IsNaN(velDir.X)) continue;

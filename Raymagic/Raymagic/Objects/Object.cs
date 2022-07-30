@@ -20,7 +20,7 @@ namespace Raymagic
         protected Color color;
         protected string info;
 
-        public bool transparent;
+        protected bool transparent = false;
 
         protected Box boundingBox;
         protected Vector3 boundingBoxSize;
@@ -79,30 +79,6 @@ namespace Raymagic
             childObjects.Add(child);
         }
 
-        public void SetRepetition(Vector3 repetitionLimit, float repetitionDistance)
-        {
-            this.repetitionEnabled = true;
-            this.repetitionLimit = repetitionLimit;
-            this.repetitionDistance = repetitionDistance;
-
-            foreach (Object child in childObjects)
-            {
-                child.SetRepetition(repetitionLimit, repetitionDistance);
-            }
-        }
-
-        public void SetSymmetry(string symmetryOptions, Vector3 symmetryPlaneOffset)
-        {
-            this.symmetryEnabled = true;
-            this.symmetryOptions = symmetryOptions;
-            this.symmetryPlaneOffset = symmetryPlaneOffset;
-
-            foreach (Object child in childObjects)
-            {
-                child.SetSymmetry(symmetryOptions, symmetryPlaneOffset);
-            }
-        }
-
         public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
             Vector3 transformedTestPos = Transform(testPos);    
@@ -158,6 +134,35 @@ namespace Raymagic
             normal.Normalize();
 
             return normal;
+        }
+
+        public void SetRepetition(Vector3 repetitionLimit, float repetitionDistance)
+        {
+            this.repetitionEnabled = true;
+            this.repetitionLimit = repetitionLimit;
+            this.repetitionDistance = repetitionDistance;
+
+            foreach (Object child in childObjects)
+            {
+                child.SetRepetition(repetitionLimit, repetitionDistance);
+            }
+        }
+
+        public void SetSymmetry(string symmetryOptions, Vector3 symmetryPlaneOffset)
+        {
+            this.symmetryEnabled = true;
+            this.symmetryOptions = symmetryOptions;
+            this.symmetryPlaneOffset = symmetryPlaneOffset;
+
+            foreach (Object child in childObjects)
+            {
+                child.SetSymmetry(symmetryOptions, symmetryPlaneOffset);
+            }
+        }
+
+        public void SetTransparent(bool transparent)
+        {
+            this.transparent = transparent;
         }
 
         public void DisplayBoundingBox()

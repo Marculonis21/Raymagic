@@ -10,7 +10,7 @@ namespace Raymagic
             data.mapName = "testArea";
 
             data.topCorner = new Vector3(500,500,300);
-            data.botCorner = new Vector3(0,0,0);
+            data.botCorner = new Vector3(-30,-30,-30);
 
             data.playerSpawn = new Vector3(100,100,100);
 
@@ -140,7 +140,7 @@ namespace Raymagic
 
             data.staticMapObjects.Add(ramp);
 
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
+            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray));
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
@@ -148,21 +148,19 @@ namespace Raymagic
 
             data.staticMapObjects.Add(boxbox);
 
-            /* Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Blue); */
-            /* data.interactableObjectList.Add(button); */
+            Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Aqua);
+            data.interactableObjectList.Add(button);
 
-            /* Lifter lifter = new Lifter(new Vector3(200,200,0), 150, Color.Blue); */
-            /* button.stateChangeEvent += lifter.EventListener; */
-                
-            /* data.interactableObjectList.Add(lifter); */
+            Jumper jj = new Jumper(new Vector3(150,150,0),
+                                   new Vector3(0,0,1),
+                                   new Vector3(1,0,0),
+                                   new Vector3(1,0,3),
+                                   15,
+                                   mainPlaneW);
 
-            Box window = new Box(new Vector3(100,200,50), new Vector3(6,100,100), Color.Gray, boundingBoxSize:new Vector3(50,100,100));
-            window.transparent = true;
-            data.dynamicMapObjects.Add(window);
+            button.stateChangeEvent += jj.EventListener;
 
-            Box window2 = new Box(new Vector3(200,200,50), new Vector3(6,100,100), Color.Gray, boundingBoxSize:new Vector3(50,100,100));
-            window2.transparent = true;
-            data.dynamicMapObjects.Add(window2);
+            data.interactableObjectList.Add(jj);
 
             Map.instance.RegisterMap(data.mapName, data);
         }

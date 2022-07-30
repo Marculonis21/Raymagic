@@ -152,8 +152,35 @@ namespace Raymagic
 
                     if (finalObj.IsTransparent)
                     {
+                        if (transparentDepth == 0)
+                        {
+                            transparentColor = finalObj.Color;
+
+                            foreach(Light light in map.lightList)
+                            {
+                                if (Vector3.Distance(light.position, testPos) > 750) continue;
+
+                                objectNormal = finalObj.SDF_normal(testPos);
+                                startPos = testPos+objectNormal*2;
+                                
+                                float addIntensity = LightRayMarch(startPos, light);
+                                if(addIntensity > 0)
+                                {
+                                    addIntensity += 0.2f*(float)Math.Pow(SpecularHighlight(ray, testPos, objectNormal, light.position), 2);
+                                }
+
+                                lightIntensity += addIntensity;
+
+                                lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
+                                Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
+
+                                transparentColor = new Color(color.R+addColor.R,
+                                                            color.G+addColor.G,
+                                                            color.B+addColor.B);
+                            }
+                        }
+
                         testPos += ray.direction*transparentStep;
-                        transparentColor = finalObj.Color;
                         transparentDepth += 1;
                         iter -= 1;
                         continue;

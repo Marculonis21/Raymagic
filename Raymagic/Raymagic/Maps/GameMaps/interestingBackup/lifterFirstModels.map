@@ -24,10 +24,6 @@ lights
 
 dynamic
 {
-    # box[testSymmetry]:(150,150,100)|(20,20,20)|Red|(100,100,100)
-    # boolean: testSymmetry: union: sphere:(10,0,50)|20|Blue|True
-    # symmetry: testSymmetry: X|(40,0,0)
-
     box[line1] :(150,150,10)|(150,5,20)|Yellow|(150,150,20)
     boolean: line1: union: box:(0,5,0)|(150,5,20)|Black|True
     repeat: line1: (0,10,0)|10

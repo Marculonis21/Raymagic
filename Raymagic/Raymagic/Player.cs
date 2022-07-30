@@ -22,8 +22,8 @@ namespace Raymagic
         const float airControll = 0.05f;
         const float jumpStrength = 11f;
         const float grabDistance = 90;
-        bool grounded = true;
-        PhysicsObject grabbing = null;
+        public bool grounded = true;
+        public PhysicsObject grabbing {get; private set;}
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
@@ -326,7 +326,7 @@ namespace Raymagic
                 this.velocity += new Vector3(0,0,1)*jumpStrength;
             }
         }
-        
+
         public void Grab()
         {
             if (grabbing == null)
@@ -464,6 +464,7 @@ namespace Raymagic
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
         }
+
         public Vector3 feetPos;
         public Vector3 capsuleBotPos;
         void FeetCollider(GameTime gameTime)
@@ -483,7 +484,6 @@ namespace Raymagic
             if ((fromFeetLen > 0 && fromCapsBot > size.X/2) ||
                 (fromFeetLen > size.X/4 && fromCapsBot < size.X/2) ||
                 (fromFeetLen < 0 && HitObjectIsActivePortal(hObj)))
-                                  
             {
                 grounded = false;
                 float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;

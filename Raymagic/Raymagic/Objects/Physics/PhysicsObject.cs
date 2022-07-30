@@ -126,12 +126,5 @@ namespace Raymagic
             this.position = newPosition;
             this.TranslateAbsolute(newPosition, true);
         }
-
-        public void Destroy()
-        {
-            // maybe 
-            Map.instance.portalableObjectList.Remove(this);
-            Map.instance.physicsObjectsList.Remove(this);
-        }
     }
 }

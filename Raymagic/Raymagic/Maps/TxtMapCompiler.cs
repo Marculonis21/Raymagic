@@ -252,7 +252,7 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new NullReferenceException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
+                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
@@ -593,6 +593,7 @@ namespace Raymagic
                                 boundingSize = GetVector3FromText(paramPart[3], lineNum);
                             }
                             obj = new Box(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
                     case "box_frame":
@@ -607,6 +608,7 @@ namespace Raymagic
                                 boundingSize = GetVector3FromText(paramPart[4], lineNum);
                             }
                             obj = new BoxFrame(position, size, frameSize, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
                     case "capsule":
@@ -621,6 +623,7 @@ namespace Raymagic
                                 boundingSize = GetVector3FromText(paramPart[4], lineNum);
                             }
                             obj = new Capsule(position, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
                     case "cylinder":
@@ -636,6 +639,7 @@ namespace Raymagic
                                 boundingSize = GetVector3FromText(paramPart[5], lineNum);
                             }
                             obj = new Cylinder(position, baseNormal, height, radius, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
                     case "plane":
@@ -647,6 +651,7 @@ namespace Raymagic
                             Color color = GetColorFromText(paramPart[2], lineNum);
 
                             obj = new Plane(position, normal, color, boolean, booleanStrength, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
                     case "sphere":
@@ -660,6 +665,7 @@ namespace Raymagic
                                 boundingSize = GetVector3FromText(paramPart[3], lineNum);
                             }
                             obj = new Sphere(position, size, color, boolean, booleanStrength, boundingSize, info:objectInfoName);
+                            obj.SetTransparent(paramPart.Contains("transparent"));
                         }
                         break;
 
@@ -790,7 +796,7 @@ namespace Raymagic
                             {
                                 pivot = GetVector3FromText(operationContent[1], lineNum);
                             }
-                            target.Rotate(angle, "x", target.Position);
+                            target.Rotate(angle, "x", pivot);
                         }
                         break;
                     case "rotateY":
@@ -801,7 +807,7 @@ namespace Raymagic
                             {
                                 pivot = GetVector3FromText(operationContent[1], lineNum);
                             }
-                            target.Rotate(angle, "y", target.Position);
+                            target.Rotate(angle, "y", pivot);
                         }
                         break;
                     case "rotateZ":
@@ -812,7 +818,7 @@ namespace Raymagic
                             {
                                 pivot = GetVector3FromText(operationContent[1], lineNum);
                             }
-                            target.Rotate(angle, "z", target.Position);
+                            target.Rotate(angle, "z", pivot);
                         }
                         break;
                     case "rotate":
@@ -824,7 +830,7 @@ namespace Raymagic
                             {
                                 pivot = GetVector3FromText(operationContent[2], lineNum);
                             }
-                            target.Rotate(angle, axis, target.Position);
+                            target.Rotate(angle, axis, pivot);
                         }
                         break;
                     case "repeat":

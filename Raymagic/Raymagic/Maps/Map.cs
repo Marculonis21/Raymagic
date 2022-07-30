@@ -139,6 +139,7 @@ namespace Raymagic
             }
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);
+            Console.WriteLine(physicsObjectsList.Count);
 
             mapSize = data.topCorner - data.botCorner;
             mapOrigin = data.botCorner;

@@ -107,7 +107,7 @@ namespace Raymagic
             }
         }
         
-        public async Task DoorOpenAsync()
+        async Task DoorOpenAsync()
         {
             while (doorPlates[0].Position != doorPlateOpened[0])
             {
@@ -119,7 +119,7 @@ namespace Raymagic
             }
         }
 
-        public async Task DoorCloseAsync()
+        async Task DoorCloseAsync()
         {
             while (doorPlates[0].Position != doorPlateClosed[0])
             {
