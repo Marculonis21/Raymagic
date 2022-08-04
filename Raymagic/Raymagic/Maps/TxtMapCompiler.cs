@@ -305,7 +305,7 @@ namespace Raymagic
                     {
                         throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
-
+                    
                     objectList.Add(obj);
                 }
                 else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
@@ -862,6 +862,12 @@ namespace Raymagic
                                 Object opObj = GetObjectFromData(category, lineNum, _objectPart, _paramPart, op, opStrength, out Type type);
 
                                 target.AddChildObject(opObj, relativeTransform);
+                            }
+                            else if (op == BooleanOP.UNION && declaredObjects.ContainsKey(operationContent[2].Split('|')[0]))
+                            {
+                                _paramPart = operationContent[2].Split('|');
+                                bool relativeTransform = bool.Parse(_paramPart.Last());
+                                target.AddChildObject(declaredObjects[_paramPart[0]], relativeTransform);
                             }
                             else
                             {

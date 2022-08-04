@@ -127,9 +127,16 @@ namespace Raymagic
 
             Vector3 rayDir = newRotK.ToVector3();
             // maybe adjust distances, good for tonight
-            Ray newRay = new Ray(OUT.Position + OUT.normal*10 + rayDir * 40, rayDir); 
+            Ray newRay = new Ray(OUT.Position - newTransK.ToVector3() + OUT.normal*10 + rayDir * 40, rayDir); 
 
             return newRay;
         }
+
+        public static bool HitObjectIsActivePortal(Object hit)
+        {
+            return ((hit == Map.instance.portalList[0] && Map.instance.portalList[0].otherPortal != null) ||
+                    (hit == Map.instance.portalList[1] && Map.instance.portalList[1].otherPortal != null));
+        }
+
     }
 }

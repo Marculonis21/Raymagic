@@ -83,6 +83,34 @@ namespace Raymagic
                     }
                 }
 
+                foreach(Object iObj in map.infoObjectList)
+                {
+                    test = iObj.SDF(testPos, best.distance);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        if(best.distance < 0.1f)
+                        {
+                            color = best.color;
+                            return;
+                        }
+                    }
+                }
+
+                foreach (Object laser in map.laserObjectList)
+                {
+                    test = laser.SDF(testPos, best.distance);
+                    if(test.distance < best.distance)
+                    {
+                        best = test;
+                        if(best.distance < 0.1f)
+                        {
+                            color = best.color;
+                            return;
+                        }
+                    }
+                }
+
                 Object bestObj = null;
                 test = map.BVH.Test(testPos, best.distance, false, out Object dObj);
                 if(test.distance < best.distance)
@@ -116,19 +144,6 @@ namespace Raymagic
                     }
                 }
 
-                foreach(Object iObj in map.infoObjectList)
-                {
-                    test = iObj.SDF(testPos, best.distance);
-                    if(test.distance < best.distance)
-                    {
-                        best = test;
-                        if(best.distance < 0.1f)
-                        {
-                            color = best.color;
-                            return;
-                        }
-                    }
-                }
 
                 if(best.distance < 0.1f)
                 {
@@ -384,6 +399,8 @@ namespace Raymagic
                 // needed for precision
                 foreach(Object obj in map.staticObjectList)
                 {
+                    if (obj.IsTransparent && caller is LaserSpawner) continue;
+
                     test = obj.SDF(testPos, best.distance, physics:true);
                     if(test.distance < best.distance)
                     {
@@ -394,7 +411,7 @@ namespace Raymagic
                 }
 
                 test = map.BVH.Test(testPos, best.distance, true, out Object dObj);
-                if(test.distance < best.distance)
+                if(test.distance < best.distance && !(dObj.IsTransparent && caller is LaserSpawner))
                 {
                     best = test;
                     hitObj = dObj;

@@ -17,7 +17,7 @@ namespace Raymagic
 
         public override float SDFDistance(Vector3 testPos)
         {
-            return SDFs.CCylinder(testPos, this.a, this.b, radius);
+            return SDFs.Cylinder(testPos, this.a, this.b, radius);
         }
     }
 }

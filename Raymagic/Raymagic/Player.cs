@@ -397,7 +397,7 @@ namespace Raymagic
             RayMarchingHelper.PhysicsRayMarch(testRay, 3, 10, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
 
             Vector3 grabPosition;
-            if (dirLength + startOffset <= grabDistance && HitObjectIsActivePortal(hitObj)) 
+            if (dirLength + startOffset <= grabDistance && Portal.HitObjectIsActivePortal(hitObj)) 
             {
                 Ray moreRay = Portal.TransferRay((Portal)hitObj,testRay, dirHit);
                 RayMarchingHelper.PhysicsRayMarch(moreRay, 3, 10, out float dirLengthPortal, out Vector3 dirHitPortal, out Object hitObjPortal, caller:grabbing);
@@ -447,7 +447,7 @@ namespace Raymagic
 
                 if (width <= this.size.X/2)
                 {
-                    if (HitObjectIsActivePortal(hitObj))  break;
+                    if (Portal.HitObjectIsActivePortal(hitObj))  break;
 
                     Vector3 normal = hitObj.SDF_normal(hitPos);
 
@@ -459,7 +459,7 @@ namespace Raymagic
             RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, new Vector3(0,0,-1)), 10, -1, out float length, out hitPos, out hitObj, caller:this.model);
 
             if ((length < size.Y) && 
-                !(HitObjectIsActivePortal(hitObj)))
+                !(Portal.HitObjectIsActivePortal(hitObj)))
             {
                 this.position += new Vector3(0,0,1)*(size.Y-length);
             }
@@ -483,7 +483,7 @@ namespace Raymagic
 
             if ((fromFeetLen > 0 && fromCapsBot > size.X/2) ||
                 (fromFeetLen > size.X/4 && fromCapsBot < size.X/2) ||
-                (fromFeetLen < 0 && HitObjectIsActivePortal(hObj)))
+                (fromFeetLen < 0 && Portal.HitObjectIsActivePortal(hObj)))
             {
                 grounded = false;
                 float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -520,12 +520,6 @@ namespace Raymagic
                 }
                 lPressed = rPressed = false;
             }
-        }
-
-        bool HitObjectIsActivePortal(Object hit)
-        {
-            return ((hit == map.portalList[0] && map.portalList[0].otherPortal != null) ||
-                    (hit == map.portalList[1] && map.portalList[1].otherPortal != null));
         }
 
         public void GetViewPlaneVectors(out Vector3 viewPlaneUp, out Vector3 viewPlaneRight)

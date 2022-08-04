@@ -144,23 +144,5 @@ namespace Raymagic
         {
             return SDFs.Portal(testPos, this.normal, this.portalSize, this.portalDepth);
         }
-
-        /* def points_in_cylinder(pt1, pt2, r, q): */
-        /*     vec = pt2 - pt1 */
-        /*     const = r * np.linalg.norm(vec) */
-        /*     return np.where(np.dot(q - pt1, vec) >= 0 and np.dot(q - pt2, vec) <= 0 \ */ 
-        /*         and np.linalg.norm(np.cross(q - pt1, vec)) <= const) */
-        public bool PosInPortal(Vector3 testPos)
-        {
-            var pt1 = this.Position - normal*portalDepth;
-            var pt2 = this.Position; 
-            var vec = pt2 - pt1;
-
-            bool x1 = Vector3.Dot(testPos - pt1, vec) >= 0 &&
-                Vector3.Dot(testPos - pt2, vec) <= 0;
-
-            bool x2 = Vector3.Multiply(testPos - pt1, pt2 - pt1).Length()/(pt2 - pt1).Length() <= this.portalSize;
-            return x1 && x2;
-        }
     }
 }

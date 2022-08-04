@@ -152,7 +152,7 @@ namespace Raymagic
             /* return Intersect(Sphere(test, portalSize), Plane(test - normal*2f, normal)); */
             var a = new Vector3() + normal*2;
             var b = a - normal*portalDepth;
-            return Intersect(CCylinder(test, a, b, portalSize), Plane(test - normal*2f, normal));
+            return Intersect(Cylinder(test, a, b, portalSize), Plane(test - normal*2f, normal));
         }
 
         public static float Capsule(Vector3 test, float height, float radius)
@@ -160,13 +160,15 @@ namespace Raymagic
             return (new Vector3(test.X, test.Y, test.Z - Math.Clamp(test.Z, 0, height))).Length() - radius;
         }
 
-        public static float Cylinder(Vector3 test, float height, float radius)
+        public static float Line(Vector3 test, Vector3 a, Vector3 b, float radius)
         {
-            Vector2 d = new Vector2((float)Math.Abs(new Vector2(test.X, test.Y).Length()), (float)Math.Abs(test.Z)) - new Vector2(radius,height);
-            return Math.Min(Math.Max(d.X, d.Y), 0) + new Vector2(Math.Max(d.X, 0), Math.Max(d.Y, 0)).Length();
+            Vector3 pa = test - a;
+            Vector3 ba = b - a;
+            float h = Math.Clamp(Vector3.Dot(pa,ba)/Vector3.Dot(ba,ba), 0, 1);
+            return (pa - ba*h).Length() - radius;
         }
-        
-        public static float CCylinder(Vector3 test, Vector3 a, Vector3 b, float radius)
+
+        public static float Cylinder(Vector3 test, Vector3 a, Vector3 b, float radius)
         {
             var ba = b - a;
             var pa = test - a;

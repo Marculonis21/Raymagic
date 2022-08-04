@@ -162,6 +162,8 @@ namespace Raymagic
 
             data.interactableObjectList.Add(jj);
 
+            data.interactableObjectList.Add(new LaserSpawner(new Vector3(2,150,50), new Vector3(1,0,0), plane1));
+
             Map.instance.RegisterMap(data.mapName, data);
         }
     }
