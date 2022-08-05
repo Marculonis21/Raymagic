@@ -253,41 +253,41 @@ namespace Raymagic
             Console.CursorVisible = true;
         }
 
-/*         public bool mapPreloading = false; */
-/*         public void PreLoadMap(string id) */
-/*         { */
-/*             mapPreloading = true; */
-/*             var _data = maps[id]; */
-/*             var _mapName = _data.mapName; */
-/*             var _staticObjectList   = _data.staticMapObjects; */
-/*             var _dynamicObjectList  = _data.dynamicMapObjects; */
-/*             var _physicsObjectsList = _data.physicsMapObjects; */
-/*             var _portalableObjectList = new List<IPortalable>(); */
-/*             _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger)); */
-/*             var _interactableObjectList = _data.interactableObjectList; */
-/*             var _lightList = _data.mapLights; */
+        public bool mapPreloading = false;
+        public void PreLoadMap(string id)
+        {
+            mapPreloading = true;
+            var _data = maps[id];
+            var _mapName = _data.mapName;
+            var _staticObjectList   = _data.staticMapObjects;
+            var _dynamicObjectList  = _data.dynamicMapObjects;
+            var _physicsObjectsList = _data.physicsMapObjects;
+            var _portalableObjectList = new List<IPortalable>();
+            _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger));
+            var _interactableObjectList = _data.interactableObjectList;
+            var _lightList = _data.mapLights;
 
-/*             /1* foreach (var item in _interactableObjectList) *1/ */
-/*             /1* { *1/ */
-/*             /1*     item.ObjectSetup(); *1/ */
-/*             /1* } *1/ */
+            /* foreach (var item in _interactableObjectList) */
+            /* { */
+            /*     item.ObjectSetup(); */
+            /* } */
 
-/*             /1* BVH.BuildBVHDownUp(); *1/ */
+            /* BVH.BuildBVHDownUp(); */
 
-/*             var _physicsSpace = new PhysicsSpace(physicsObjectsList); */
+            var _physicsSpace = new PhysicsSpace(physicsObjectsList);
 
-/*             var _mapSize      = _data.topCorner - _data.botCorner; */
-/*             var _mapOrigin    = _data.botCorner; */
-/*             var _mapTopCorner = _data.topCorner; */
+            var _mapSize      = _data.topCorner - _data.botCorner;
+            var _mapOrigin    = _data.botCorner;
+            var _mapTopCorner = _data.topCorner;
 
-/*             var _distanceMap = new DMValue[(int)(_mapSize.X/distanceMapDetail)] */
-/*                                           [(int)(_mapSize.Y/distanceMapDetail)] */
-/*                                           [(int)(_mapSize.Z/distanceMapDetail)]; */
+            var _distanceMap = new DMValue[(int)(_mapSize.X/distanceMapDetail), 
+                                           (int)(_mapSize.Y/distanceMapDetail),
+                                           (int)(_mapSize.Z/distanceMapDetail)];
 
-/*             _distanceMap = LoadDistanceMap(id, distanceMapDetail, _distanceMap); */
+            _distanceMap = LoadDistanceMap(id, distanceMapDetail, _distanceMap);
 
-/*             mapPreloading = false; */
-/*         } */
+            mapPreloading = false;
+        }
 
         public Vector3 GetPlayerStart()
         {
@@ -312,7 +312,7 @@ namespace Raymagic
         }
 
         /* public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[,,] distanceMap) */
-        public DMValue[][][] LoadDistanceMap(string name, float distanceMapDetail, DMValue[][][] distanceMap)
+        public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[][][] distanceMap)
         {
             try
             {
