@@ -1,0 +1,33 @@
+config
+{
+    name: loadingMap
+    player_spawn: (250,250,100)
+    top_corner: (500,500,300)
+    bot_corner: (0,0,0)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,298)|(0,0,-1)|Beige
+    cylinder[cyl]:(250,250,0)|(0,0,-1)|300|240|White
+    boolean: cyl: difference: cylinder:(0,0,-20)|(0,0,-1)|350|230|Black|True
+}
+
+lights
+{
+    light:(400,250,200)|White|20000
+}
+
+dynamic
+{
+    box[schaft]:(250,250,100)|(150,150,400)|Red|(150,150,400)
+}
+
+physics
+{
+}
+
+interactables
+{
+}

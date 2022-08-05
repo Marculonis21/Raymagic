@@ -22,8 +22,7 @@ namespace Raymagic
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
         public float distanceMapDetail;
-        /* public DMValue[,,] distanceMap; */
-        public DMValue[][][] distanceMap;
+        public DMValue[,,] distanceMap;
 
         public List<Object> staticObjectList = new List<Object>();
         public List<Object> dynamicObjectList = new List<Object>();
@@ -166,19 +165,9 @@ namespace Raymagic
             }
 
             /* Maps/{name}-{distanceMapDetail}.dm */
-            /* distanceMap = new DMValue[(int)(mapSize.X/distanceMapDetail), */ 
-            /*                           (int)(mapSize.Y/distanceMapDetail), */
-            /*                           (int)(mapSize.Z/distanceMapDetail)]; */
-            distanceMap = new DMValue[(int)(mapSize.X/distanceMapDetail)][][];
-            for (int x = 0; x < distanceMap.Length; x++)
-            {
-                distanceMap[x] = new DMValue[(int)(mapSize.Y/distanceMapDetail)][];
-
-                for (int y = 0; y < distanceMap[x].Length; y++)
-                {
-                    distanceMap[x][y] = new DMValue[(int)(mapSize.Z/distanceMapDetail)];
-                }
-            }
+            distanceMap = new DMValue[(int)(mapSize.X/distanceMapDetail), 
+                                      (int)(mapSize.Y/distanceMapDetail),
+                                      (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine("");
             BVH.BuildBVHDownUp();
@@ -242,8 +231,7 @@ namespace Raymagic
                         index++;
                     }
 
-                    /* distanceMap[x,y,z] = new DMValue(bestObjIndex, best); */
-                    distanceMap[x][y][z] = new DMValue(bestObjIndex, best);
+                    distanceMap[x,y,z] = new DMValue(bestObjIndex, best);
                 });
             }
 
@@ -311,8 +299,7 @@ namespace Raymagic
             GC.Collect();
         }
 
-        /* public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[,,] distanceMap) */
-        public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[][][] distanceMap)
+        public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[,,] distanceMap)
         {
             try
             {
@@ -335,19 +322,5 @@ namespace Raymagic
 
             return null;
         }
-
-        /* public bool IsPositionInsideDistanceMap(Vector3 position, out DMValue dmValue) */
-        /* { */
-        /*     Vector3 coords = position - this.mapOrigin; */
-
-        /*     if (!((int)(coords.X/this.distanceMapDetail) >= this.distanceMap.GetLength(0) || */
-        /*           (int)(coords.Y/this.distanceMapDetail) >= this.distanceMap.GetLength(1) || */
-        /*           (int)(coords.Z/this.distanceMapDetail) >= this.distanceMap.GetLength(2) || */ 
-        /*           (int)(coords.X/this.distanceMapDetail) < 0 || */
-        /*           (int)(coords.Y/this.distanceMapDetail) < 0 || */
-        /*           (int)(coords.Z/this.distanceMapDetail) < 0)) */
-        /*     { */
-        /*     } */
-        /* } */
     }
 }
