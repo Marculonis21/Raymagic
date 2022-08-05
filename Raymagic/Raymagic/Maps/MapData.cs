@@ -18,5 +18,8 @@ namespace Raymagic
 
         public Vector3 topCorner;
         public Vector3 botCorner;
+
+        public Vector3 levelStartAnchor;
+        public Vector3 levelEndAnchor;
     }
 }

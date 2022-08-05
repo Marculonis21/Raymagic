@@ -6,34 +6,70 @@ namespace Raymagic
     {
         Vector3 normal;
         Object ground;
+        Object objBase;
         public LaserSpawner(Vector3 position, Vector3 normal, Object ground) : base(position, Color.Black)
         {
-            this.normal = normal;
+            this.normal = Vector3.Normalize(normal);
             this.ground = ground;
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
-            this.boundingBoxSize = new Vector3(30,30,50);
-            this.boundingBox = new Box(this.Position - new Vector3(0,0,boundingBoxSize.Z/2),
+
+            Vector3 right = Vector3.Cross(normal, new Vector3(0,0,1));
+            Vector3 up = Vector3.Cross(normal, -right);
+
+            Box empty = new Box(this.Position-normal*9, up*35 + right*35 + normal*20, Color.Black, BooleanOP.DIFFERENCE);
+            this.ground.AddChildObject(empty, false);
+
+            Box inside = new Box(this.Position - normal*5, up*35 + right*35 + normal*10, Color.Gray)  ;
+            inside.AddChildObject(new Box(normal*4, up*31 + right*31 + normal*10, Color.Black, BooleanOP.DIFFERENCE), true);
+
+            Box wiring1 = new Box(this.Position - normal*5, right*40 + up*4 + normal*4, Color.Black);
+            Box wiring2 = new Box(this.Position - normal*5, right*4 + up*40 + normal*4, Color.Black);
+            wiring1.Rotate(45, normal, wiring1.Position);
+            wiring2.Rotate(45, normal, wiring2.Position);
+
+            objBase = new Cylinder(this.Position + normal*2, normal, 15, 10, Color.White); 
+            objBase.AddChildObject(new Sphere(normal*-5, 10, Color.Gray), true);
+            objBase.AddChildObject(new Plane(normal*2, normal, Color.Black, BooleanOP.INTERSECT), true);
+            objBase.AddChildObject(new Sphere(normal*-4,  9, Color.White), true);
+
+            Sphere top2 = new Sphere(this.Position - normal*3, 10, Color.Gray);
+            top2.AddChildObject(new Plane(normal*8, -normal, Color.Black, BooleanOP.INTERSECT), true);
+
+            objBase.AddChildObject(top2, false);
+
+            objBase.AddChildObject(new Cylinder(new Vector3(), -normal, 6, 2, Color.DarkRed), true);
+            objBase.AddChildObject(new Cylinder(new Vector3(), -normal, 9, 1, Color.Red), true);
+
+            inside.AddChildObject(wiring1, false);
+            inside.AddChildObject(wiring2, false);
+
+            staticObjectList.Add(inside);
+
+            this.boundingBoxSize = up*15 + right*15 + normal*30;
+            this.boundingBox = new Box(this.Position,
                                        this.boundingBoxSize,
-                                       Color.Black);
+                                       Color.Lime);
 
             CalculateLaserPathAsync();
         }
 
         public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {
-            return new SDFout(float.MaxValue, Color.Pink);
+            return objBase.SDF(testPos, minDist, false);
         }
 
+        LaserCatcher hitCatcher = null;
         public async Task CalculateLaserPathAsync()
         {
             const int maxDepth = 3;
             Color laserColor = Color.Red;
             List<Object> newLaserList = new List<Object>();
-            Vector3 startPosition = this.Position + normal*5;
+            Vector3 startPosition = this.Position + normal*15;
             Ray laserRay = new Ray(startPosition, normal);
+            Object hitObj = null;
 
             while (true)
             {
@@ -42,7 +78,7 @@ namespace Raymagic
 
                 for (int i = 0; i < maxDepth; i++)
                 {
-                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out Object hitObj, caller:this);
+                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out hitObj, caller:this);
 
                     newLaserList.Add(new Line(laserRay.origin, hitPos+laserRay.direction*5, laserColor));
                     if (Portal.HitObjectIsActivePortal(hitObj))
@@ -53,6 +89,23 @@ namespace Raymagic
                     else
                     {
                         break;
+                    }
+                }
+
+                if (hitObj.GetType() == typeof(LaserCatcher))
+                {
+                    if (hitCatcher == null)
+                    {
+                        hitCatcher = hitObj as LaserCatcher;
+                        hitCatcher.Interact();
+                    }
+                }
+                else
+                {
+                    if (hitCatcher != null)
+                    {
+                        hitCatcher.Interact();
+                        hitCatcher = null;
                     }
                 }
 

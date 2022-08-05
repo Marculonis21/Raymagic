@@ -20,7 +20,7 @@ namespace Raymagic
                 throw new Exception("Unable to make this kind of button - facing Z");
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
             Object doorFrame = new Capsule(this.Position + new Vector3(0,0, -45-45), 70, 65, Color.DarkGray);
             doorFrame.AddChildObject(new Sphere(this.Position + new Vector3(0, 0, 100), 15, secondaryColor));
@@ -34,7 +34,7 @@ namespace Raymagic
             doorPlatesSideBar.AddChildObject(new Plane(-facing * 4, -facing, Color.Black, BooleanOP.INTERSECT), true);
             doorFrame.AddChildObject(doorPlatesSideBar, false);
 
-            Map.instance.staticObjectList.Add(doorFrame);
+            staticObjectList.Add(doorFrame);
 
             this.doorPlateClosed = new Vector3[] {this.Position + right* 40 + new Vector3(0, 0, 55),
                                                   this.Position + right*-40 + new Vector3(0, 0 ,55)};
@@ -53,7 +53,6 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position + new Vector3(0,0,55),
                                        boundingBoxSize,
                                        Color.Black);
-            /* Map.instance.infoObjectList.Add(boundingBox); */
         }
 
         public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)

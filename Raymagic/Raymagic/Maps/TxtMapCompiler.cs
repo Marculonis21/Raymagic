@@ -149,6 +149,8 @@ namespace Raymagic
             partsFound.Add("player_spawn",false);
             partsFound.Add("top_corner",false);
             partsFound.Add("bot_corner",false);
+            partsFound.Add("anchor_start",false);
+            partsFound.Add("anchor_end",false);
 
             int lineNum;
             for (int i = start+1; i < end; i++)
@@ -185,6 +187,18 @@ namespace Raymagic
                     var bc = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.botCorner = GetVector3FromText(bc, lineNum);
                 }
+                else if (line.StartsWith("anchor_start:"))
+                {
+                    partsFound["anchor_start"] = true;
+                    var As = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.levelStartAnchor = GetVector3FromText(As, lineNum);
+                }
+                else if (line.StartsWith("anchor_end:"))
+                {
+                    partsFound["anchor_end"] = true;
+                    var ae = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.levelEndAnchor = GetVector3FromText(ae, lineNum);
+                }
                 else    
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown config input - needs name, player_spawn, top_corner, bot_corner");
@@ -206,6 +220,14 @@ namespace Raymagic
             if (!partsFound["bot_corner"])
             {
                 throw new FormatException("config - missing 'bot_corner' attribute");
+            }
+            if (!partsFound["anchor_start"])
+            {
+                throw new FormatException("config - missing 'anchor_start' attribute");
+            }
+            if (!partsFound["anchor_end"])
+            {
+                throw new FormatException("config - missing 'anchor_end' attribute");
             }
         }
 

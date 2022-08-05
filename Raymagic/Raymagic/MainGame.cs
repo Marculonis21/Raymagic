@@ -157,7 +157,7 @@ namespace Raymagic
 
             if (map.mapPreloading)
             {
-                Task.Delay(20);
+                Task.Delay(20); // empties thread for map preloading in threadpool
             }
         }
         

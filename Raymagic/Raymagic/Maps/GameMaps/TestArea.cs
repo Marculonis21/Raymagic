@@ -148,21 +148,22 @@ namespace Raymagic
 
             data.staticMapObjects.Add(boxbox);
 
-            Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Aqua);
-            data.interactableObjectList.Add(button);
+            /* Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Aqua); */
+            /* data.interactableObjectList.Add(button); */
 
-            Jumper jj = new Jumper(new Vector3(150,150,0),
-                                   new Vector3(0,0,1),
-                                   new Vector3(1,0,0),
-                                   new Vector3(1,0,3),
-                                   15,
-                                   mainPlaneW);
+            /* Jumper jj = new Jumper(new Vector3(150,150,0), */
+            /*                        new Vector3(0,0,1), */
+            /*                        new Vector3(1,0,0), */
+            /*                        new Vector3(1,0,3), */
+            /*                        15, */
+            /*                        mainPlaneW); */
 
-            button.stateChangeEvent += jj.EventListener;
+            /* button.stateChangeEvent += jj.EventListener; */
 
-            data.interactableObjectList.Add(jj);
+            /* data.interactableObjectList.Add(jj); */
 
             data.interactableObjectList.Add(new LaserSpawner(new Vector3(2,150,50), new Vector3(1,0,0), plane1));
+            data.interactableObjectList.Add(new LaserCatcher(new Vector3(150,150,0), new Vector3(0,0,1), mainPlaneW, Color.Aqua));
 
             Map.instance.RegisterMap(data.mapName, data);
         }

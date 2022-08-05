@@ -18,7 +18,7 @@ namespace Raymagic
             pistonStartStopHeights[1] = maxHeight;
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
             Vector3 position = this.Position + new Vector3(0,0,10);
             Vector3 lineSize = new Vector3(150,5,20);
@@ -34,7 +34,7 @@ namespace Raymagic
             line1.AddChildObject(new Box(this.Position + new Vector3(0,0,20), new Vector3(90,90,45), Color.Black, BooleanOP.DIFFERENCE), false);
             line1.AddChildObject(new Box(this.Position, new Vector3(100,100,4), Color.Gray), false);
 
-            Map.instance.staticObjectList.Add(line1);
+            staticObjectList.Add(line1);
 
             piston = new Cylinder(this.Position + new Vector3(0,0,pistonStartStopHeights[0]), new Vector3(0,0,1), pistonStartStopHeights[1], 15, Color.DarkGray);
             difPlane = new Plane(this.Position, new Vector3(0,0,1), Color.Black);

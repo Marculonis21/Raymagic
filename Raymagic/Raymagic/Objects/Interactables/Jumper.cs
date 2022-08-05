@@ -25,7 +25,7 @@ namespace Raymagic
             this.floor = floorObject;
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
             // offset for easier modelling 
             normal.Normalize();
@@ -67,12 +67,12 @@ namespace Raymagic
             inside.AddChildObject(ic2,true);
             inside.AddChildObject(ib1,true);
 
-            Map.instance.staticObjectList.Add(inside);
+            staticObjectList.Add(inside);
 
             Cylinder rotator = new Cylinder(this.Position + arrowDir*55 + right*10,
                                             right, 20, 5, Color.DarkGray);
 
-            Map.instance.staticObjectList.Add(rotator);
+            staticObjectList.Add(rotator);
 
             // needs direction change - plateFrame, glassPlate
             // correct orientation - arrow
@@ -105,7 +105,7 @@ namespace Raymagic
             glassPlate.AddChildObject(new Capsule(new Vector3(0,0,-58), 60, 28, Color.Black, BooleanOP.INTERSECT), true);
             glassPlate.SetTransparent(true);
 
-            Map.instance.dynamicObjectList.Add(glassPlate);
+            dynamicObjectList.Add(glassPlate);
             objList.Add(glassPlate);
 
             Box wiring1 = new Box(this.Position - normal*5,
@@ -142,11 +142,8 @@ namespace Raymagic
             trigger1.onCollisionEnter += this.TriggerEnter;
             trigger2.onCollisionEnter += this.TriggerEnter;
 
-            Map.instance.physicsObjectsList.Add(trigger1);
-            Map.instance.physicsObjectsList.Add(trigger2);
-
-            /* Map.instance.infoObjectList.Add(new Sphere(this.Position + normal*50 + arrowDir*15, 30, Color.Lime)); */
-            /* Map.instance.infoObjectList.Add(new Sphere(this.Position + normal*50 - arrowDir*15, 30, Color.Green)); */
+            physicsObjectsList.Add(trigger1);
+            physicsObjectsList.Add(trigger2);
 
             this.boundingBoxSize = arrowDir*120 + right*60 + normal*80;
             this.boundingBox = new Box(this.Position + normal*40,

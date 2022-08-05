@@ -19,10 +19,10 @@ namespace Raymagic
                 root.Print(0);
         }
 
-        public void BuildBVHDownUp(bool infoPrint=true)
+        public void BuildBVHDownUp(List<Object> dynamicObjectList, List<Interactable> interactableObjectList, bool infoPrint=true)
         {
-            List<Object> dList = new List<Object>(Map.instance.dynamicObjectList);
-            dList.AddRange(Map.instance.interactableObjectList);
+            List<Object> dList = new List<Object>(dynamicObjectList);
+            dList.AddRange(interactableObjectList);
 
             if(dList.Count == 0) return;
 
@@ -108,7 +108,6 @@ namespace Raymagic
             }
 
             this.root = tmpNodes[0]; // root is the last node
-            /* Map.instance.infoObjectList.Add(this.root.boundingBox); */
 
             sw.Stop();
             if (infoPrint)

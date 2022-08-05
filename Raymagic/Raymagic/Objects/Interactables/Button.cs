@@ -18,7 +18,7 @@ namespace Raymagic
 
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
             // offset for easier modelling 
             Vector3 position = this.Position;
@@ -33,8 +33,6 @@ namespace Raymagic
 
             bBase2.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, BooleanOP.SDIFFERENCE, 1), true);
             bBase2.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor), true);
-
-            /* Map.instance.staticObjectList.Add(bBase); */
 
             Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed);
             button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)),button1.Position);

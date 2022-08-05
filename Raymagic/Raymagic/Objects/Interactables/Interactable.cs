@@ -27,7 +27,7 @@ namespace Raymagic
             // !! have to create boudning box for the object !!
         }
 
-        public abstract void ObjectSetup();
+        public abstract void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList);
 
         public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
         {

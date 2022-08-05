@@ -12,7 +12,7 @@ namespace Raymagic
             this.stateCount = 2;
         }
 
-        public override void ObjectSetup()
+        public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
             // stage 1
             Cylinder body = new Cylinder(this.Position + new Vector3(0,0,10), new Vector3(0,0,1), 8, 30, Color.White);
@@ -22,7 +22,7 @@ namespace Raymagic
             body.AddChildObject(new Cylinder(this.Position + new Vector3(0,0,100), new Vector3(0,0,1), 102, 40, Color.Black, BooleanOP.DIFFERENCE), false); 
             body.AddChildObject(new Cylinder(this.Position + new Vector3(0,0,3), new Vector3(0,0,1), 3, 40, Color.DarkGray), false); 
 
-            Map.instance.staticObjectList.Add(body);
+            staticObjectList.Add(body);
             
             Cylinder button1 = new Cylinder(this.Position + new Vector3(0,0,15), new Vector3(0,0,1), 6, 38, Color.DarkRed);
             button1.AddChildObject(new Box(new Vector3(0,0,1), new Vector3(55, 5, 2), Color.DarkRed), true);
@@ -46,7 +46,6 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position + new Vector3(0,0,10), 
                                        this.boundingBoxSize,
                                        Color.Black);
-            /* Map.instance.staticObjectList.Add(boundingBox); */
 
             this.buttonBallTrigger = new PhysicsTrigger(this.Position + new Vector3(0,0,-25), 60);
             this.buttonBallTrigger.onCollisionEnter += OnTriggerEnter;
@@ -56,8 +55,8 @@ namespace Raymagic
             this.buttonPlayerTrigger.onCollisionEnter += OnTriggerEnter;
             this.buttonPlayerTrigger.onCollisionExit += OnTriggerExit;
 
-            Map.instance.physicsObjectsList.Add(buttonBallTrigger);
-            Map.instance.physicsObjectsList.Add(buttonPlayerTrigger);
+            physicsObjectsList.Add(buttonBallTrigger);
+            physicsObjectsList.Add(buttonPlayerTrigger);
         }
 
         public void OnTriggerEnter(IPortalable obj, PhysicsTrigger trigger)

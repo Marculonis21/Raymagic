@@ -21,6 +21,9 @@ namespace Raymagic
         public Vector3 mapSize;
         public Vector3 mapOrigin;
         public Vector3 mapTopCorner;
+        public Vector3 levelStartAnchor;
+        public Vector3 levelEndAnchor;
+
         public float distanceMapDetail;
         public DMValue[,,] distanceMap;
 
@@ -107,7 +110,7 @@ namespace Raymagic
                 mapTopCorner = data.topCorner;
 
                 this.BVH = new BVH();
-                BVH.BuildBVHDownUp(false);
+                BVH.BuildBVHDownUp(this.dynamicObjectList, this.interactableObjectList, false);
             }
         }
 
@@ -136,7 +139,7 @@ namespace Raymagic
 
             foreach (var item in interactableObjectList)
             {
-                item.ObjectSetup();
+                item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
             }
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);
@@ -146,9 +149,12 @@ namespace Raymagic
                 Console.WriteLine(item.GetType());
             }
 
-            mapSize = data.topCorner - data.botCorner;
-            mapOrigin = data.botCorner;
-            mapTopCorner = data.topCorner;
+            this.mapSize = data.topCorner - data.botCorner;
+            this.mapOrigin = data.botCorner;
+            this.mapTopCorner = data.topCorner;
+            this.levelStartAnchor = data.levelStartAnchor;
+            this.levelEndAnchor = data.levelEndAnchor;
+
 
             Console.WriteLine("\nSelect distance map detail: ");
             while (true)
@@ -170,7 +176,7 @@ namespace Raymagic
                                       (int)(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine("");
-            BVH.BuildBVHDownUp();
+            BVH.BuildBVHDownUp(this.dynamicObjectList, this.interactableObjectList);
             /* BdH.InfoPrint(); */
 
             if(File.Exists($"Maps/Data/{mapName}-{distanceMapDetail}.dm"))
@@ -242,8 +248,10 @@ namespace Raymagic
         }
 
         public bool mapPreloading = false;
+        public bool preloadedReady = false;
         public void PreLoadMap(string id)
         {
+            Console.WriteLine("preloading started");
             mapPreloading = true;
             var _data = maps[id];
             var _mapName = _data.mapName;
@@ -254,13 +262,16 @@ namespace Raymagic
             _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger));
             var _interactableObjectList = _data.interactableObjectList;
             var _lightList = _data.mapLights;
+            var _levelStartAnchor = _data.levelStartAnchor;
+            var _levelEndAnchor = _data.levelEndAnchor;
 
-            /* foreach (var item in _interactableObjectList) */
-            /* { */
-            /*     item.ObjectSetup(); */
-            /* } */
+            foreach (var item in _interactableObjectList)
+            {
+                item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
+            }
 
-            /* BVH.BuildBVHDownUp(); */
+            var _BVH = new BVH();
+            _BVH.BuildBVHDownUp(_dynamicObjectList, _interactableObjectList);
 
             var _physicsSpace = new PhysicsSpace(physicsObjectsList);
 
@@ -275,6 +286,24 @@ namespace Raymagic
             _distanceMap = LoadDistanceMap(id, distanceMapDetail, _distanceMap);
 
             mapPreloading = false;
+
+            Player.instance.TranslateAbsolute(_levelStartAnchor + (Player.instance.position-this.levelEndAnchor));
+
+            this.mapName                = _mapName;
+            this.staticObjectList       = _staticObjectList;
+            this.dynamicObjectList      = _dynamicObjectList;
+            this.physicsObjectsList     = _physicsObjectsList;
+            this.portalableObjectList   = _portalableObjectList;
+            this.interactableObjectList = _interactableObjectList;
+            this.lightList              = _lightList;
+            this.BVH                    = _BVH;
+            this.physicsSpace           = _physicsSpace;
+            this.mapSize                = _mapSize;
+            this.mapOrigin              = _mapOrigin;
+            this.mapTopCorner           = _mapTopCorner;
+            this.distanceMap            = _distanceMap;
+            this.levelStartAnchor       = _levelStartAnchor;
+            this.levelEndAnchor         = _levelEndAnchor;
         }
 
         public Vector3 GetPlayerStart()
