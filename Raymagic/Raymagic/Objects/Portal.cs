@@ -50,7 +50,6 @@ namespace Raymagic
                 this.up = Vector3.Normalize(Vector3.Cross(normal, right));
             }
 
-            Console.WriteLine($"normal {normal}, right {right}, up {up}");
             var _normal = -normal;
             var _right = -right;
             this.baseChangeMatrixIn = Matrix.Create<double>(3,3, new double[] {
@@ -68,14 +67,6 @@ namespace Raymagic
                     }, 
                     Extreme.Mathematics.MatrixElementOrder.ColumnMajor);
             this.baseChangeMatrixInverse = baseChangeMatrix.GetInverse();
-
-            /* var inVector = Vector3.Normalize(new Vector3(0,0,1)); */
-            /* Console.WriteLine(inVector); */
-            /* var v = Vector.Create<double>(inVector.X, inVector.Y, inVector.Z); */
-
-            /* var K2B = baseChangeMatrix.Solve(v); */
-            /* var B2K = baseChangeMatrixInverse.Solve(v); */
-            /* Console.WriteLine($"solved {K2B}"); */
 
             this.type = type;
 

@@ -4,6 +4,8 @@ config
     player_spawn: (100,100,100)
     top_corner: (300,300,200)
     bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
 }
 
 static

@@ -9,14 +9,17 @@ namespace Raymagic
 
         // Physics object based on Verlet Integration
         Vector3 acceleration;
-        public Vector3 velocity {get; private set;}
+        public Vector3 velocity {get; protected set;}
 
-        public Vector3 position {get; private set;} // old pos
+        public Vector3 position {get; protected set;} // old pos
         public Vector3 lastBeforeTranslate = new Vector3(); // for keeping velocities with player driven translates (grab)
-        public Vector3 lookDir {get; private set;}
-        public Object model {get; private set;}
+        public Vector3 lookDir {get; protected set;}
+        public Object model {get; protected set;}
 
-        public float size {get; private set;}
+        public float size {get; protected set;}
+
+        protected Color color1;
+        protected Color color2;
 
         public PhysicsObject(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1)
         {
@@ -26,9 +29,15 @@ namespace Raymagic
             this.position = position;
             this.size = size;
 
+            this.color1 = color1;
+            this.color2 = color2;
+
             this.model = this;
             this.lookDir = new Vector3(1,0,0);
+        }
 
+        public virtual void ObjectSetup()
+        {
             this.AddChildObject(new Plane(new Vector3(),
                                           new Vector3(1,0,0),
                                           Color.Black,

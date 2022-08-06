@@ -512,11 +512,14 @@ namespace Raymagic
             if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
             {
                 RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, this.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:this.model);
-                if (hitObj.IsSelectable)
+                if (hitObj.IsSelectable || (hitObj == map.portalList[0] && lPressed) || (hitObj == map.portalList[1] && rPressed))
                 {
+                    if (hitObj == map.portalList[0] || hitObj == map.portalList[1])
+                    {
+                        hit += hitObj.SDF_normal(hit)*-2;
+                    }
                     int type = lPressed ? 0 : 1;
                     map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
-                    Console.WriteLine("added");
                 }
                 lPressed = rPressed = false;
             }

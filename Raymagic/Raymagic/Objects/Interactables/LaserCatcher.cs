@@ -16,7 +16,6 @@ namespace Raymagic
 
         public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
-
             Vector3 right = Vector3.Cross(normal, new Vector3(0,0,1));
             if (normal.Z == 1 || normal.Z == -1)
             {
@@ -60,6 +59,22 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position,
                                        this.boundingBoxSize,
                                        Color.Lime);
+
+            RotateBase();
+        }
+
+        public async Task RotateBase()
+        {
+            while (true)
+            {
+                if (this.state == 1)
+                {
+                    this.modelStates[0].Rotate(8, normal, this.modelStates[0].Position);
+                    this.modelStates[1].Rotate(8, normal, this.modelStates[1].Position);
+                }
+
+                await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
+            }
         }
     }
 }

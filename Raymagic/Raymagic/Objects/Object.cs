@@ -79,8 +79,9 @@ namespace Raymagic
             childObjects.Add(child);
         }
 
-        public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false, out bool IsTransparent)
         {
+            IsTransparent = this.transparent;
             Vector3 transformedTestPos = Transform(testPos);    
 
             if (repetitionEnabled)
@@ -274,6 +275,6 @@ namespace Raymagic
         public bool IsSelectable { get => selectable; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }
-        public bool IsTransparent { get => transparent; }
+        /* public bool IsTransparent { get => transparent; } */
     }
 }

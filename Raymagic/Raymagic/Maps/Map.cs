@@ -141,6 +141,10 @@ namespace Raymagic
             {
                 item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
             }
+            foreach (var item in physicsObjectsList)
+            {
+                item.ObjectSetup();
+            }
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);
 
@@ -268,6 +272,10 @@ namespace Raymagic
             foreach (var item in _interactableObjectList)
             {
                 item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
+            }
+            foreach (var item in _physicsObjectsList)
+            {
+                item.ObjectSetup();
             }
 
             var _BVH = new BVH();
