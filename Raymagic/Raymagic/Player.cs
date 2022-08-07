@@ -435,7 +435,7 @@ namespace Raymagic
 
         void GrabbingUpdate()
         {
-            float startOffset = 40;
+            float startOffset = 45;
             Ray testRay = new Ray(this.position + this.lookDir * startOffset, this.lookDir);
             RayMarchingHelper.PhysicsRayMarch(testRay, 3, 10, out float dirLength, out Vector3 dirHit, out Object hitObj, caller:grabbing);
 

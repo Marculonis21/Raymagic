@@ -52,7 +52,12 @@ namespace Raymagic
 
         public override void UpdateRotation()
         {
+            this.AddChildObject(new Sphere(this.outDir*1, 1, Color.Black), true); //guide
             base.UpdateRotation();
+            this.outDir = this.childObjects[this.childObjects.Count - 1].Position - this.Position;
+            this.childObjects.RemoveAt(this.childObjects.Count - 1);
+            Console.WriteLine(outDir);
+
         }
     }
 }

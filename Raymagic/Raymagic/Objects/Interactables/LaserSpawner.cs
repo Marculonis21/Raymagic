@@ -69,7 +69,7 @@ namespace Raymagic
             List<Object> newLaserList = new List<Object>();
             Vector3 startPosition = this.Position + normal*15;
             Ray laserRay = new Ray(startPosition, normal);
-            Object hitObj = null;
+            Object hitObj = this;
 
             while (true)
             {
@@ -78,7 +78,7 @@ namespace Raymagic
 
                 for (int i = 0; i < maxDepth; i++)
                 {
-                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out hitObj, caller:this);
+                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out hitObj, caller:hitObj);
 
                     newLaserList.Add(new Line(laserRay.origin, hitPos+laserRay.direction*5, laserColor));
                     if (Portal.HitObjectIsActivePortal(hitObj))
@@ -88,7 +88,14 @@ namespace Raymagic
                     }
                     else if (hitObj.GetType() == typeof(MirrorBall))
                     {
-                        Console.WriteLine("sdafasdf");
+                        if (hitObj.IsTransparent)
+                        {
+                            
+                        }
+                        var mb = hitObj as MirrorBall;
+                        newLaserList.RemoveAt(newLaserList.Count - 1);
+                        newLaserList.Add(new Line(laserRay.origin, hitPos + laserRay.direction*(mb.size/2 + 5), laserColor));
+                        laserRay = new Ray(hitPos + laserRay.direction*(mb.size/2 + 5), mb.outDir);
                     }
                     else
                     {
@@ -117,14 +124,6 @@ namespace Raymagic
                 Map.instance.laserObjectList.Clear();
                 Map.instance.laserObjectList.AddRange(newLaserList);
             }
-        }
-
-        public override void Interact()
-        {
-        }
-
-        public void ButtonUpAndOff()
-        {
         }
     }
 }
