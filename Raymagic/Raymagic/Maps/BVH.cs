@@ -116,13 +116,14 @@ namespace Raymagic
             }
         }
 
-        public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, out Object obj, out bool IsTransparent)
         {
             if(root != null)
-                return root.Test(testPos, minDist, physics, out obj);
+                return root.Test(testPos, minDist, out obj, out IsTransparent);
             else
             {
                 obj = null;
+                IsTransparent = false;
                 return new SDFout(float.MaxValue, Color.Pink);
             }
         }

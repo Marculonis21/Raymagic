@@ -75,11 +75,15 @@ namespace Raymagic
                 child.inverse = TransformHelper.GetInverse(child.transformMatrix);
                 child.Translate(child.childRelativePos);
             }
+            else
+            {
+                child.childRelativePos = this.Position - child.Position;
+            }
 
             childObjects.Add(child);
         }
 
-        public virtual SDFout SDF(Vector3 testPos, float minDist, bool physics=false, out bool IsTransparent)
+        public virtual SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
             IsTransparent = this.transparent;
             Vector3 transformedTestPos = Transform(testPos);    
@@ -104,9 +108,13 @@ namespace Raymagic
             foreach (Object child in childObjects)
             {
                 // need to pass the original (not transformed) testPos
-                
-                var childOut = child.SDF(testPos, minDist, physics);
+                var childOut = child.SDF(testPos, minDist, out bool childIsTransparent);
+
                 var _out = SDFs.Combine(current.distance, childOut.distance, current.color, childOut.color, child.booleanOP, child.booleanStrength);
+                if (childOut.distance == _out.distance)
+                {
+                    IsTransparent = childIsTransparent;
+                }
 
                 current = _out;
             }
@@ -129,9 +137,9 @@ namespace Raymagic
             Vector3 pZ = new Vector3(p.X, p.Y, p.Z + EPS);
             Vector3 mZ = new Vector3(p.X, p.Y, p.Z - EPS);
 
-            Vector3 normal = new Vector3(SDF(pX,float.MaxValue).distance - SDF(mX,float.MaxValue).distance,
-                                         SDF(pY,float.MaxValue).distance - SDF(mY,float.MaxValue).distance,
-                                         SDF(pZ,float.MaxValue).distance - SDF(mZ,float.MaxValue).distance); 
+            Vector3 normal = new Vector3(SDF(pX,float.MaxValue, out _).distance - SDF(mX,float.MaxValue,out _).distance,
+                                         SDF(pY,float.MaxValue, out _).distance - SDF(mY,float.MaxValue,out _).distance,
+                                         SDF(pZ,float.MaxValue, out _).distance - SDF(mZ,float.MaxValue,out _).distance); 
             normal.Normalize();
 
             return normal;
@@ -254,7 +262,7 @@ namespace Raymagic
                 obj.Rotate(angle, axis, pivotPosition);
             }
         }
-        
+
         protected Vector3 Transform(Vector3 orig)
         {
             return TransformHelper.Transform(orig, inverse);
@@ -270,11 +278,18 @@ namespace Raymagic
                                    (float)this.transformMatrix[3,2]);
             }
         }
+        public Vector3 Rotation
+        {
+            get
+            {
+                return TransformHelper.GetRotationFromTransform(transformMatrix);
+            }
+        }
 
         public string Info { get => info; }
         public bool IsSelectable { get => selectable; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }
-        /* public bool IsTransparent { get => transparent; } */
+        public bool IsTransparent { get => transparent; }
     }
 }

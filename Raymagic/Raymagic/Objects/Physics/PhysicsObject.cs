@@ -33,7 +33,7 @@ namespace Raymagic
             this.color2 = color2;
 
             this.model = this;
-            this.lookDir = new Vector3(1,0,0);
+            this.lookDir = new Vector3(1,0,0); // for portalable only
         }
 
         public virtual void ObjectSetup()
@@ -66,7 +66,7 @@ namespace Raymagic
             ClearForces();
         }
 
-        public void UpdateRotation()
+        public virtual void UpdateRotation()
         {
             var movementDir = Vector3.Normalize(velocity);
             var upVector = new Vector3(0,0,1);

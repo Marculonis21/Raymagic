@@ -48,10 +48,11 @@ namespace Raymagic
                                        Color.Yellow);
         }
 
-        public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
-            var pistonSDF = piston.SDF(testPos, minDist, physics);
-            var difPlaneSDF = difPlane.SDF(testPos, minDist, physics);
+            IsTransparent = false;
+            var pistonSDF = piston.SDF(testPos, minDist, out _);
+            var difPlaneSDF = difPlane.SDF(testPos, minDist, out _);
             return SDFs.Combine(pistonSDF.distance, 
                                 difPlaneSDF.distance, 
                                 pistonSDF.color, 

@@ -55,15 +55,21 @@ namespace Raymagic
                                        Color.Black);
         }
 
-        public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
-            var dp1 = doorPlates[0].SDF(testPos, minDist, physics);
-            var dp2 = doorPlates[1].SDF(testPos, minDist, physics);
+            var dp1 = doorPlates[0].SDF(testPos, minDist, out bool IsTransparent1);
+            var dp2 = doorPlates[1].SDF(testPos, minDist, out bool IsTransparent2);
 
             if (dp1.distance < dp2.distance)
+            {
+                IsTransparent = IsTransparent1;
                 return dp1;
+            }
             else
+            {
+                IsTransparent = IsTransparent2;
                 return dp2;
+            }
 
         }
 

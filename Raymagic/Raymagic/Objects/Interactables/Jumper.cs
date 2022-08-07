@@ -105,7 +105,7 @@ namespace Raymagic
             glassPlate.AddChildObject(new Capsule(new Vector3(0,0,-58), 60, 28, Color.Black, BooleanOP.INTERSECT), true);
             glassPlate.SetTransparent(true);
 
-            dynamicObjectList.Add(glassPlate);
+            /* dynamicObjectList.Add(glassPlate); */
             objList.Add(glassPlate);
 
             Box wiring1 = new Box(this.Position - normal*5,
@@ -151,19 +151,21 @@ namespace Raymagic
                                        Color.Red);
         }
 
-        public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
             SDFout best = new SDFout(float.MaxValue, Color.Pink);
             SDFout test;
+            IsTransparent = false;
 
             foreach (var obj in objList)
             {
                 if (obj == glassPlate) continue;
 
-                test = obj.SDF(testPos, minDist, physics);
+                test = obj.SDF(testPos, minDist, out bool objTransparent);
 
                 if (test.distance < best.distance)
                 {
+                    IsTransparent = objTransparent;
                     best = test;
                 }
             }

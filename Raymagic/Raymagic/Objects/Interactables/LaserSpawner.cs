@@ -56,9 +56,9 @@ namespace Raymagic
             CalculateLaserPathAsync();
         }
 
-        public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
-            return objBase.SDF(testPos, minDist, false);
+            return objBase.SDF(testPos, minDist, out IsTransparent);
         }
 
         LaserCatcher hitCatcher = null;
@@ -85,6 +85,10 @@ namespace Raymagic
                     {
                         laserRay = Portal.TransferRay((Portal)hitObj, laserRay, hitPos);
                         laserRay = new Ray(laserRay.origin - laserRay.direction*45, laserRay.direction);
+                    }
+                    else if (hitObj.GetType() == typeof(MirrorBall))
+                    {
+                        Console.WriteLine("sdafasdf");
                     }
                     else
                     {

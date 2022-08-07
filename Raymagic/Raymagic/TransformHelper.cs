@@ -80,7 +80,7 @@ namespace Raymagic
         {
             /* return (rotationMatrix * translationMatrix).GetInverse(); */
             Matrix<double> inverse = transformMatrix.GetInverse();
-            return new double[12] {
+            return new double[12] { // XYZ
                 inverse[0,0],
                 inverse[0,1],
                 inverse[0,2],
@@ -106,6 +106,49 @@ namespace Raymagic
             return pos-c*_out;
         }
 
+        public static Vector3 GetRotationFromTransform(Matrix<double> transformMatrix)
+        {
+            var matrix = new Microsoft.Xna.Framework.Matrix((float)transformMatrix[0,0], (float)transformMatrix[0,1], (float)transformMatrix[0,2], (float)transformMatrix[0,3],
+                                                            (float)transformMatrix[1,0], (float)transformMatrix[1,1], (float)transformMatrix[1,2], (float)transformMatrix[1,3],
+                                                            (float)transformMatrix[2,0], (float)transformMatrix[2,1], (float)transformMatrix[2,2], (float)transformMatrix[2,3],
+                                                            (float)transformMatrix[3,0], (float)transformMatrix[3,1], (float)transformMatrix[3,2], (float)transformMatrix[3,3]);
+
+            var q = Microsoft.Xna.Framework.Quaternion.CreateFromRotationMatrix(matrix);
+
+            /* https://stackoverflow.com/questions/70462758/c-sharp-how-to-convert-quaternions-to-euler-angles-xyz */
+
+            float X = 0;
+            float Y = 0;
+            float Z = 0;
+
+            // X
+            double sinr_cosp = 2 * (q.W * q.X + q.Y * q.Z);
+            double cosr_cosp = 1 - 2 * (q.X * q.X + q.Y * q.Y);
+            X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
+
+            // Y
+            double sinp = 2 * (q.W * q.Y - q.Z * q.X);
+            if (Math.Abs(sinp) >= 1)
+            {
+                Y = (float)Math.CopySign(Math.PI / 2, sinp);
+            }
+            else
+            {
+                Y = (float)Math.Asin(sinp);
+            }
+
+            // Z
+            double siny_cosp = 2 * (q.W * q.Z + q.X * q.Y);
+            double cosy_cosp = 1 - 2 * (q.Y * q.Y + q.Z * q.Z);
+            Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
+
+            return new Vector3((float)(X*180/Math.PI),
+                               (float)(Y*180/Math.PI),
+                               (float)(Z*180/Math.PI));
+            /* return new Vector3(X, */
+            /*                    Y, */
+            /*                    Z); */
+        }
 
         public static Vector3 Transform(Vector3 orig, double[] transformInverse)
         {

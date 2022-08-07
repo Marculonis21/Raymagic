@@ -76,36 +76,39 @@ namespace Raymagic
             /* Map.instance.infoObjectList.Add(this.boundingBox); */
         }
 
-        public SDFout Test(Vector3 testPos, float minDist, bool physics, out Object obj)
+        public SDFout Test(Vector3 testPos, float minDist, out Object obj, out bool IsTransparent)
         {
             obj = null;
 
             // test node bounding box
-            SDFout test = this.boundingBox.SDF(testPos, minDist, physics);
+            SDFout test = this.boundingBox.SDF(testPos, minDist, out _);
             if (test.distance < minDist)
             {
                 // if bounding box collided try the actuall node
                 if(this.isLeaf) // for leaf nodes
                 {
                     SDFout objTest;
+                    bool objTransparent;
                     if (obj is Interactable)
                     {
-                        objTest = (obj as Interactable).SDF(testPos, minDist, physics);
+                        objTest = (obj as Interactable).SDF(testPos, minDist, out objTransparent);
                     }
                     else
                     {
-                        objTest = this.obj.SDF(testPos, minDist, physics);
+                        objTest = this.obj.SDF(testPos, minDist, out objTransparent);
                     }
 
                     if(objTest.distance < minDist)
                     {
                         if (obj is Interactable)
                         {
+                            IsTransparent = objTransparent;
                             var _obj = obj as Interactable;
                             obj = _obj.modelStates[_obj.state];
                         }
                         else
                         {
+                            IsTransparent = objTransparent;
                             obj = this.obj;
                         }
                         return objTest;
@@ -113,8 +116,8 @@ namespace Raymagic
                 }
                 else // for parent node
                 {
-                    SDFout lTest = LEFT.Test(testPos, minDist, physics, out Object lObj);
-                    SDFout rTest = RIGHT.Test(testPos, minDist, physics, out Object rObj);
+                    SDFout lTest = LEFT.Test(testPos, minDist, out Object lObj, out bool lTransparent);
+                    SDFout rTest = RIGHT.Test(testPos, minDist, out Object rObj, out bool rTransparent);
 
                     // both of them will improve minDist - choose the best one
                     if(lTest.distance < minDist && rTest.distance < minDist)
@@ -122,11 +125,13 @@ namespace Raymagic
                         if(lTest.distance < rTest.distance)
                         {
                             obj = lObj;
+                            IsTransparent = lTransparent;
                             return lTest;
                         }
                         else
                         {
                             obj = rObj;
+                            IsTransparent = rTransparent;
                             return rTest;
                         }
                     }
@@ -134,12 +139,14 @@ namespace Raymagic
                     else if(lTest.distance < minDist && rTest.distance >= minDist)
                     {
                         obj = lObj;
+                        IsTransparent = lTransparent;
                         return lTest;
                     }
                     // only right will improve
                     else if(rTest.distance < minDist && lTest.distance >= minDist)
                     {
                         obj = rObj;
+                        IsTransparent = rTransparent;
                         return rTest;
                     }
                     // non of them will improve - return (mindist + 1 OR something big) because we didnt
@@ -147,6 +154,7 @@ namespace Raymagic
                 }
             }
 
+            IsTransparent = false;
             return new SDFout(float.MaxValue, Color.Pink);
         }
         

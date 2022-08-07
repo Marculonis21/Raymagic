@@ -81,7 +81,7 @@ namespace Raymagic
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
                 foreach(Object obj in Map.instance.staticObjectList)
                 {
-                    test = obj.SDF(childPos[i], best.distance);
+                    test = obj.SDF(childPos[i], best.distance, out _);
                     if(test.distance < best.distance)
                         best = test;
                 }

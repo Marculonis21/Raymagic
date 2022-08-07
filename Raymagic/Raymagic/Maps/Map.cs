@@ -232,7 +232,7 @@ namespace Raymagic
                     {
                         test = obj.SDF(mapOrigin + new Vector3(x*distanceMapDetail, 
                                                                y*distanceMapDetail, 
-                                                               z*distanceMapDetail), best.distance);
+                                                               z*distanceMapDetail), best.distance, out _);
                         if(test.distance < best.distance)
                         {
                             best = test;

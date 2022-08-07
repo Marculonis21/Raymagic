@@ -275,11 +275,54 @@ namespace Raymagic
             {
                 var right = Vector3.Cross(lookDir, new Vector3(0,0,1));
                 var up = new Vector3(0,0,1);
-
                 grabbing.Rotate(-rot.X, up, this.position);
-                grabbing.Rotate(rot.Y, right, this.position);
+
+                if (grabbing.GetType() == typeof(MirrorBall))
+                {
+                    // DONT ASK ME WHY - Rotations are hard, forcing rotations is impossible
+                    Vector2 v = Vector2.Normalize(new Vector2(lookDir.X, lookDir.Y));
+                    var xDegree = Math.Acos(v.X)*180/Math.PI;
+                    var yDegree = Math.Asin(v.Y)*180/Math.PI;
+                    float testAzimuth = 0;
+                    if (yDegree > 0)
+                    {
+                        testAzimuth = (float)xDegree;
+                    }
+                    else
+                    {
+                        testAzimuth = 360 - (float)xDegree;
+                    }
+
+                    Vector3 gRot = grabbing.Rotation;
+                    grabbing.Rotate(testAzimuth - gRot.Z, "z", grabbing.Position);
+                    if (yDegree > 0)
+                    {
+                        grabbing.Rotate(gRot.Y, "x", grabbing.Position);
+                    }
+                    else
+                    {
+                        grabbing.Rotate(-gRot.Y, "x", grabbing.Position);
+                    }
+                    if ((float)Math.Abs(yDegree) > 45)
+                    {
+                        if (yDegree > 0)
+                        {
+                            grabbing.Rotate(gRot.X, "y", grabbing.Position);
+                        }
+                        else
+                        {
+                            grabbing.Rotate(-gRot.X, "y", grabbing.Position);
+                        }
+                    }
+                    var mb = grabbing as MirrorBall;
+
+                    mb.outDir = Vector3.Normalize(new Vector3(lookDir.X, lookDir.Y, 0));
+                }
+                else
+                {
+                    grabbing.Rotate(rot.Y, right, this.position);
+                }
             }
-            
 
             Informer.instance.AddInfo("playerRot", "LookDir: " + lookDir.ToString());
         }

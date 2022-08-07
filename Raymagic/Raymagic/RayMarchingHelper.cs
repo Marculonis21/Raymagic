@@ -45,6 +45,8 @@ namespace Raymagic
                 ObjHitType type = ObjHitType.Static;
                 Object staticObject = null;
 
+                bool objectIsTransparent = false;
+
                 if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
                    (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
                    (int)(coords.Z/map.distanceMapDetail) >= map.distanceMap.GetLength(2) || 
@@ -61,6 +63,7 @@ namespace Raymagic
 
                     staticObject = map.staticObjectList[dmValue.objIndex];
                     best = dmValue.sdfValue;
+                    objectIsTransparent = staticObject.IsTransparent;
                 }
 
                 if (depth < 5)
@@ -85,7 +88,7 @@ namespace Raymagic
 
                 foreach(Object iObj in map.infoObjectList)
                 {
-                    test = iObj.SDF(testPos, best.distance);
+                    test = iObj.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -99,7 +102,7 @@ namespace Raymagic
 
                 foreach (Object laser in map.laserObjectList)
                 {
-                    test = laser.SDF(testPos, best.distance);
+                    test = laser.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -112,17 +115,18 @@ namespace Raymagic
                 }
 
                 Object bestObj = null;
-                test = map.BVH.Test(testPos, best.distance, false, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, out Object dObj, out bool dTransparent);
                 if(test.distance < best.distance)
                 {
                     best = test;
                     bestObj = dObj;
+                    objectIsTransparent = dTransparent;
                     type = ObjHitType.Dynamic;
                 }
 
                 if (depth > 0 || Player.instance.GodMode) 
                 {
-                    test = Player.instance.model.SDF(testPos, best.distance);
+                    test = Player.instance.model.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -135,11 +139,12 @@ namespace Raymagic
                 {
                     if (obj.isTrigger) continue;
 
-                    test = obj.SDF(testPos, best.distance);
+                    test = obj.SDF(testPos, best.distance, out bool pTransparent);
                     if(test.distance < best.distance)
                     {
                         best = test;
                         bestObj = obj;
+                        objectIsTransparent = pTransparent;
                         type = ObjHitType.Dynamic;
                     }
                 }
@@ -165,7 +170,8 @@ namespace Raymagic
 
                     float lightIntensity = 0;
 
-                    if (finalObj.IsTransparent)
+                    /* if (finalObj.IsTransparent) */
+                    if (objectIsTransparent)
                     {
                         if (transparentDepth == 0)
                         {
@@ -324,13 +330,13 @@ namespace Raymagic
                     }
                 }
 
-                test = map.BVH.Test(testPos, best.distance, false, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, out Object dObj, out _);
                 if(test.distance < best.distance &&  !dObj.IsTransparent)
                 {
                     best = test;
                 }
 
-                test = Player.instance.model.SDF(testPos, best.distance);
+                test = Player.instance.model.SDF(testPos, best.distance, out _);
                 if(test.distance < best.distance)
                 {
                     best = test;
@@ -340,7 +346,7 @@ namespace Raymagic
                 {
                     if (obj.isTrigger || obj.IsTransparent) continue;
 
-                    test = obj.SDF(testPos, best.distance);
+                    test = obj.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -401,7 +407,7 @@ namespace Raymagic
                 {
                     if (obj.IsTransparent && caller is LaserSpawner) continue;
 
-                    test = obj.SDF(testPos, best.distance, physics:true);
+                    test = obj.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -410,7 +416,7 @@ namespace Raymagic
                     }
                 }
 
-                test = map.BVH.Test(testPos, best.distance, true, out Object dObj);
+                test = map.BVH.Test(testPos, best.distance, out Object dObj, out _);
                 if(test.distance < best.distance && !(dObj.IsTransparent && caller is LaserSpawner))
                 {
                     best = test;
@@ -422,7 +428,7 @@ namespace Raymagic
                 {
                     if (pObj == caller || pObj.isTrigger) continue;
 
-                    test = pObj.SDF(testPos, best.distance, physics:true);
+                    test = pObj.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -433,7 +439,7 @@ namespace Raymagic
 
                 if (Player.instance.model != caller)
                 {
-                    test = Player.instance.model.SDF(testPos, best.distance, physics:true);
+                    test = Player.instance.model.SDF(testPos, best.distance, out _);
                     if(test.distance < best.distance)
                     {
                         best = test;

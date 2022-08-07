@@ -29,9 +29,9 @@ namespace Raymagic
 
         public abstract void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList);
 
-        public override SDFout SDF(Vector3 testPos, float minDist, bool physics=false)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
         {
-            return modelStates[state].SDF(testPos, minDist, physics);
+            return modelStates[state].SDF(testPos, minDist, out IsTransparent);
         }
 
         public override float SDFDistance(Vector3 testPos)

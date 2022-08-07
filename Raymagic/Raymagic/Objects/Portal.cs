@@ -92,7 +92,7 @@ namespace Raymagic
         }
 
         // special testing method including ray 
-        public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool useBounding=true, bool physics=false)
+        public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool physics=false)
         {
             if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink);
 

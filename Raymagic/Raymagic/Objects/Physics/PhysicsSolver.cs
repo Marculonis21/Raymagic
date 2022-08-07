@@ -77,6 +77,8 @@ namespace Raymagic
                     {
                         obj.Translate(hitAxis*length);
 
+                        if (!obj.physicsEnabled) continue;
+
                         obj.UpdateRotation();
                         
                         // touching ground - apply env forces - friction
