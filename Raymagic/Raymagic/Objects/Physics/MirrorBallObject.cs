@@ -56,8 +56,6 @@ namespace Raymagic
             base.UpdateRotation();
             this.outDir = this.childObjects[this.childObjects.Count - 1].Position - this.Position;
             this.childObjects.RemoveAt(this.childObjects.Count - 1);
-            Console.WriteLine(outDir);
-
         }
     }
 }
