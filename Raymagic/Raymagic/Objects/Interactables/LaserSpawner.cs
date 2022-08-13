@@ -69,16 +69,18 @@ namespace Raymagic
             List<Object> newLaserList = new List<Object>();
             Vector3 startPosition = this.Position + normal*15;
             Ray laserRay = new Ray(startPosition, normal);
-            Object hitObj = this;
+            Object hitObj = null;
+            Object caller = this;
 
             while (true)
             {
                 newLaserList.Clear();
                 laserRay = new Ray(startPosition, normal);
+                caller = this;
 
                 for (int i = 0; i < maxDepth; i++)
                 {
-                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out hitObj, caller:hitObj);
+                    RayMarchingHelper.PhysicsRayMarch(laserRay, 100, 1, out float _, out Vector3 hitPos, out hitObj, caller:caller);
 
                     newLaserList.Add(new Line(laserRay.origin, hitPos+laserRay.direction*5, laserColor));
                     if (Portal.HitObjectIsActivePortal(hitObj))
@@ -88,14 +90,11 @@ namespace Raymagic
                     }
                     else if (hitObj.GetType() == typeof(MirrorBall))
                     {
-                        if (hitObj.IsTransparent)
-                        {
-                            
-                        }
                         var mb = hitObj as MirrorBall;
                         newLaserList.RemoveAt(newLaserList.Count - 1);
                         newLaserList.Add(new Line(laserRay.origin, hitPos + laserRay.direction*(mb.size/2 + 5), laserColor));
                         laserRay = new Ray(hitPos + laserRay.direction*(mb.size/2 + 5), mb.outDir);
+                        caller = hitObj;
                     }
                     else
                     {

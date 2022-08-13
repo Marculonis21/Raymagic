@@ -28,11 +28,14 @@ namespace Raymagic
         {
             Map map = Map.instance;
             color = Color.Black;
+            length = float.MaxValue;
+
             Color transparentColor = Color.White;
             float transparentDepth = 0;
             float transparentStep = 0.25f;
 
-            length = float.MaxValue;
+            Color laserColor = Color.Black;
+            float laserDistance = float.MaxValue;
 
             Vector3 testPos = ray.origin;
             const int maxSteps = 100;
@@ -103,6 +106,12 @@ namespace Raymagic
                 foreach (Object laser in map.laserObjectList)
                 {
                     test = laser.SDF(testPos, best.distance, out _);
+                    if (test.distance < laserDistance)
+                    {
+                        laserDistance = test.distance;
+                        laserColor = laser.Color;
+                    }
+
                     if(test.distance < best.distance)
                     {
                         best = test;
@@ -225,9 +234,11 @@ namespace Raymagic
                         lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
                         Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
-                        color = new Color(color.R+addColor.R,
-                                          color.G+addColor.G,
-                                          color.B+addColor.B);
+                        var laserIntensity = (float)Math.Exp(-laserDistance/2);
+                        Color laserAddColor = (laserColor.ToVector3()*laserIntensity).ToColor();
+                        color = new Color(color.R+addColor.R+laserAddColor.R,
+                                          color.G+addColor.G+laserAddColor.G,
+                                          color.B+addColor.B+laserAddColor.B);
 
                         if (transparentDepth > 0)
                         {
@@ -236,15 +247,6 @@ namespace Raymagic
                             Vector3 _c = c * T + transparentColor.ToVector3() * (1-T);
                             color = _c.ToColor();
                         }
-
-                        /* if (gammaEnabled) */
-                        /* { */
-                        /*     Vector3 v = color.ToVector3(); */
-                        /*     Vector3 corrected = new Vector3((float)Math.Pow(v.X, 1f/2.2f), */
-                        /*                                     (float)Math.Pow(v.Y, 1f/2.2f), */
-                        /*                                     (float)Math.Pow(v.Z, 1f/2.2f)); */
-                        /*     color = corrected.ToColor(); */
-                        /* } */
                     }
 
                     return;

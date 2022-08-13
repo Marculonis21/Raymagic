@@ -22,7 +22,7 @@ namespace Raymagic
 
         public override float SDFDistance(Vector3 testPos)
         {
-            return SDFs.Line(testPos, this.a, this.b, 2);
+            return SDFs.Line(testPos, this.a, this.b, 0.5f);
         }
     }
 }
