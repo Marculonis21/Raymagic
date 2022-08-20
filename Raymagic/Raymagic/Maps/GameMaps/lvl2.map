@@ -22,7 +22,7 @@ static
 
     box[glassend]:(250,590,75)|(250,6,150)|Gray|(250,300,150)|transparent
     boolean: glassend: difference: box:(0,0,-45)|(250,7,7)|Black|True
-    box[glassendLine1]:(0,0,-45)|(250,7,7)|White|(250,7,7)|transparent
+    box[glassendLine1]:(0,0,-45)|(250,6,7)|White|(250,7,7)|transparent
     boolean: glassend: union: glassendLine1|true
 
     boolean: glassend: difference: box:(0,0,-30)|(250,7,7)|Black|True

@@ -179,7 +179,6 @@ namespace Raymagic
 
                     float lightIntensity = 0;
 
-                    /* if (finalObj.IsTransparent) */
                     if (objectIsTransparent)
                     {
                         if (transparentDepth == 0)
@@ -294,6 +293,10 @@ namespace Raymagic
 
             float intensity = light.intensity;
             float k = 16f*intensity;
+            bool objectIsTransparent = false;
+
+            float transparentStep = 10f;
+            float transparentIntensityChange = 0.9f;
 
             Vector3 testPos = position + ray.direction*length;
             while(length < (position - light.position).Length() - 0.1f)
@@ -302,6 +305,7 @@ namespace Raymagic
 
                 SDFout test;
                 SDFout best = new SDFout(float.MaxValue, Color.Pink);
+                objectIsTransparent = false;
 
                 if((int)(coords.X/map.distanceMapDetail) >= map.distanceMap.GetLength(0) ||
                    (int)(coords.Y/map.distanceMapDetail) >= map.distanceMap.GetLength(1) ||
@@ -317,32 +321,33 @@ namespace Raymagic
                                                       (int)Math.Abs(coords.Y/map.distanceMapDetail),
                                                       (int)Math.Abs(coords.Z/map.distanceMapDetail)];
 
-                    if (!map.staticObjectList[dmValue.objIndex].IsTransparent)
-                    {
-                        best = dmValue.sdfValue;
-                    }
+                    best = dmValue.sdfValue;
+                    objectIsTransparent = map.staticObjectList[dmValue.objIndex].IsTransparent;
                 }
 
-                test = map.BVH.Test(testPos, best.distance, out Object dObj, out _);
-                if(test.distance < best.distance &&  !dObj.IsTransparent)
+                test = map.BVH.Test(testPos, best.distance, out Object dObj, out bool dTransparent);
+                if(test.distance < best.distance)
                 {
                     best = test;
+                    objectIsTransparent = dTransparent;
                 }
 
                 test = Player.instance.model.SDF(testPos, best.distance, out _);
                 if(test.distance < best.distance)
                 {
                     best = test;
+                    objectIsTransparent = false;
                 }
 
                 foreach(var obj in map.physicsObjectsList)
                 {
-                    if (obj.isTrigger || obj.IsTransparent) continue;
+                    if (obj.isTrigger) continue;
 
-                    test = obj.SDF(testPos, best.distance, out _);
+                    test = obj.SDF(testPos, best.distance, out bool pTransparent);
                     if(test.distance < best.distance)
                     {
                         best = test;
+                        objectIsTransparent = pTransparent;
                     }
                 }
 
@@ -352,15 +357,31 @@ namespace Raymagic
                     break;
                 }
 
-                if(best.distance < 0.01f)
-                    return 0.0f;
+                if (objectIsTransparent)
+                {
+                    intensity *= transparentIntensityChange;
+                }
+                else
+                {
+                    if(best.distance < 0.01f)
+                        return 0.0f;
 
-                intensity = Math.Min(intensity, k*best.distance/length);
+                    intensity = Math.Min(intensity, k*best.distance/length);
+                }
+
                 if(intensity < 0.001f)
                     return 0.0f;
 
-                length += best.distance;
-                testPos += ray.direction*best.distance;
+                if (objectIsTransparent)
+                {
+                    length += best.distance+transparentStep;
+                    testPos += ray.direction*(best.distance+transparentStep);
+                }
+                else
+                {
+                    length += best.distance;
+                    testPos += ray.direction*best.distance;
+                }
             }
 
             return intensity/(Vector3.DistanceSquared(position, light.position));
