@@ -26,7 +26,6 @@ namespace Raymagic
                     /* } */
                     objectWatcher.Add(item);
                     objectLastDot.Add(Vector3.Dot(Vector3.Normalize(this.Position - item.position), this.normal));
-                    Console.WriteLine($"{this.color} obj added {item}");
                 }
             }
         }
@@ -40,7 +39,6 @@ namespace Raymagic
                 if ((this.Position - item.position).Length() > testFieldSize+5)
                 {
                     toRemove.Add(item);
-                    Console.WriteLine($"{this.color} obj removed {item}");
                 }
             }
 

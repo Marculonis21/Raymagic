@@ -83,10 +83,9 @@ namespace Raymagic
             data.isCompiled = true;
             data.path = path;
 
-            /* var tasks = new Task[6]; */
+            await ParseConfigAsync(input);
             List<Task> tasks = new List<Task>();
 
-            tasks.Add(ParseConfigAsync(input));
             tasks.Add(ParseLightsAsync(input));
             tasks.Add(ParseDynamicAsync(input));
             tasks.Add(ParsePhysicsAsync(input));
@@ -377,7 +376,7 @@ namespace Raymagic
                         Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                         Color color = GetColorFromText(paramPart[1], lineNum);
                         float intensity = float.Parse(paramPart[2]);
-                        Light light = new Light(position, color, intensity);
+                        Light light = new Light(position, color, intensity, data.botCorner, data.topCorner);
                         data.mapLights.Add(light);
                     }
                     else
@@ -774,8 +773,8 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
-                            Color color = GetColorFromText(paramPart[2], lineNum);
-                            iObj = new Door(position, facing, color);
+                            Color color = GetColorFromText(paramPart[3], lineNum);
+                            iObj = new Door(position, facing, declaredObjects[paramPart[2]], color);
                         }
                         break;
 

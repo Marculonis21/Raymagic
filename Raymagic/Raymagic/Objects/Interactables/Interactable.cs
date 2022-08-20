@@ -51,7 +51,10 @@ namespace Raymagic
             stateChangeEvent?.Invoke(obj, state);
         }
 
-        public virtual void EventListener(Interactable obj, int state) { }
+        public virtual void EventListener(Interactable obj, int state) 
+        { 
+            Interact();
+        }
 
         public static void PlayerInteract(Vector3 playerPos)
         {

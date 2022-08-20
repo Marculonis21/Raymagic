@@ -7,14 +7,16 @@ namespace Raymagic
         Object[] doorPlates;
         Vector3 facing;
         Vector3 right;
+        Object wallObject;
 
         Vector3[] doorPlateClosed;
         Vector3[] doorPlateOpened;
-        public Door(Vector3 floorDoorPosition, Vector3 facing, Color secondaryColor) : base(floorDoorPosition, secondaryColor)
+        public Door(Vector3 floorDoorPosition, Vector3 facing, Object wallObject, Color secondaryColor) : base(floorDoorPosition, secondaryColor)
         {
             this.facing = facing;
             this.right = Vector3.Cross(facing, new Vector3(0,0,1));
             this.stateCount = 2;
+            this.wallObject = wallObject;
 
             if (facing.Z != 0)
                 throw new Exception("Unable to make this kind of button - facing Z");
@@ -22,6 +24,8 @@ namespace Raymagic
 
         public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
+            wallObject.AddChildObject(new Capsule(this.Position + new Vector3(0,0,-90), 70,65, Color.Black, BooleanOP.DIFFERENCE), false);
+
             Object doorFrame = new Capsule(this.Position + new Vector3(0,0, -45-45), 70, 65, Color.DarkGray);
             doorFrame.AddChildObject(new Sphere(this.Position + new Vector3(0, 0, 100), 15, secondaryColor));
             doorFrame.AddChildObject(new Capsule(this.Position + new Vector3(0,0, -45-45), 90, 50, Color.Black, BooleanOP.DIFFERENCE), false);
@@ -80,12 +84,10 @@ namespace Raymagic
             if (this.state == 1)
             {
                 DoorOpenAsync();
-                Console.WriteLine($"{this} openning");
             }
             else
             {
                 DoorCloseAsync();
-                Console.WriteLine($"{this} closing");
             }
         }
 

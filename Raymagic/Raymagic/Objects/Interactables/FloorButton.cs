@@ -22,6 +22,10 @@ namespace Raymagic
             body.AddChildObject(new Cylinder(this.Position + new Vector3(0,0,100), new Vector3(0,0,1), 102, 40, Color.Black, BooleanOP.DIFFERENCE), false); 
             body.AddChildObject(new Cylinder(this.Position + new Vector3(0,0,3), new Vector3(0,0,1), 3, 40, Color.DarkGray), false); 
 
+            Sphere indicator = new Sphere(this.Position, 8, this.secondaryColor);
+            indicator.SetSymmetry("XY", new Vector3(35,35,0));
+            body.AddChildObject(indicator);
+
             staticObjectList.Add(body);
             
             Cylinder button1 = new Cylinder(this.Position + new Vector3(0,0,15), new Vector3(0,0,1), 6, 38, Color.DarkRed);
@@ -47,7 +51,7 @@ namespace Raymagic
                                        this.boundingBoxSize,
                                        Color.Black);
 
-            this.buttonBallTrigger = new PhysicsTrigger(this.Position + new Vector3(0,0,-25), 60);
+            this.buttonBallTrigger = new PhysicsTrigger(this.Position + new Vector3(0,0,-5), 60);
             this.buttonBallTrigger.onCollisionEnter += OnTriggerEnter;
             this.buttonBallTrigger.onCollisionExit += OnTriggerExit;
 
@@ -63,7 +67,6 @@ namespace Raymagic
         {
             if (this.state == 0)
             {
-                Console.WriteLine("in");
                 if (obj is PhysicsObject && trigger == this.buttonBallTrigger)
                 {
                     Interact();

@@ -102,7 +102,7 @@ namespace Raymagic
 
             if (Vector3.Distance(testPos, this.Position) < portalSize-8 && !physics)
             {
-                if (this.otherPortal == null) return current;
+                if (this.otherPortal == null || Map.instance.portalList[this.otherPortal.type] == null) return current;
 
                 var otherPos = otherPortal.Position;
 
