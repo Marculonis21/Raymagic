@@ -32,7 +32,7 @@ namespace Raymagic
 
             Color transparentColor = Color.White;
             float transparentDepth = 0;
-            float transparentStep = 0.25f;
+            float transparentStep = 2f;
 
             Color laserColor = Color.Black;
             float laserDistance = float.MaxValue;
@@ -188,7 +188,8 @@ namespace Raymagic
 
                             foreach(Light light in map.lightList)
                             {
-                                if (Vector3.Distance(light.position, testPos) > 750) continue;
+                                if (Vector3.Distance(light.position, testPos) > 750 ||
+                                    !light.IsPosInZone(testPos)) continue;
 
                                 objectNormal = finalObj.SDF_normal(testPos);
                                 startPos = testPos+objectNormal*2;
@@ -218,7 +219,9 @@ namespace Raymagic
 
                     foreach(Light light in map.lightList)
                     {
-                        if (Vector3.Distance(light.position, testPos) > 750) continue;
+                        if (Vector3.Distance(light.position, testPos) > 750 ||
+                            !light.IsPosInZone(testPos)) continue;
+                        /* if (Vector3.Distance(light.position, testPos) > 750) continue; */
 
                         objectNormal = finalObj.SDF_normal(testPos);
                         startPos = testPos+objectNormal*2;
