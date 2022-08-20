@@ -1,0 +1,113 @@
+config
+{
+    name: lvl2
+    player_spawn: (262,50,150)
+    top_corner: (500,700,300)
+    bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,298)|(0,0,-1)|Beige
+    plane[wall1] :(2,0,0)|(1,0,0)|Beige
+    plane[wall2] :(498,0,0)|(-1,0,0)|Beige
+    plane[wall3] :(0,2,0)|(0,1,0)|Beige
+    plane[wall4] :(0,698,0)|(0,-1,0)|Beige
+
+    box[endWall]:(250,700,150)|(500,250,300)|Beige|(550,300,350)
+    boolean: endWall: difference: box:(0,-20,-75)|(250,300,150)|Black|True
+
+    box[glassend]:(250,590,75)|(250,6,150)|Gray|(250,300,150)|transparent
+    boolean: glassend: difference: box:(0,0,-45)|(250,7,7)|Black|True
+    box[glassendLine1]:(0,0,-45)|(250,7,7)|White|(250,7,7)|transparent
+    boolean: glassend: union: glassendLine1|true
+
+    boolean: glassend: difference: box:(0,0,-30)|(250,7,7)|Black|True
+    box[glassendLine2]:(0,0,-30)|(250,7,7)|White|(250,7,7)|transparent
+    boolean: glassend: union: glassendLine2|true
+
+    box[in]:(250,0,150)|(500,200,300)|Beige|(500,250,300)
+    boolean: in: difference: box:(0,20,60)|(200,300,150)|Black|True
+
+    box[glassleft1] :(390,430,150)|(4,300,300)|DarkGray|(10,300,300)|transparent
+    box[glassleft2] :(445,280,150)|(110,4,300)|Gray|(110,10,300)|transparent
+    box[glassright1]:(110,430,150)|(4,300,300)|DarkGray|(10,300,300)|transparent
+    box[glassright2]:(55,280,150)|(110,4,300)|Gray|(110,10,300)|transparent
+
+    boolean: glassleft1:  difference: box:(0,0,-105)|(7,300,7)|Black|true
+    boolean: glassleft1:  difference: box:(0,0,-120)|(7,300,7)|Black|true
+    boolean: glassright1: difference: box:(0,0,-105)|(7,300,7)|Black|true
+    boolean: glassright1: difference: box:(0,0,-120)|(7,300,7)|Black|true
+
+    box[glassleft1Line1] :(0,0,-105)|(7,300,7)|White|(7,300,7)|transparent
+    box[glassleft1Line2] :(0,0,-120)|(7,300,7)|White|(7,300,7)|transparent
+    box[glassright1Line1]:(0,0,-105)|(7,300,7)|White|(7,300,7)|transparent
+    box[glassright1Line2]:(0,0,-120)|(7,300,7)|White|(7,300,7)|transparent
+
+    boolean: glassleft1: union: glassleft1Line1|true
+    boolean: glassleft1: union: glassleft1Line2|true
+    boolean: glassright1: union: glassright1Line1|true
+    boolean: glassright1: union: glassright1Line2|true
+
+    box[frameleft1] :(390,430,150)|(10,300,10)|Black|(10,300,10)
+    box[frameright1]:(110,430,150)|(10,300,10)|Black|(10,300,10)
+
+    box[frameleft2] :(445,280,150)|(120,10,10)|Black|(110,10,10)
+    box[frameright2]:(55,280,150)|(120,10,10)|Black|(110,10,10)
+
+    box[frameleft3] :(390,280,150)|(10,10,300)|Black|(10,10,300)
+    box[frameright3] :(110,280,150)|(10,10,300)|Black|(10,10,300)
+
+    # sphere[doorOut]:(210,700,50)|70|Green|(140,140,140)
+    # box[underbutton]:(150,350,0)|(50,50,10)|White|(50,50,10)
+    # cylinder[buttonRight]:(150,350,5)|(0,0,-1)|50|10|Pink|(100,100,100)
+    # cylinder[buttonLeft]:(360,500,0)|(0,0,-1)|50|10|Red|(100,100,100)
+    # cylinder[buttonFront]:(170,560,0)|(0,0,-1)|50|10|Aqua|(100,100,100)
+
+    # sphere[floorbutton]:(445,500,0)|50|Green|(140,140,140)
+
+    # sphere[portal1]:(55,575,60)|50|Pink|(100,100,100)
+    # sphere[portal2]:(500,350,60)|50|Red|(100,100,100)
+    # sphere[portalfinish]:(375,640,60)|50|Aqua|(100,100,100)
+    # sphere[portalmain]:(250,100,60)|50|Orange|(100,100,100)
+
+    # sphere[PhysicsObject]:(60, 350, 50)|25|Green|(50,50,50)
+
+}
+
+lights
+{
+    light:(250,250,200)|White|20000
+}
+
+dynamic
+{
+}
+
+physics
+{
+    physics_object[PhysicsObject]:(60, 350, 50)|Green|Gray
+}
+
+interactables
+{
+    portal_spawner[portalMain]:(250,100,60)|(0,1,0)|0|Orange|true
+    portal_spawner[portal1]:(55,575,60)|(0,-1,0)|1|Pink|false
+    portal_spawner[portal2]:(500,350,60)|(-1,0,0)|1|Red|false
+    portal_spawner[portalFinish]:(375,640,60)|(-1,0,0)|1|Aqua|false
+
+    door[doorOut]:(210,700,0)|(0,-1,0)|wall4|Green
+    button[buttonRight]:(150,350,0)|(1,0,0)|Pink
+    button[buttonLeft] :(360,500,0)|(-1,0,0)|Red
+    button[buttonFront]:(170,560,0)|(0,-1,0)|Aqua
+
+    floor_button[floorbutton]:(445,500,0)|Green
+
+    connect: floorbutton -> doorOut
+    connect: buttonRight -> portal1
+    connect: buttonLeft -> portal2
+    connect: buttonFront -> portalFinish
+}

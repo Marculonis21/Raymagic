@@ -45,11 +45,17 @@ namespace Raymagic
 
                 "physics_object",
                 "physics_trigger",
+                "mirror_ball",
 
                 "button",
                 "floor_button",
                 "door",
-                "lifter"
+                "lifter",
+
+                "jumper",
+                "laser_spawner",
+                "laser_catcher",
+                "portal_spawner"
             };
 
             possibleOperations = new List<string>() {
@@ -726,6 +732,13 @@ namespace Raymagic
                     float size = float.Parse(paramPart[1]);
                     pObj = new PhysicsTrigger(position, size);
                 }
+                else if (objectType == "mirror_ball")
+                {
+                    Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                    Color color1 = GetColorFromText(paramPart[1], lineNum);
+                    Color color2 = GetColorFromText(paramPart[2], lineNum);
+                    pObj = new MirrorBall(position, 25, color1, color2);
+                }
                 else
                 {
                     throw new FormatException($"Format error line {lineNum} - Cannot add object type '{objectType}' into lights block)");
@@ -784,6 +797,50 @@ namespace Raymagic
                             float maxHeight = float.Parse(paramPart[1]);
                             Color secondaryColor = GetColorFromText(paramPart[2], lineNum);
                             iObj = new Lifter(position, maxHeight, secondaryColor);
+                        }
+                        break;
+
+                    case "jumper":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
+                            Vector3 arrowDir = GetVector3FromText(paramPart[2], lineNum);
+                            Vector3 jumperDirection = GetVector3FromText(paramPart[3], lineNum);
+                            float jumperStrength = float.Parse(paramPart[4]);
+                            Object floorObject = declaredObjects[paramPart[5]];
+
+                            iObj = new Jumper(position, normal, arrowDir, jumperDirection, jumperStrength, floorObject);
+                        }
+                        break;
+
+                    case "laser_spawner":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
+                            Object ground = declaredObjects[paramPart[2]];
+                            iObj = new LaserSpawner(position, normal, ground);
+                        }
+                        break;
+
+                    case "laser_catcher":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
+                            Object ground = declaredObjects[paramPart[2]];
+                            Color color = GetColorFromText(paramPart[3], lineNum);
+                            iObj = new LaserCatcher(position, normal, ground, color);
+                        }
+                        break;
+
+                    case "portal_spawner":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
+                            int portalType = int.Parse(paramPart[2]);
+                            Color color = GetColorFromText(paramPart[3], lineNum);
+                            bool startEnabled = bool.Parse(paramPart[4]);
+
+                            iObj = new PortalSpawner(position, facing, portalType, color, startEnabled);
                         }
                         break;
                         

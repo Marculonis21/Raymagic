@@ -55,7 +55,16 @@ namespace Raymagic
             this.AddChildObject(sphere2, true);
         }
 
-        public void UpdatePosition(float dt)
+        public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)
+        {
+            IsTransparent = false;
+            if (SDFs.Point(testPos, this.position) - this.size > minDist) return new SDFout(float.MaxValue, Color.Pink);
+
+            return base.SDF(testPos, minDist, out IsTransparent);
+        }
+
+
+        public virtual void UpdatePosition(float dt)
         {
             Vector3 newVelocity = this.Position - position;
 

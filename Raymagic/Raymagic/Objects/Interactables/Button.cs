@@ -34,16 +34,17 @@ namespace Raymagic
             bBase2.AddChildObject(new Sphere(new Vector3(facing.X, facing.Y, 2) * 4, 14, Color.Black, BooleanOP.SDIFFERENCE, 1), true);
             bBase2.AddChildObject(new Cylinder(new Vector3(0,0,-15), new Vector3(0,0,1), 3, 12f, this.secondaryColor), true);
 
-            Object button1 = new Cylinder(position + new Vector3(0,0,-1), new Vector3(0,0,1), 7, 8, Color.DarkRed);
+            Object button1 = new Cylinder(position + new Vector3(0,0,2) + facing*1, new Vector3(0,0,1), 7, 7, new Color(50,0,0));
             button1.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)),button1.Position);
-            bBase1.AddChildObject(button1, false);
+            /* bBase1.AddChildObject(button1, false); */
 
-            Object button2 = new Cylinder(position + new Vector3(0,0,-3), new Vector3(0,0,1), 5, 8, Color.Red);
+            Object button2 = new Cylinder(position + new Vector3(0,0,-1) + facing*1, new Vector3(0,0,1), 5, 7, Color.Red);
             button2.Rotate(18,Vector3.Cross(facing, new Vector3(0,0,1)), button2.Position);
-            bBase2.AddChildObject(button2, false);
+            /* bBase2.AddChildObject(button2, false); */
+            staticObjectList.Add(bBase1);
 
-            modelStates.Add(bBase1);
-            modelStates.Add(bBase2);
+            modelStates.Add(button1);
+            modelStates.Add(button2);
 
             this.boundingBoxSize = new Vector3(30,30,50);
             this.boundingBox = new Box(this.Position - new Vector3(0,0,boundingBoxSize.Z/2),

@@ -268,19 +268,7 @@ namespace Raymagic
             return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0f);
         }
 
-        /* float ambientOcclusion (float3 pos, float3 normal) */
-        /* { */
-        /*     float sum = 0; */
-        /*     for (int i = 0; i < _AOSteps; i ++) */
-        /*     { */
-        /*         float3 p = pos + normal * (i+1) * _AOStepSize; */
-        /*         sum    += map(p); */
-        /*     } */
-        /*     return sum / (_AOStep * _AOStepSize); */
-        /* } */
-
         const int AOSteps = 10;
-        /* const float AOStepSize = 5f; */
         private static float AmbientOcclusion(Vector3 pos, Vector3 normal)
         {
             float occ = 0f;
