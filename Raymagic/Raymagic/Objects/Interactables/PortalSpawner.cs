@@ -6,6 +6,7 @@ namespace Raymagic
     {
         Vector3 facing;
         int portalType;
+        bool startEnabled;
 
         List<Object> objList = new List<Object>();
 
@@ -14,22 +15,22 @@ namespace Raymagic
             this.facing = facing;
             this.portalType = portalType;
             this.stateCount = 2;
+            this.startEnabled = startEnabled;
 
             if (portalType != 0 && portalType != 1)
             {
                 throw new Exception($"Unknown portalType while creating PortalSpawner - {portalType}");
             }
 
-            if (startEnabled)
-            {
-                Interact();
-            }
         }
 
         public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
-            // offset for easier modelling 
-            Vector3 position = this.Position;
+            if (startEnabled)
+            {
+                Interact();
+            }
+
             facing.Normalize();
             Vector3 right = Vector3.Cross(facing, new Vector3(0,0,1));
             right = new Vector3((float)Math.Abs(right.X), (float)Math.Abs(right.Y), (float)Math.Abs(right.Z));

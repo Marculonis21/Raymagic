@@ -295,8 +295,8 @@ namespace Raymagic
             float k = 16f*intensity;
             bool objectIsTransparent = false;
 
-            float transparentStep = 10f;
-            float transparentIntensityChange = 0.9f;
+            float transparentStep = 5f;
+            float transparentIntensityChange = 0.92f;
 
             Vector3 testPos = position + ray.direction*length;
             while(length < (position - light.position).Length() - 0.1f)

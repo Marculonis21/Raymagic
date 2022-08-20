@@ -89,17 +89,24 @@ namespace Raymagic
             data.isCompiled = true;
             data.path = path;
 
-            await ParseConfigAsync(input);
             List<Task> tasks = new List<Task>();
 
-            tasks.Add(ParseLightsAsync(input));
-            tasks.Add(ParseDynamicAsync(input));
-            tasks.Add(ParsePhysicsAsync(input));
             if (full)
             {
                 // they contain static elements - needs full recompile
-                tasks.Add(ParseStaticAsync(input));
-                tasks.Add(ParseInteractableAsync(input));
+                // awaits for consistency
+                await ParseConfigAsync(input);
+                await ParseStaticAsync(input);
+                await ParseLightsAsync(input);
+                await ParseDynamicAsync(input);
+                await ParsePhysicsAsync(input);
+                await ParseInteractableAsync(input);
+            }
+            else
+            {
+                tasks.Add(ParseLightsAsync(input));
+                tasks.Add(ParseDynamicAsync(input));
+                tasks.Add(ParsePhysicsAsync(input));
             }
 
             try
