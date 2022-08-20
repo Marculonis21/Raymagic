@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
@@ -76,7 +77,9 @@ namespace Raymagic
         public void LoadMaps()
         {
             new TestArea();
-            new Showcase();
+            new Level1();
+            new Level2();
+            /* new Showcase(); */
 
             string[] files = Directory.GetFiles(txtMapsPath, "*.map");
 
@@ -319,19 +322,23 @@ namespace Raymagic
             return data.playerSpawn;
         }
         
-        // SERIALIZATION
+        // SERIALIZATION - compression update from https://itecnote.com/tecnote/c-custom-serialization-deserialization-together-with-deflatestreams/
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {
             SaveContainer saveContainer = new SaveContainer(this.distanceMap);
 
-            IFormatter formatter = new BinaryFormatter();  
+            IFormatter bf = new BinaryFormatter();
+            using (var uncompressed = new MemoryStream())
+            using (var fileStream = File.Create($"Maps/Data/{name}-{distanceMapDetail}.dm"))
+            {
+                bf.Serialize(uncompressed, saveContainer);
+                uncompressed.Seek(0, SeekOrigin.Begin);
 
-            Stream stream = new FileStream($"Maps/Data/{name}-{distanceMapDetail}.dm", FileMode.Create, FileAccess.Write, FileShare.None);  
-            formatter.Serialize(stream, saveContainer);  
-            stream.Close();  
-
-            Console.WriteLine($"DistanceMap Maps/Data/{name}-{distanceMapDetail}.dm saved");
-            saveContainer = null;
+                using (var deflateStream = new DeflateStream(fileStream, CompressionMode.Compress))
+                {
+                    uncompressed.CopyTo(deflateStream);
+                }
+            }
             
             GC.Collect();
         }
@@ -340,15 +347,21 @@ namespace Raymagic
         {
             try
             {
-                IFormatter formatter = new BinaryFormatter();  
-                Stream stream = new FileStream($"Maps/Data/{name}-{distanceMapDetail}.dm", FileMode.Open, FileAccess.Read, FileShare.Read);  
-                SaveContainer saveContainer = (SaveContainer)formatter.Deserialize(stream);  
-                stream.Close(); 
+                IFormatter bf = new BinaryFormatter();
+                using (var fileStream = File.OpenRead($"Maps/Data/{name}-{distanceMapDetail}.dm"))
+                using (var decompressed = new MemoryStream())
+                {
+                    using (var deflateStream = new DeflateStream(fileStream, CompressionMode.Decompress))
+                    {
+                        deflateStream.CopyTo(decompressed);
+                    }
 
-                distanceMap = saveContainer.Deserialize(distanceMap);
+                    decompressed.Seek(0, SeekOrigin.Begin);
+                    SaveContainer saveContainer = (SaveContainer)bf.Deserialize(decompressed);
+                    distanceMap = saveContainer.Deserialize(distanceMap);
+                }
 
                 Console.WriteLine($"Distance map Maps/Data/{name}-{distanceMapDetail}.dm loaded");
-                saveContainer = null;
 
                 return distanceMap;
             }
