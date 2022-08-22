@@ -16,9 +16,11 @@ namespace Raymagic
         protected Vector3 up;
 
         protected Matrix<double> baseChangeMatrixIn;
-        protected Matrix<double> baseChangeMatrixInInverse;
-        protected Matrix<double> baseChangeMatrix;
-        protected Matrix<double> baseChangeMatrixInverse;
+        /* protected Matrix<double> baseChangeMatrixInInverse; */
+        /* protected Matrix<double> baseChangeMatrixOut; */
+        protected Matrix<double> baseChangeMatrixOutInverse;
+
+        protected Matrix<double> baseChangeTransformation;
 
         int type;
         float portalSize = 50; 
@@ -58,15 +60,14 @@ namespace Raymagic
                     up.X, up.Y, up.Z,
                     }, 
                     Extreme.Mathematics.MatrixElementOrder.ColumnMajor);
-            this.baseChangeMatrixInInverse = baseChangeMatrixIn.GetInverse();
 
-            this.baseChangeMatrix = Matrix.Create<double>(3,3, new double[] {
+            var baseChangeMatrixOut = Matrix.Create<double>(3,3, new double[] {
                     normal.X, normal.Y, normal.Z,
                     right.X, right.Y, right.Z,
                     up.X, up.Y, up.Z,
                     }, 
                     Extreme.Mathematics.MatrixElementOrder.ColumnMajor);
-            this.baseChangeMatrixInverse = baseChangeMatrix.GetInverse();
+            this.baseChangeMatrixOutInverse = baseChangeMatrixOut.GetInverse();
 
             this.type = type;
 
@@ -83,15 +84,22 @@ namespace Raymagic
             {
                 this.otherPortal = Map.instance.portalList[1];
                 this.otherPortal.otherPortal = this;
+
+                this.baseChangeTransformation = this.baseChangeMatrixIn*this.otherPortal.baseChangeMatrixOutInverse;
+                this.otherPortal.baseChangeTransformation = this.otherPortal.baseChangeMatrixIn*this.baseChangeMatrixOutInverse;
             }
             else if (this.type == 1 && Map.instance.portalList[0] != null)
             {
                 otherPortal = Map.instance.portalList[0];
                 this.otherPortal.otherPortal = this;
+
+                this.baseChangeTransformation = this.baseChangeMatrixIn*this.otherPortal.baseChangeMatrixOutInverse;
+
+                this.otherPortal.baseChangeTransformation = this.otherPortal.baseChangeMatrixIn*this.baseChangeMatrixOutInverse;
             }
         }
 
-        // special testing method including ray 
+        // special SDF method including ray through portal propagation
         public SDFout PortalSDF(Vector3 testPos, float minDist, Ray ray, int depth, bool physics=false)
         {
             if (Vector3.Dot(ray.direction,normal) > 0) return new SDFout(float.MaxValue, Color.Pink);
@@ -102,26 +110,31 @@ namespace Raymagic
 
             if (Vector3.Distance(testPos, this.Position) < portalSize-8 && !physics)
             {
-                if (this.otherPortal == null || Map.instance.portalList[this.otherPortal.type] == null) return current;
+                if (this.otherPortal == null || Map.instance.portalList[this.type == 0 ? 1 : 0] == null) return current;
 
                 var otherPos = otherPortal.Position;
 
                 Vector3 translateK = this.Position - testPos;
                 Vector3 dirK = ray.direction;
 
-                var translateB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
-                var dirB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(dirK.X,dirK.Y,dirK.Z));
+                // solving vector space base change
                 /* // BASIS = {NORMAL, RIGHT, UP}*/
+                
+                //// V1
+                /* var translateB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)); */
+                /* var dirB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(dirK.X,dirK.Y,dirK.Z)); */
 
-                var _translateKNew = otherPortal.baseChangeMatrixInverse.Solve(translateB);
-                var _dirKNew = otherPortal.baseChangeMatrixInverse.Solve(dirB);
-                /* Console.WriteLine($"refK {reflectK} ->\n refB1 {reflectB} ->\n K {reflectKNew}"); */
-                /* Console.WriteLine($"dirK {dirK} ->\n dirB {dirB} ->\n K {_dirKNew}"); */
+                /* var _translateKNew = otherPortal.baseChangeMatrixOutInverse.Solve(translateB); */
+                /* var _dirKNew = otherPortal.baseChangeMatrixOutInverse.Solve(dirB); */
+
+                /* Vector3 outDir = Vector3.Normalize(_dirKNew.ToVector3()); */
+                /* Vector3 translateKNew = _translateKNew.ToVector3(); */
+
+                //// V2
+                Vector3 outDir = this.baseChangeTransformation.Solve(Vector.Create<double>(dirK.X, dirK.Y, dirK.Z)).ToVector3();
+                Vector3 translateKNew = this.baseChangeTransformation.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)).ToVector3();
 
                 /* return new SDFout(float.MaxValue, Color.Pink); */
-
-                Vector3 outDir = Vector3.Normalize(_dirKNew.ToVector3());
-                Vector3 translateKNew = _translateKNew.ToVector3();
 
                 Ray outRay = new Ray((otherPos-translateKNew)+(outDir*25), outDir);
 

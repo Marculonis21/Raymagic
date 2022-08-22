@@ -79,18 +79,22 @@ namespace Raymagic
                     (thisDot > 0 && objectLastDot[i] < 0))
                 {
                     var lookDirK = objectWatcher[i].lookDir;
-                    var rotB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
-                    var newRotK = this.otherPortal.baseChangeMatrixInverse.Solve(rotB);
+                    /* var rotB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z)); */
+                    /* var newRotK = this.otherPortal.baseChangeMatrixOutInverse.Solve(rotB); */
 
                     // dabble in momentum !!!
                     /* var velocityK = objectWatcher[i].velocity * this.normal*1.099f; */
                     var velocityK = objectWatcher[i].velocity * this.normal * Map.instance.portalMomentumConstant;
-                    var velB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z));
-                    var newVelK = this.otherPortal.baseChangeMatrixInverse.Solve(velB);
+                    /* var velB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z)); */
+                    /* var newVelK = this.otherPortal.baseChangeMatrixOutInverse.Solve(velB); */
 
                     var translateK = this.Position - objectWatcher[i].position;
-                    var transB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
-                    var newTransK = this.otherPortal.baseChangeMatrixInverse.Solve(transB);
+                    /* var transB = this.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)); */
+                    /* var newTransK = this.otherPortal.baseChangeMatrixOutInverse.Solve(transB); */
+
+                    var newRotK   = this.baseChangeTransformation.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
+                    var newVelK   = this.baseChangeTransformation.Solve(Vector.Create<double>(velocityK.X,velocityK.Y,velocityK.Z));
+                    var newTransK = this.baseChangeTransformation.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
 
                     objectWatcher[i].RotateAbsolute(newRotK.ToVector3());
                     objectWatcher[i].TranslateAbsolute(this.otherPortal.Position + this.otherPortal.normal*10 + objectWatcher[i].lookDir * 5 * Vector3.Dot(this.otherPortal.normal, objectWatcher[i].lookDir));
@@ -116,12 +120,14 @@ namespace Raymagic
             Portal OUT = IN.otherPortal;
 
             var lookDirK = ray.direction;
-            var rotB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
-            var newRotK = OUT.baseChangeMatrixInverse.Solve(rotB);
+            /* var rotB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z)); */
+            /* var newRotK = OUT.baseChangeMatrixOutInverse.Solve(rotB); */
+            var newRotK = IN.baseChangeTransformation.Solve(Vector.Create<double>(lookDirK.X,lookDirK.Y,lookDirK.Z));
 
             var translateK = IN.Position - hit;
-            var transB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
-            var newTransK = OUT.baseChangeMatrixInverse.Solve(transB);
+            /* var transB = IN.baseChangeMatrixIn.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z)); */
+            /* var newTransK = OUT.baseChangeMatrixOutInverse.Solve(transB); */
+            var newTransK = IN.baseChangeTransformation.Solve(Vector.Create<double>(translateK.X,translateK.Y,translateK.Z));
 
             Vector3 rayDir = newRotK.ToVector3();
             // maybe adjust distances, good for tonight
