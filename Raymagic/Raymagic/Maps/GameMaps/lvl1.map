@@ -39,6 +39,8 @@ dynamic
     
     capsule[aasdf]:(0,100,-90)|70|65|Blue|(250,250,250)
 
+    # box[sdafas]:(250,200,100)|(100,100,100)|Red|(100,100,100)
+    
     # box[wallPanels1]:(3,50,55)|(5,60,60)|Gray|(200,700,200)
     # repeat: wallPanels1: (0,10,2)|61
 

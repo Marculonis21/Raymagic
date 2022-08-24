@@ -89,13 +89,13 @@ namespace Raymagic
             data.isCompiled = true;
             data.path = path;
 
+            await ParseConfigAsync(input);
             List<Task> tasks = new List<Task>();
 
             if (full)
             {
                 // they contain static elements - needs full recompile
                 // awaits for consistency
-                await ParseConfigAsync(input);
                 await ParseStaticAsync(input);
                 await ParseLightsAsync(input);
                 await ParseDynamicAsync(input);

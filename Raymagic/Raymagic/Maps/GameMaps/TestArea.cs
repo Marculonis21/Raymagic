@@ -142,6 +142,7 @@ namespace Raymagic
 
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
             data.physicsMapObjects.Add(new MirrorBall(new Vector3(100,200,100), 25, Color.DarkGray, Color.Gray));
+            /* data.physicsMapObjects.Add(new MirrorBall(new Vector3(200,200,100), 25, Color.DarkGray, Color.Gray)); */
 
             Box boxbox = new Box(new Vector3(400,200,75),
                                  new Vector3(150,150,150),
@@ -152,20 +153,20 @@ namespace Raymagic
             Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Pink);
             data.interactableObjectList.Add(button);
 
-            PortalSpawner portalSpawner = new PortalSpawner(new Vector3(4,200,100), new Vector3(1,0,0), 0, Color.Pink);
-            button.stateChangeEvent += portalSpawner.EventListener;
-            data.interactableObjectList.Add(portalSpawner);
+            /* PortalSpawner portalSpawner = new PortalSpawner(new Vector3(4,200,100), new Vector3(1,0,0), 0, Color.Pink); */
+            /* button.stateChangeEvent += portalSpawner.EventListener; */
+            /* data.interactableObjectList.Add(portalSpawner); */
 
-            /* Jumper jj = new Jumper(new Vector3(150,150,0), */
-            /*                        new Vector3(0,0,1), */
-            /*                        new Vector3(1,0,0), */
-            /*                        new Vector3(1,0,3), */
-            /*                        15, */
-            /*                        mainPlaneW); */
+            Jumper jj = new Jumper(new Vector3(150,150,0),
+                                   new Vector3(0,0,1),
+                                   new Vector3(1,0,0),
+                                   new Vector3(1,0,3),
+                                   15,
+                                   mainPlaneW);
 
-            /* button.stateChangeEvent += jj.EventListener; */
+            button.stateChangeEvent += jj.EventListener;
 
-            /* data.interactableObjectList.Add(jj); */
+            data.interactableObjectList.Add(jj);
 
             /* data.interactableObjectList.Add(new LaserSpawner(new Vector3(2,150,30), new Vector3(1,0,0), plane1)); */
             /* data.interactableObjectList.Add(new LaserCatcher(new Vector3(150,150,0), new Vector3(0,0,1), mainPlaneW, Color.Aqua)); */
