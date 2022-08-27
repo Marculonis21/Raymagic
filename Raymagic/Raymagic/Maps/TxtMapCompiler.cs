@@ -21,6 +21,11 @@ namespace Raymagic
         Dictionary<string, Tuple<PhysicsObject, Type>> declaredPhysicsObjects;
         Dictionary<string, Tuple<Interactable, Type>> declaredInteractableObjects;
 
+        Dictionary<string, Vector3> declaredVectorVars;
+        Dictionary<string, Color> declaredColorVars;
+        Dictionary<string, Vector3> declaredVectorVarsPersistant;
+        Dictionary<string, Color> declaredColorVarsPersistant;
+
         enum ObjectCategory
         {
             STATIC,
@@ -32,6 +37,9 @@ namespace Raymagic
         private TxtMapCompiler()
         {
             map = Map.instance;
+
+            declaredVectorVarsPersistant = new Dictionary<string, Vector3>();
+            declaredColorVarsPersistant = new Dictionary<string, Color>();
 
             possibleObjects = new List<string>() {
                 "box",
@@ -85,6 +93,10 @@ namespace Raymagic
             declaredPhysicsObjects = new Dictionary<string, Tuple<PhysicsObject, Type>>();
             declaredInteractableObjects = new Dictionary<string, Tuple<Interactable, Type>>();
 
+            declaredVectorVars = new Dictionary<string, Vector3>();
+            declaredColorVars = new Dictionary<string, Color>();
+
+
             data = new MapData();
             data.isCompiled = true;
             data.path = path;
@@ -96,11 +108,11 @@ namespace Raymagic
             {
                 // they contain static elements - needs full recompile
                 // awaits for consistency
-                await ParseStaticAsync(input);
-                await ParseLightsAsync(input);
-                await ParseDynamicAsync(input);
-                await ParsePhysicsAsync(input);
-                await ParseInteractableAsync(input);
+                tasks.Add(ParseStaticAsync(input));
+                tasks.Add(ParseLightsAsync(input));
+                tasks.Add(ParseDynamicAsync(input));
+                tasks.Add(ParsePhysicsAsync(input));
+                tasks.Add(ParseInteractableAsync(input));
             }
             else
             {
@@ -118,6 +130,20 @@ namespace Raymagic
                     Informer.instance.AddInfo("map_compilation1", $"Compiling done", true);
                     Informer.instance.AddInfo("map_compilation2", "", true);
                 }
+
+                string s = "";
+                foreach (var item in declaredVectorVars)
+                {
+                    s += $"{item.Key}:{item.Value}, ";
+                }
+                Informer.instance.AddInfo("declareVectors", s, true);
+
+                s = "";
+                foreach (var item in declaredColorVars)
+                {
+                    s += $"{item.Key}:{item.Value}, ";
+                }
+                Informer.instance.AddInfo("declareColors", s, true);
             }
             catch (FormatException e)
             {
@@ -213,7 +239,7 @@ namespace Raymagic
                 }
                 else    
                 {
-                    throw new FormatException($"Format warning line {lineNum} - Unknown config input - needs name, player_spawn, top_corner, bot_corner");
+                    throw new FormatException($"Format warning line {lineNum} - Unknown config input - expects 'name', 'player_spawn', 'top_corner', 'bot_corner'");
                 }
             }
 
@@ -290,6 +316,9 @@ namespace Raymagic
 
                     AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
+                else if (LineContainsVariableDeclaration(line, lineNum, true))
+                {
+                }
                 else    
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown input");
@@ -347,6 +376,9 @@ namespace Raymagic
                     if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
+                }
+                else if (LineContainsVariableDeclaration(line, lineNum, false))
+                {
                 }
                 else    
                 {
@@ -447,6 +479,9 @@ namespace Raymagic
                     }
                     data.physicsMapObjects.Add(pObj);
                 }
+                else if (LineContainsVariableDeclaration(line, lineNum, false))
+                {
+                }
                 else
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown input");
@@ -546,6 +581,9 @@ namespace Raymagic
                         }
                         
                     }
+                }
+                else if (LineContainsVariableDeclaration(line, lineNum, true))
+                {
                 }
                 else
                 {
@@ -1095,30 +1133,95 @@ namespace Raymagic
             return true;
         }
 
+        private bool LineContainsVariableDeclaration(string line, int lineNum, bool persistant) 
+        {
+            if (line.StartsWith("$"))
+            {
+                var split = line.Split(':',StringSplitOptions.TrimEntries);
+                var name = split[0];
+                var value = split[1];
+
+                if (value.Contains("(") || value.Contains(")"))
+                {
+                    var vector = GetVector3FromText(value, lineNum);
+                    if (persistant)
+                        this.declaredVectorVarsPersistant.Add(name, vector);
+                    else
+                        this.declaredVectorVars.Add(name, vector);
+                }
+                else
+                {
+                    var color = GetColorFromText(value, lineNum);
+                    if (persistant)
+                        this.declaredColorVarsPersistant.Add(name, color);
+                    else
+                        this.declaredColorVars.Add(name, color);
+                }
+            }
+
+            return true;
+        }
+
         private Vector3 GetVector3FromText(string input, int lineNum)
         {
-            input = input.Trim(new char[] {' ', '(', ')'});
-            var values = input.Split(",", 3, StringSplitOptions.TrimEntries);
-            try
+            if (input.Contains("$"))
             {
-                var vector = new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
-                return vector;
+                if (declaredVectorVars.ContainsKey(input))
+                {
+                    return declaredVectorVars[input];
+                }
+                else if (declaredVectorVarsPersistant.ContainsKey(input))
+                {
+                    return declaredVectorVarsPersistant[input];
+                }
+                else
+                {
+                    throw new FormatException($"Format error line {lineNum} - Unknown variable {input}");
+                }
             }
-            catch (FormatException)
+            else
             {
-                throw new FormatException($"Format error line {lineNum} - incorrect vector format (correct: (float,float,float))");;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new FormatException($"Format error line {lineNum} - vector needs 3 float values");
+                input = input.Trim(new char[] {' ', '(', ')'});
+                var values = input.Split(",", 3, StringSplitOptions.TrimEntries);
+                try
+                {
+                    var vector = new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+                    return vector;
+                }
+                catch (FormatException)
+                {
+                    throw new FormatException($"Format error line {lineNum} - incorrect vector format (correct: (float,float,float))");;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new FormatException($"Format error line {lineNum} - vector needs 3 float values");
+                }
             }
         }
 
         private Color GetColorFromText(string input, int lineNum)
         {
-            CColor cc = CColor.FromName(input);
-            if (!cc.IsKnownColor) throw new FormatException($"Format error line {lineNum} - Unknown color {input}");
-            return new Color(cc.R, cc.G, cc.B, cc.A);
+            if (input.Contains("$"))
+            {
+                if (declaredColorVars.ContainsKey(input))
+                {
+                    return declaredColorVars[input];
+                }
+                else if (declaredColorVarsPersistant.ContainsKey(input))
+                {
+                    return declaredColorVars[input];
+                }
+                else
+                {
+                    throw new FormatException($"Format error line {lineNum} - Unknown variable {input}");
+                }
+            }
+            else
+            {
+                CColor cc = CColor.FromName(input);
+                if (!cc.IsKnownColor) throw new FormatException($"Format error line {lineNum} - Unknown color {input}");
+                return new Color(cc.R, cc.G, cc.B, cc.A);
+            }
         }
 
         private BooleanOP GetBooleanOPFromText(string input)

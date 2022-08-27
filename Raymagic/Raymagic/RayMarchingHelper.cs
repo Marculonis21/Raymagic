@@ -161,6 +161,7 @@ namespace Raymagic
 
                 if(best.distance < 0.1f)
                 {
+
                     SDFout final = new SDFout(float.MaxValue, Color.Pink);
                     Object finalObj = null;
 
@@ -216,6 +217,10 @@ namespace Raymagic
                         continue;
                     }
 
+                    /* var vec = new Vector3(iter/100f,iter/100f,iter/100f); */
+                    /* color = vec.ToColor(); */
+                    /* return; */
+
                     foreach(Light light in map.lightList)
                     {
                         if (Vector3.Distance(light.position, testPos) > 750 ||
@@ -242,6 +247,9 @@ namespace Raymagic
                                           color.G+addColor.G+laserAddColor.G,
                                           color.B+addColor.B+laserAddColor.B);
 
+                        /* var ao = AmbientOcclusion(testPos, objectNormal); */
+                        /* color = new Color(ao,ao,ao); */
+
                         if (transparentDepth > 0)
                         {
                             Vector3 c = color.ToVector3();
@@ -267,21 +275,36 @@ namespace Raymagic
             return Math.Max(Vector3.Dot(Vector3.Normalize(lightPos - objectHitPos), reflectionViewRay.direction), 0f);
         }
 
-        const int AOSteps = 10;
+        /* const int AOSteps = 10; */
         private static float AmbientOcclusion(Vector3 pos, Vector3 normal)
         {
-            float occ = 0f;
-            float sca = 1f;
-            for (int i = 0; i < AOSteps; i++)
-            {
-                float h = 2 + 2 * i/4;
-                Vector3 test = pos + normal * h;
-                PhysicsRayMarch(new Ray(test, test-pos), 1, -1, out float dist, out Vector3 _, out Object _);
-                occ += (h-dist)*sca;
-                sca *= 0.95f;
-            }
+            /* float occ = 0f; */
+            /* float sca = 1f; */
+            /* for (int i = 0; i < AOSteps; i++) */
+            /* { */
+            /*     float h = 2 + 2 * i/4; */
+            /*     Vector3 test = pos + normal * h; */
+            /*     PhysicsRayMarch(new Ray(test, test-pos), 1, -1, out float dist, out Vector3 _, out Object _); */
+            /*     occ += (h-dist)*sca; */
+            /*     sca *= 0.95f; */
+            /* } */
 
-            return Math.Clamp(1 - 3*occ, 0, 1);
+            float height = 5;
+            Vector3 test1 = pos + normal * height;
+            PhysicsRayMarch(new Ray(test1, test1-pos), 1, -1, out float dist1, out Vector3 _, out Object _);
+
+            Vector3 test2 = pos + normal * height*2;
+            PhysicsRayMarch(new Ray(test2, test2-pos), 1, -1, out float dist2, out Vector3 _, out Object _);
+
+            var value1 = (height-dist1)/height;
+            var value2 = ((height*2)-dist2)/height*2;
+
+            var value = (value1+value2)/2;
+            if (value < 0.33)
+            {
+                value = 0;
+            }
+            return 1-value;
         }
 
         public static float LightRayMarch(Vector3 position, Light light)

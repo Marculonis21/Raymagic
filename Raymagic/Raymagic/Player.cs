@@ -216,13 +216,15 @@ namespace Raymagic
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]) && !this.testONButtonDown)
             {
                 this.testONButtonDown = true;
+                Screen.instance.processingTest = true;
 
                 // long running task? thread feels better - completely separated
-                new Thread(() => map.PreLoadMap("loadTest2")).Start();
+                /* new Thread(() => map.PreLoadMap("loadTest2")).Start(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {
                 this.testOFFButtonDown = true;
+                Screen.instance.processingTest = false;
             }
 
             if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_ON"]))

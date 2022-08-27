@@ -48,11 +48,18 @@ namespace Raymagic
 
         }
 
+        public bool processingTest = true;
         public void DrawGame()
         {
             this.DrawPhase = true;
             RayMarchingPhase();
             Informer.instance.AddInfo("debug raysPhase", $" ray phase: {watch.ElapsedMilliseconds}");
+
+            /* if (processingTest) */
+            /* { */
+            /*     ImageProcessingPhase(); */
+            /*     Informer.instance.AddInfo("debug processingPhase", $" processingPhase phase: {watch.ElapsedMilliseconds}"); */
+            /* } */
 
             TileDrawPhase();
             CursorDrawPhase();
@@ -110,18 +117,24 @@ namespace Raymagic
             watch.Stop();
         }
 
+        private void ImageProcessingPhase()
+        {
+            watch.Restart();
+
+            watch.Stop();
+        }
+
         private void TileDrawPhase()
         {
             watch.Restart();
 
             graphics.Begin();
-
             for(int y = 0; y < (screenDimensions.Y/detailSize); y++)
                 for(int x = 0; x < (screenDimensions.X/detailSize); x++)
                 {
                     graphics.DrawRectangle(new Point(x*detailSize,y*detailSize), 
-                                           detailSize,detailSize, 
-                                           colorBuffer[x,y]);
+                                        detailSize,detailSize, 
+                                        colorBuffer[x,y]);
                 }
         }
 
