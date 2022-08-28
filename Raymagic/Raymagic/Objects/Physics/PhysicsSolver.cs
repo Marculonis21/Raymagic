@@ -52,7 +52,7 @@ namespace Raymagic
         {
             foreach (var obj in objects)
             {
-                if (obj.isTrigger)
+                if (obj.isTrigger && (obj as PhysicsTrigger).isEnabled)
                 {
                     ((PhysicsTrigger)obj).FindCollision(out Vector3 _, out float _, out Object _);
                     continue;

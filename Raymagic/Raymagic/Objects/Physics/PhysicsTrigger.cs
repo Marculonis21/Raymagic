@@ -11,9 +11,12 @@ namespace Raymagic
 
         public List<IPortalable> inTriggerList {get; private set;} // IPortalable are all the objects worth triggering
 
-        public PhysicsTrigger(Vector3 position, float size) : base(position, size, Color.Black, Color.Black)
+        public bool isEnabled = true;
+
+        public PhysicsTrigger(Vector3 position, float size, bool startEnabled=true) : base(position, size, Color.Black, Color.Black)
         {
             this.isTrigger = true;
+            this.isEnabled = startEnabled;
             inTriggerList = new List<IPortalable>();
         }
 
