@@ -36,7 +36,22 @@ dynamic
     boolean: mainFrame: union: cylinder:(6,0,0)|(-1,0,0)|8|75|DarkGray|True
     boolean: mainFrame: difference: cylinder:(-50,0,0)|(-1,0,0)|100|70|Black|True
 
-    box[plate1]:(200,100,50)|(2,100,80)|Blue|(4,100,80)
+    box[plate1]:(200,100,50)|(4,100,140)|Gray|(4,100,140)
+    box[plate2]:(200,200,50)|(4,100,140)|White|(4,100,140)
+
+    boolean: plate1: difference: box:(190,150,60)|(22,1,140)|Black|false
+    boolean: plate2: difference: box:(190,150,60)|(22,1,150)|Black|false
+    boolean: plate1: difference: cylinder:(190,150,60)|(-1,0,0)|11|25|Black|false
+    boolean: plate2: difference: cylinder:(190,150,60)|(-1,0,0)|11|25|Black|false
+
+    cylinder[lock1]:(195,150,60)|(-1,0,0)|5|24|White|(100,100,100)
+    boolean: lock1: difference: box:(0,0,-23)|(10,50,45)|Black|true
+
+    cylinder[lock2]:(195,150,60)|(-1,0,0)|5|24|Gray|(100,100,100)
+    boolean: lock2: difference: box:(0,0,23)|(10,50,45)|Black|true
+
+    rotate: lock1: -90|(1,0,0)
+    rotate: lock2: -90|(1,0,0)
 }
 
 physics

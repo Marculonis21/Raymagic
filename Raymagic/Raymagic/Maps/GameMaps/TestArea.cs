@@ -14,6 +14,9 @@ namespace Raymagic
 
             data.playerSpawn = new Vector3(100,100,100);
 
+            data.nextLevelID = "_lvl1cs";
+            data.nextLevelDetail = 1;
+
             Box xBox = new Box(new Vector3(0,0,0),
                                new Vector3(500,20,20),
                                Color.Red);
@@ -53,6 +56,8 @@ namespace Raymagic
             Plane plane3 = new Plane(new Vector3(0,2,0),
                                      new Vector3(0,1,0),
                                      Color.Blue);
+            plane3.AddChildObject(new Plane(new Vector3(0,0,0), new Vector3(-1,0,0), Color.Blue, BooleanOP.INTERSECT), false);
+
             Plane plane4 = new Plane(new Vector3(0,498,0),
                                      new Vector3(0,-1,0),
                                      Color.Blue);
@@ -126,8 +131,7 @@ namespace Raymagic
 
             b.AddChildObject(new Sphere(new Vector3(40,40,40),
                                         40,
-                                        Color.Black,
-                                        BooleanOP.SDIFFERENCE, 5), true);
+                                        Color.Black, BooleanOP.SDIFFERENCE, 5), true);
 
             Box ramp = new Box(new Vector3(50,400,50),
                                new Vector3(100,200,200),
@@ -153,23 +157,29 @@ namespace Raymagic
             Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Pink);
             data.interactableObjectList.Add(button);
 
+            Door2 outDoor = new Door2(new Vector3(400,2,0), new Vector3(0,1,0), plane3, Color.Pink);
+            button.stateChangeEvent += outDoor.EventListener;
+            data.interactableObjectList.Add(outDoor);
+            data.outDoor = outDoor;
+
             /* PortalSpawner portalSpawner = new PortalSpawner(new Vector3(4,200,100), new Vector3(1,0,0), 0, Color.Pink); */
             /* button.stateChangeEvent += portalSpawner.EventListener; */
             /* data.interactableObjectList.Add(portalSpawner); */
 
-            Jumper jj = new Jumper(new Vector3(150,150,0),
-                                   new Vector3(0,0,1),
-                                   new Vector3(1,0,0),
-                                   new Vector3(1,0,3),
-                                   15,
-                                   mainPlaneW);
+            /* Jumper jj = new Jumper(new Vector3(150,150,0), */
+            /*                        new Vector3(0,0,1), */
+            /*                        new Vector3(1,0,0), */
+            /*                        new Vector3(1,0,3), */
+            /*                        15, */
+            /*                        mainPlaneW); */
 
-            button.stateChangeEvent += jj.EventListener;
+            /* button.stateChangeEvent += jj.EventListener; */
 
-            data.interactableObjectList.Add(jj);
+            /* data.interactableObjectList.Add(jj); */
 
             /* data.interactableObjectList.Add(new LaserSpawner(new Vector3(2,150,30), new Vector3(1,0,0), plane1)); */
             /* data.interactableObjectList.Add(new LaserCatcher(new Vector3(150,150,0), new Vector3(0,0,1), mainPlaneW, Color.Aqua)); */
+
 
             Map.instance.RegisterMap(data.mapName, data);
         }

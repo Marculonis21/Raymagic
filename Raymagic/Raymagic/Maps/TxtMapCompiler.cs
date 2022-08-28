@@ -129,21 +129,21 @@ namespace Raymagic
                 {
                     Informer.instance.AddInfo("map_compilation1", $"Compiling done", true);
                     Informer.instance.AddInfo("map_compilation2", "", true);
-                }
 
-                string s = "";
-                foreach (var item in declaredVectorVars)
-                {
-                    s += $"{item.Key}:{item.Value}, ";
-                }
-                Informer.instance.AddInfo("declareVectors", s, true);
+                    string s = "";
+                    foreach (var item in declaredVectorVars)
+                    {
+                        s += $"{item.Key}:{item.Value}, ";
+                    }
+                    Informer.instance.AddInfo("declareVectors", s, true);
 
-                s = "";
-                foreach (var item in declaredColorVars)
-                {
-                    s += $"{item.Key}:{item.Value}, ";
+                    s = "";
+                    foreach (var item in declaredColorVars)
+                    {
+                        s += $"{item.Key}:{item.Value}, ";
+                    }
+                    Informer.instance.AddInfo("declareColors", s, true);
                 }
-                Informer.instance.AddInfo("declareColors", s, true);
             }
             catch (FormatException e)
             {
@@ -194,7 +194,7 @@ namespace Raymagic
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"config {i}"); */
-                await Task.Yield();
+                /* await Task.Yield(); */
 
                 var line = input[i];
                 lineNum = i+1;
@@ -286,7 +286,7 @@ namespace Raymagic
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"static {i}"); */
-                await Task.Yield();
+                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -345,7 +345,7 @@ namespace Raymagic
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"dynamic {i}"); */
-                await Task.Yield();
+                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -405,7 +405,7 @@ namespace Raymagic
                 lineNum = i+1;
 
                 /* Console.WriteLine($"lights {i}"); */
-                await Task.Yield();
+                /* await Task.Yield(); */
 
                 var line = input[i];
 
@@ -454,7 +454,7 @@ namespace Raymagic
             for (int i = start+1; i < end; i++)
             {
                 /* Console.WriteLine($"physics {i}"); */
-                await Task.Yield();
+                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -503,7 +503,7 @@ namespace Raymagic
             int lineNum;
             for (int i = start+1; i < end; i++)
             {
-                await Task.Yield();
+                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -560,9 +560,9 @@ namespace Raymagic
                         {
                             var trigger = (pObj as PhysicsTrigger);
 
-                            if (toType == typeof(Door))
+                            if (toType == typeof(Door2))
                             {
-                                var door = (toObj as Door);
+                                var door = (toObj as Door2);
 
                                 trigger.onCollisionEnter += door.TriggerEnter;
                                 trigger.onCollisionExit += door.TriggerExit;
@@ -832,7 +832,7 @@ namespace Raymagic
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
                             Color color = GetColorFromText(paramPart[3], lineNum);
-                            iObj = new Door(position, facing, declaredObjects[paramPart[2]], color);
+                            iObj = new Door2(position, facing, declaredObjects[paramPart[2]], color);
                         }
                         break;
 
@@ -1084,7 +1084,7 @@ namespace Raymagic
                             targetObject = split[0];
                             operationContent = split[1].Split('|', StringSplitOptions.TrimEntries);
                         }
-                        if (operationType == "boolean") // boolean: box: op[1.0]: plane:(,,)|(0,0,)
+                        else if (operationType == "boolean") // boolean: box: op[1.0]: plane:(,,)|(0,0,)
                         {
                             var objContentSplit = parts[1].Split(":", 3, StringSplitOptions.TrimEntries);
                             // box: op: plane: ...
@@ -1113,6 +1113,10 @@ namespace Raymagic
                         {
                             var objects = parts[1].Split("->", 2, StringSplitOptions.TrimEntries);
                             operationContent = objects;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
                     else
@@ -1148,6 +1152,8 @@ namespace Raymagic
                         this.declaredVectorVarsPersistant.Add(name, vector);
                     else
                         this.declaredVectorVars.Add(name, vector);
+
+                    return true;
                 }
                 else
                 {
@@ -1156,10 +1162,12 @@ namespace Raymagic
                         this.declaredColorVarsPersistant.Add(name, color);
                     else
                         this.declaredColorVars.Add(name, color);
+
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
         private Vector3 GetVector3FromText(string input, int lineNum)

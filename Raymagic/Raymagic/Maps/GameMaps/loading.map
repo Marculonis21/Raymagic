@@ -1,25 +1,30 @@
 config
 {
     name: loadingMap
-    player_spawn: (350,250,100)
-    top_corner: (700,410,250)
+    player_spawn: (200,350,100)
+    top_corner: (700,700,250)
     bot_corner: (0,0,0)
-    anchor_start: (350,250,75)
-    anchor_end: (350,250,75)
+    anchor_start: (350,350,75)
+    anchor_end: (350,350,75)
 }
 
 static
 {
     plane[floor]:(0,0,0)|(0,0,1)|Beige
     plane[roof] :(0,0,248)|(0,0,-1)|Beige
-    cylinder[cyl]:(350,200,0)|(0,0,-1)|300|350|White
-    boolean: cyl: difference: cylinder:(0,0,-20)|(0,0,-1)|350|200|Black|True
-    boolean: cyl: difference: box:(0,0,150)|(1000,150,150)|Black|True
+
+    cylinder[middle]:(350,350,0)|(0,0,-1)|100|30|Red
+    box[middle2]:(350,350,100)|(50,50,50)|Green
+
+    cylinder[cyl]:(350,350,0)|(0,0,-1)|300|300|White
+    boolean: cyl: difference: cylinder:(0,0,-20)|(0,0,-1)|350|250|Black|True
+    boolean: cyl: difference: box:(0,0,150)|(1000,100,150)|Black|True
 }
 
 lights
 {
-    light:(350,250,200)|White|20000
+    light:(200,200,200)|White|15000
+    light:(200,500,200)|White|5000
 }
 
 dynamic

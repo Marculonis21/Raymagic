@@ -24,6 +24,8 @@ namespace Raymagic
         public Vector3 mapTopCorner;
         public Vector3 levelStartAnchor;
         public Vector3 levelEndAnchor;
+        public string nextLevelID;
+        public float nextLevelDetail;
 
         public float distanceMapDetail;
         public DMValue[,,] distanceMap;
@@ -139,6 +141,8 @@ namespace Raymagic
             this.portalableObjectList.AddRange(this.physicsObjectsList.Where(x => !x.isTrigger));
             this.interactableObjectList = data.interactableObjectList;
             this.lightList = data.mapLights;
+            this.nextLevelID = data.nextLevelID;
+            this.nextLevelDetail = data.nextLevelDetail;
 
             foreach (var item in interactableObjectList)
             {
@@ -256,21 +260,39 @@ namespace Raymagic
 
         public bool mapPreloading = false;
         public bool preloadedReady = false;
-        public void PreLoadMap(string id)
+        public void PreLoadMap(string id="", float mapDetail=2, bool next=false)
         {
+            if (id == "")
+            {
+                throw new Exception("Map preloading failed - need of next map ID");
+            }
+
+            if (!next && !maps.ContainsKey(id))
+            {
+                throw new Exception($"Map preloading failed - map ID {id} not found in map list");
+            }
+
+            if (next)
+            {
+                id = this.nextLevelID;
+                mapDetail = this.nextLevelDetail;
+            }
+
             Console.WriteLine("preloading started");
             mapPreloading = true;
-            var _data = maps[id];
-            var _mapName = _data.mapName;
-            var _staticObjectList   = _data.staticMapObjects;
-            var _dynamicObjectList  = _data.dynamicMapObjects;
-            var _physicsObjectsList = _data.physicsMapObjects;
-            var _portalableObjectList = new List<IPortalable>();
+            var _data                   = maps[id];
+            var _mapName                = _data.mapName;
+            var _staticObjectList       = _data.staticMapObjects;
+            var _dynamicObjectList      = _data.dynamicMapObjects;
+            var _physicsObjectsList     = _data.physicsMapObjects;
+            var _portalableObjectList   = new List<IPortalable>();
             _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger));
             var _interactableObjectList = _data.interactableObjectList;
-            var _lightList = _data.mapLights;
-            var _levelStartAnchor = _data.levelStartAnchor;
-            var _levelEndAnchor = _data.levelEndAnchor;
+            var _lightList              = _data.mapLights;
+            var _levelStartAnchor       = _data.levelStartAnchor;
+            var _levelEndAnchor         = _data.levelEndAnchor;
+            var _nextLevelID            = _data.nextLevelID;
+            var _nextLevelDetail        = _data.nextLevelDetail;
 
             foreach (var item in _interactableObjectList)
             {
@@ -290,11 +312,11 @@ namespace Raymagic
             var _mapOrigin    = _data.botCorner;
             var _mapTopCorner = _data.topCorner;
 
-            var _distanceMap = new DMValue[(int)(_mapSize.X/distanceMapDetail), 
-                                           (int)(_mapSize.Y/distanceMapDetail),
-                                           (int)(_mapSize.Z/distanceMapDetail)];
+            var _distanceMap = new DMValue[(int)(_mapSize.X/mapDetail), 
+                                           (int)(_mapSize.Y/mapDetail),
+                                           (int)(_mapSize.Z/mapDetail)];
 
-            _distanceMap = LoadDistanceMap(id, distanceMapDetail, _distanceMap);
+            _distanceMap = LoadDistanceMap(id, mapDetail, _distanceMap);
 
             mapPreloading = false;
 
@@ -315,6 +337,8 @@ namespace Raymagic
             this.distanceMap            = _distanceMap;
             this.levelStartAnchor       = _levelStartAnchor;
             this.levelEndAnchor         = _levelEndAnchor;
+            this.nextLevelID            = _nextLevelID;
+            this.nextLevelDetail        = _nextLevelDetail;
         }
 
         public Vector3 GetPlayerStart()

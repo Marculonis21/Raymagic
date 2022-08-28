@@ -70,10 +70,10 @@ namespace Raymagic
             data.staticMapObjects.Add(glassFrame);
 
             FloorButton floorButton = new FloorButton(new Vector3(225,75,0), Color.Aqua);
-            Door outDoor = new Door(ZERO + new Vector3(80,400,0), new Vector3(0,-1,0), wall4, Color.Aqua);
+            Door2 outDoor = new Door2(ZERO + new Vector3(80,400,0), new Vector3(0,-1,0), wall4, Color.Aqua);
             floorButton.stateChangeEvent += outDoor.EventListener;
 
-            Door inDoor = new Door(ZERO + new Vector3(0,100,0), new Vector3(1,0,0), wall4, Color.Gray);
+            Door2 inDoor = new Door2(ZERO + new Vector3(0,100,0), new Vector3(1,0,0), wall4, Color.Gray);
 
             data.interactableObjectList.Add(floorButton);
             data.interactableObjectList.Add(outDoor);
