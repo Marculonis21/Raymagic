@@ -14,7 +14,7 @@ namespace Raymagic
         protected bool playerControllable = false;
         protected float controlDistance = float.MaxValue;
 
-        protected Color secondaryColor;
+        public Color secondaryColor {get; protected set;}
 
         public Interactable(Vector3 position, Color secondaryColor) : base(position, Color.Black, new Vector3(), null, BooleanOP.NONE, 0, false)
         {

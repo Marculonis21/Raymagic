@@ -133,7 +133,15 @@ namespace Raymagic
 
         public void SetMap(string id)
         {
+            LoadingMap ld = new LoadingMap();
+
             this.data = maps[id];
+
+            if (maps[id].inDoor != null || maps[id].outDoor != null)
+            {
+                LoadingMap.AddLoadingMaps(ref this.data);
+            }
+
             this.mapName = data.mapName;
             this.staticObjectList = data.staticMapObjects;
             this.dynamicObjectList = data.dynamicMapObjects;

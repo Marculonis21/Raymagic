@@ -56,12 +56,17 @@ namespace Raymagic
             Plane plane3 = new Plane(new Vector3(0,2,0),
                                      new Vector3(0,1,0),
                                      Color.Blue);
-            plane3.AddChildObject(new Plane(new Vector3(0,0,0), new Vector3(-1,0,0), Color.Blue, BooleanOP.INTERSECT), false);
 
             Plane plane4 = new Plane(new Vector3(0,498,0),
                                      new Vector3(0,-1,0),
                                      Color.Blue);
 
+            plane3.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
+            plane1.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
+            plane2.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
+            plane4.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
+            mainPlaneW.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
+            roofPlane.AddChildObject(new Plane(new Vector3(0,-5,0), new Vector3(0,-1,0), Color.Blue, BooleanOP.INTERSECT), false);
 
             plane4.AddChildObject(new Sphere(new Vector3(250,0,50),
                                              50,
@@ -160,6 +165,7 @@ namespace Raymagic
             Door2 outDoor = new Door2(new Vector3(400,2,0), new Vector3(0,1,0), plane3, Color.Pink);
             button.stateChangeEvent += outDoor.EventListener;
             data.interactableObjectList.Add(outDoor);
+
             data.outDoor = outDoor;
 
             /* PortalSpawner portalSpawner = new PortalSpawner(new Vector3(4,200,100), new Vector3(1,0,0), 0, Color.Pink); */

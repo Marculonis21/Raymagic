@@ -19,8 +19,8 @@ namespace Raymagic
 
         public Vector3 levelStartAnchor;
         public Vector3 levelEndAnchor;
-        public Object inDoor;
-        public Object outDoor;
+        public Door2 inDoor;
+        public Door2 outDoor;
 
         public string nextLevelID;
         public float nextLevelDetail;
