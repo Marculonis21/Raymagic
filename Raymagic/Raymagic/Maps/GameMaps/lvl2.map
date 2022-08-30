@@ -17,12 +17,20 @@ static
     plane[wall3] :(0,2,0)|(0,1,0)|Beige
     plane[wall4] :(0,698,0)|(0,-1,0)|Beige
 
+    boolean: floor: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: roof: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: wall1: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: wall2: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: wall3: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: wall4: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+
     box[endWall]:(250,700,150)|(500,250,300)|Beige|(550,300,350)
     boolean: endWall: difference: box:(0,-20,-75)|(250,300,150)|Black|True
+    boolean: endWall: difference: plane:(210,710,0)|(0,-1,0)|Black|false
 
     box[glassend]:(250,590,75)|(250,6,150)|Gray|(250,300,150)|transparent
     boolean: glassend: difference: box:(0,0,-45)|(250,7,7)|Black|True
-    box[glassendLine1]:(0,0,-45)|(250,6,7)|White|(250,7,7)|transparent
+    box[glassendLine1]:(0,0,-45)|(250,7,7)|White|(250,7,7)|transparent
     boolean: glassend: union: glassendLine1|true
 
     boolean: glassend: difference: box:(0,0,-30)|(250,7,7)|Black|True
@@ -99,14 +107,14 @@ interactables
     portal_spawner[portal2]:(500,350,60)|(-1,0,0)|1|Red|false
     portal_spawner[portalFinish]:(375,640,60)|(-1,0,0)|1|Aqua|false
 
-    door[doorOut]:(210,700,0)|(0,-1,0)|wall4|Green
+    door[outDoor]:(210,700,0)|(0,-1,0)|wall4|Green
     button[buttonRight]:(150,350,0)|(1,0,0)|Pink
     button[buttonLeft] :(360,500,0)|(-1,0,0)|Red
     button[buttonFront]:(170,560,0)|(0,-1,0)|Aqua
 
     floor_button[floorbutton]:(445,500,0)|Green
 
-    connect: floorbutton -> doorOut
+    connect: floorbutton -> outDoor
     connect: buttonRight -> portal1
     connect: buttonLeft -> portal2
     connect: buttonFront -> portalFinish

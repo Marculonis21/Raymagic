@@ -21,16 +21,45 @@ namespace Raymagic
         {
             /* data.inDoor; */
             /* data.outDoor; */
+            if (data.inDoor != null)
+            {
+                Console.WriteLine("add indoor");
+                AddToDoor(ref data, data.inDoor, true);
+            }
 
-            var inDirection = -data.outDoor.facing;
-            var inDirectionRight = Vector3.Cross(data.outDoor.facing, new Vector3(0,0,1));
+            if (data.outDoor != null)
+            {
+                Console.WriteLine("add outdoor");
+                AddToDoor(ref data, data.outDoor, false);
+            }
+
+        }
+
+        static void AddToDoor(ref MapData data, Door2 door, bool IN)
+        {
+            Vector3 inDirection = IN ? door.facing : -door.facing;
+
+            var inDirectionRight = Vector3.Cross(inDirection, new Vector3(0,0,1));
+            // hack for negative directions
+            inDirectionRight = new Vector3(Math.Abs(inDirectionRight.X),Math.Abs(inDirectionRight.Y),Math.Abs(inDirectionRight.Z)); 
             var inDirectionUp = new Vector3(0,0,1);
 
-            var inPosition = data.outDoor.Position;
+            var inPosition = door.Position;
 
-            var inLoadingBC = inPosition + (inDirection * loadingMapSize.X + inDirectionRight * -loadingMapSize.Y/2 + inDirectionUp * -loadingMapSize.Z/2);
-            var inLoadingTC = inPosition + (inDirection * 0                + inDirectionRight *  loadingMapSize.Y/2 + inDirectionUp *  loadingMapSize.Z/2);
-            Console.WriteLine($"BC: {inLoadingBC}, TC: {inLoadingTC}");
+            Vector3 inLoadingBC;
+            Vector3 inLoadingTC;
+
+            if (inDirection.X > 0 || inDirection.Y > 0)
+            {
+                inLoadingBC = inPosition + (inDirection * 0                + inDirectionRight * -loadingMapSize.Y/2 + inDirectionUp * -loadingMapSize.Z/2);
+                inLoadingTC = inPosition + (inDirection * loadingMapSize.X + inDirectionRight *  loadingMapSize.Y/2 + inDirectionUp *  loadingMapSize.Z/2);
+            }
+            else
+            {
+                inLoadingBC = inPosition + (inDirection * loadingMapSize.X + inDirectionRight * -loadingMapSize.Y/2 + inDirectionUp * -loadingMapSize.Z/2);
+                inLoadingTC = inPosition + (inDirection * 0                + inDirectionRight * +loadingMapSize.Y/2 + inDirectionUp *  loadingMapSize.Z/2);
+            }
+            /* Console.WriteLine($"BC: {inLoadingBC}, TC: {inLoadingTC}"); */
 
             // set new bot/top corner size
             data.botCorner.Deconstruct(out float bcx, out float bcy, out float bcz);
@@ -150,6 +179,12 @@ namespace Raymagic
             
             data.dynamicMapObjects.Add(railing);
 
+            if (IN)
+            {
+                Console.WriteLine(inPosition + inDirection*300 + inDirectionUp*-240);
+                Console.WriteLine(inLoadingBC);
+                Console.WriteLine(inLoadingTC);
+            }
 
             data.mapLights.Add(new Light(inPosition + inDirection*300 + inDirectionUp*-240, 
                                          Color.White, 

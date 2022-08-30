@@ -527,6 +527,14 @@ namespace Raymagic
                         throw new FormatException($"Format error line {lineNum} - multiple objects cannot share info name");
                     }
                     data.interactableObjectList.Add(iObj);
+                    if (objectInfoName.ToLower() == "indoor")
+                    {
+                        data.inDoor = iObj as Door2;
+                    }
+                    if (objectInfoName.ToLower() == "outdoor")
+                    {
+                        data.outDoor = iObj as Door2;
+                    }
                 }
                 else if (LineContainsOperation(line, lineNum, out string operationType, out string _, out string[] operationContent))
                 {

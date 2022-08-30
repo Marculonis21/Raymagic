@@ -190,9 +190,9 @@ namespace Raymagic
             }
 
             /* Maps/{name}-{distanceMapDetail}.dm */
-            distanceMap = new DMValue[(int)(mapSize.X/distanceMapDetail), 
-                                      (int)(mapSize.Y/distanceMapDetail),
-                                      (int)(mapSize.Z/distanceMapDetail)];
+            distanceMap = new DMValue[(int)Math.Ceiling(mapSize.X/distanceMapDetail), 
+                                      (int)Math.Ceiling(mapSize.Y/distanceMapDetail),
+                                      (int)Math.Ceiling(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine("");
             BVH.BuildBVHDownUp(this.dynamicObjectList, this.interactableObjectList);
@@ -235,6 +235,7 @@ namespace Raymagic
 
                 int layer = (int)((mapSize.Y/distanceMapDetail) * (mapSize.X/distanceMapDetail));
                 Parallel.For(0, layer, i => 
+                /* for (int i = 0; i < layer; i++) */
                 {
                     int y = (int)(i / (mapSize.X/distanceMapDetail));
                     int x = (int)(i % (mapSize.X/distanceMapDetail));
@@ -256,6 +257,7 @@ namespace Raymagic
                         index++;
                     }
 
+                    /* Console.WriteLine($"{x}:{y}:{z}"); */
                     distanceMap[x,y,z] = new DMValue(bestObjIndex, best);
                 });
             }
