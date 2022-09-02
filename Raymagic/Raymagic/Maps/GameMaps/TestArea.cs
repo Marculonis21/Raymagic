@@ -118,7 +118,7 @@ namespace Raymagic
             data.staticMapObjects.Add(_b3Frame);
 
 
-            Light light = new Light(new Vector3(250,250,280), Color.White,
+            Light light = new Light(new Vector3(250,250,200), Color.White,
                                     30000, data.botCorner, data.topCorner);
 
             data.mapLights.Add(light);
@@ -150,7 +150,7 @@ namespace Raymagic
             data.staticMapObjects.Add(ramp);
 
             /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
-            data.physicsMapObjects.Add(new MirrorBall(new Vector3(100,200,100), 25, Color.DarkGray, Color.Gray));
+            /* data.physicsMapObjects.Add(new MirrorBall(new Vector3(100,200,100), 25)); */
             /* data.physicsMapObjects.Add(new MirrorBall(new Vector3(200,200,100), 25, Color.DarkGray, Color.Gray)); */
 
             Box boxbox = new Box(new Vector3(400,200,75),
@@ -162,11 +162,14 @@ namespace Raymagic
             Button button = new Button(new Vector3(50,50,0), new Vector3(1,0,0), Color.Pink);
             data.interactableObjectList.Add(button);
 
-            Door2 outDoor = new Door2(new Vector3(400,2,0), new Vector3(0,1,0), plane3, Color.Pink);
-            button.stateChangeEvent += outDoor.EventListener;
-            data.interactableObjectList.Add(outDoor);
+            /* Door2 outDoor = new Door2(new Vector3(400,2,0), new Vector3(0,1,0), plane3, Color.Pink); */
+            /* button.stateChangeEvent += outDoor.EventListener; */
+            /* data.interactableObjectList.Add(outDoor); */
+            /* data.outDoor = outDoor; */
 
-            data.outDoor = outDoor;
+            BallSpawner bs = new BallSpawner(new Vector3(100,300,300), Color.Pink, new MirrorBall(new Vector3(0,0,0), 25), 250);
+            button.stateChangeEvent += bs.EventListener;
+            data.interactableObjectList.Add(bs);
 
             /* PortalSpawner portalSpawner = new PortalSpawner(new Vector3(4,200,100), new Vector3(1,0,0), 0, Color.Pink); */
             /* button.stateChangeEvent += portalSpawner.EventListener; */

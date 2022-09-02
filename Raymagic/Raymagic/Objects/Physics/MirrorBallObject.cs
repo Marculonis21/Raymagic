@@ -6,7 +6,7 @@ namespace Raymagic
     {
         public Vector3 outDir;
 
-        public MirrorBall(Vector3 position, float size, Color color1, Color color2) : base(position, size, color1, color2)
+        public MirrorBall(Vector3 position, float size) : base(position, size, Color.DarkGray, Color.Gray)
         {
             outDir = new Vector3(1,0,0);
         }
@@ -44,7 +44,7 @@ namespace Raymagic
             dimples.SetSymmetry("XYZ", new Vector3(15,15,15));
             this.AddChildObject(dimples, true);
 
-            Sphere mirror = new Sphere(position, size-5, color2);
+            Sphere mirror = new Sphere(position, size-5, Color.Gray);
             mirror.SetTransparent(true);
             mirror.AddChildObject(new Sphere(new Vector3(), size-10, Color.Black, BooleanOP.DIFFERENCE), true);
             this.AddChildObject(mirror, false);

@@ -788,9 +788,7 @@ namespace Raymagic
                 else if (objectType == "mirror_ball")
                 {
                     Vector3 position = GetVector3FromText(paramPart[0], lineNum);
-                    Color color1 = GetColorFromText(paramPart[1], lineNum);
-                    Color color2 = GetColorFromText(paramPart[2], lineNum);
-                    pObj = new MirrorBall(position, 25, color1, color2);
+                    pObj = new MirrorBall(position, 25);
                 }
                 else
                 {
@@ -848,8 +846,9 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             float maxHeight = float.Parse(paramPart[1]);
-                            Color secondaryColor = GetColorFromText(paramPart[2], lineNum);
-                            iObj = new Lifter(position, maxHeight, secondaryColor);
+                            bool inverted = bool.Parse(paramPart[2]);
+                            Color secondaryColor = GetColorFromText(paramPart[3], lineNum);
+                            iObj = new Lifter(position, maxHeight, inverted, secondaryColor);
                         }
                         break;
 

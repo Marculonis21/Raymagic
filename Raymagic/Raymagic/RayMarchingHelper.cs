@@ -161,7 +161,6 @@ namespace Raymagic
 
                 if(best.distance < 0.1f)
                 {
-
                     SDFout final = new SDFout(float.MaxValue, Color.Pink);
                     Object finalObj = null;
 
@@ -206,8 +205,8 @@ namespace Raymagic
                                 Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
                                 transparentColor = new Color(color.R+addColor.R,
-                                                            color.G+addColor.G,
-                                                            color.B+addColor.B);
+                                                             color.G+addColor.G,
+                                                             color.B+addColor.B);
                             }
                         }
 
@@ -217,6 +216,7 @@ namespace Raymagic
                         continue;
                     }
 
+                    //// iter count rendering
                     /* var vec = new Vector3(iter/100f,iter/100f,iter/100f); */
                     /* color = vec.ToColor(); */
                     /* return; */
@@ -225,7 +225,6 @@ namespace Raymagic
                     {
                         if (Vector3.Distance(light.position, testPos) > 750 ||
                             !light.IsPosInZone(testPos)) continue;
-                        /* if (Vector3.Distance(light.position, testPos) > 750) continue; */
 
                         objectNormal = finalObj.SDF_normal(testPos);
                         startPos = testPos+objectNormal*2;
@@ -238,7 +237,8 @@ namespace Raymagic
 
                         lightIntensity += addIntensity;
 
-                        lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
+                        /* lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something */
+                        lightIntensity = Math.Max(lightIntensity, light.intensity/500000); // try around something
                         Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
                         var laserIntensity = (float)Math.Exp(-laserDistance/2);

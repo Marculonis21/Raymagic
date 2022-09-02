@@ -8,11 +8,13 @@ namespace Raymagic
         Plane difPlane;
         const float lifterSpeed = 4;
 
-        /* float pistonMaxHeight = 100; */
+        bool inverted;
+
         float[] pistonStartStopHeights = new float[2]; 
-        public Lifter(Vector3 position, float maxHeight, Color secondaryColor) : base(position, secondaryColor)
+        public Lifter(Vector3 position, float maxHeight, bool inverted, Color secondaryColor) : base(position, secondaryColor)
         {
             this.stateCount = 2;
+            this.inverted = true;
 
             pistonStartStopHeights[0] = this.Position.Z + 10;
             pistonStartStopHeights[1] = maxHeight;
@@ -42,6 +44,11 @@ namespace Raymagic
             Box pistonTop = new Box(new Vector3(0,0,2),new Vector3(80,80,4),Color.Gray);
             piston.AddChildObject(pistonTop, true);
 
+            if (this.inverted)
+            {
+                piston.Translate(new Vector3(0,0,1) * pistonStartStopHeights[1], true);
+            }
+
             this.boundingBoxSize = new Vector3(90,90, pistonStartStopHeights[1]+4);
             this.boundingBox = new Box(this.Position + new Vector3(0,0,boundingBoxSize.Z/2),
                                        this.boundingBoxSize,
@@ -66,13 +73,13 @@ namespace Raymagic
 
             if (this.state == 1)
             {
-                LifterUpAsync();
-                Console.WriteLine($"{this} up");
+                if (inverted) LifterDownAsync();
+                else LifterUpAsync();
             }
             else
             {
-                LifterDownAsync();
-                Console.WriteLine($"{this}  down");
+                if (inverted) LifterUpAsync();
+                else LifterDownAsync();
             }
         }
 
