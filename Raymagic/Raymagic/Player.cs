@@ -557,7 +557,7 @@ namespace Raymagic
             if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
             {
                 RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, this.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:this.model);
-                if (hitObj.IsSelectable || (hitObj == map.portalList[0] && lPressed) || (hitObj == map.portalList[1] && rPressed))
+                if (hitObj.IsPortalable || (hitObj == map.portalList[0] && lPressed) || (hitObj == map.portalList[1] && rPressed))
                 {
                     if (hitObj == map.portalList[0] || hitObj == map.portalList[1])
                     {

@@ -30,7 +30,7 @@ namespace Raymagic
         protected BooleanOP booleanOP;
         protected float booleanStrength;
 
-        protected bool selectable; 
+        protected bool portalableSurface; 
 
         protected bool repetitionEnabled = false;
         protected Vector3 repetitionLimit = new Vector3();
@@ -40,7 +40,7 @@ namespace Raymagic
         public string symmetryOptions = "";
         public Vector3 symmetryPlaneOffset = new Vector3();
 
-        public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool selectable)
+        public Object(Vector3 position, Color color, Vector3 boundingBoxSize, string info, BooleanOP booleanOP, float opStrength, bool portalableSurface)
         {
             this.transformMatrix[0,0] = 1;
             this.transformMatrix[1,1] = 1;
@@ -48,7 +48,7 @@ namespace Raymagic
             this.transformMatrix[3,3] = 1;
 
             this.color = color;
-            this.selectable = selectable;
+            this.portalableSurface = portalableSurface;
             this.info = info;
             this.childObjects = new List<Object>();
 
@@ -143,6 +143,11 @@ namespace Raymagic
             normal.Normalize();
 
             return normal;
+        }
+
+        public void SetPortalable(bool enabled)
+        {
+            this.portalableSurface = enabled;
         }
 
         public void SetRepetition(Vector3 repetitionLimit, float repetitionDistance)
@@ -287,7 +292,7 @@ namespace Raymagic
         }
 
         public string Info { get => info; }
-        public bool IsSelectable { get => selectable; }
+        public bool IsPortalable { get => portalableSurface; }
         public Box BoundingBox { get => boundingBox; } 
         public Vector3 BoundingBoxSize { get => boundingBoxSize; }
         public bool IsTransparent { get => transparent; }

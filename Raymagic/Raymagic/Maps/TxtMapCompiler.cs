@@ -17,7 +17,8 @@ namespace Raymagic
         List<string> possibleObjects;
         List<string> possibleOperations;
 
-        Dictionary<string, Object> declaredObjects;
+        Dictionary<string, Object> declaredObjectsStatic;
+        Dictionary<string, Object> declaredObjectsDynamic;
         Dictionary<string, Tuple<PhysicsObject, Type>> declaredPhysicsObjects;
         Dictionary<string, Tuple<Interactable, Type>> declaredInteractableObjects;
 
@@ -37,6 +38,8 @@ namespace Raymagic
         private TxtMapCompiler()
         {
             map = Map.instance;
+
+            declaredObjectsStatic = new Dictionary<string, Object>();
 
             declaredVectorVarsPersistant = new Dictionary<string, Vector3>();
             declaredColorVarsPersistant = new Dictionary<string, Color>();
@@ -89,19 +92,24 @@ namespace Raymagic
 
             string[] input = GetTextFromFile(path);
 
-            declaredObjects = new Dictionary<string, Object>();
+            if (full)
+            {
+                declaredObjectsStatic = new Dictionary<string, Object>();    
+            }
+
+            declaredObjectsDynamic = new Dictionary<string, Object>();
+
             declaredPhysicsObjects = new Dictionary<string, Tuple<PhysicsObject, Type>>();
             declaredInteractableObjects = new Dictionary<string, Tuple<Interactable, Type>>();
 
             declaredVectorVars = new Dictionary<string, Vector3>();
             declaredColorVars = new Dictionary<string, Color>();
 
-
             data = new MapData();
             data.isCompiled = true;
             data.path = path;
 
-            await ParseConfigAsync(input);
+            await Task.Run(() => ParseConfigAsync(input));
             List<Task> tasks = new List<Task>();
 
             if (full)
@@ -124,6 +132,7 @@ namespace Raymagic
             try
             {
                 await Task.WhenAll(tasks);
+                await Task.Run(() => ParsePortalableAsync(input));
 
                 if (!full)
                 {
@@ -302,7 +311,7 @@ namespace Raymagic
 
                     try
                     {
-                        declaredObjects.Add(objectInfoName, obj);
+                        declaredObjectsStatic.Add(objectInfoName, obj);
                     }
                     catch (ArgumentException)
                     {
@@ -312,7 +321,7 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
+                    if (!declaredObjectsStatic.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
@@ -362,7 +371,7 @@ namespace Raymagic
 
                     try
                     {
-                        declaredObjects.Add(objectInfoName, obj);
+                        declaredObjectsDynamic.Add(objectInfoName, obj);
                     }
                     catch (ArgumentException)
                     {
@@ -373,7 +382,7 @@ namespace Raymagic
                 }
                 else if (LineContainsOperation(line, lineNum, out string operationType, out string targetObject, out string[] operationContent))
                 {
-                    if (!declaredObjects.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
+                    if (!declaredObjectsDynamic.ContainsKey(targetObject)) throw new FormatException($"NullReference error line {lineNum} - object {targetObject} was not yet declared");
 
                     AssignOperationFromData(ObjectCategory.STATIC, lineNum, operationType, targetObject, operationContent);
                 }
@@ -596,6 +605,36 @@ namespace Raymagic
                 else
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown input");
+                }
+            }
+        }
+
+        private async Task ParsePortalableAsync(string[] input)
+        {
+            Tuple<int,int> startEnd = GetBlockStartEnd("portalable", input, false);
+            (int start, int end) = startEnd;
+
+            int lineNum;
+            for (int i = start+1; i < end; i++)
+            {
+                lineNum = i+1;
+
+                var line = input[i];
+
+                if (line.StartsWith("#")) continue;
+                if (line == "") continue;
+
+                if (declaredObjectsStatic.ContainsKey(line))
+                {
+                    declaredObjectsStatic[line].SetPortalable(true);
+                }
+                else if (declaredObjectsDynamic.ContainsKey(line))
+                {
+                    declaredObjectsDynamic[line].SetPortalable(true);
+                }
+                else
+                {
+                    throw new FormatException($"Format error line {lineNum} - Portalable block input are only names of declared object on new lines to set portalable");
                 }
             }
         }
@@ -838,7 +877,8 @@ namespace Raymagic
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 facing = GetVector3FromText(paramPart[1], lineNum);
                             Color color = GetColorFromText(paramPart[3], lineNum);
-                            iObj = new Door2(position, facing, declaredObjects[paramPart[2]], color);
+                            int triggersNeeded = int.Parse(paramPart[4]);
+                            iObj = new Door2(position, facing, declaredObjectsStatic[paramPart[2]], color, triggersNeeded);
                         }
                         break;
 
@@ -859,7 +899,7 @@ namespace Raymagic
                             Vector3 arrowDir = GetVector3FromText(paramPart[2], lineNum);
                             Vector3 jumperDirection = GetVector3FromText(paramPart[3], lineNum);
                             float jumperStrength = float.Parse(paramPart[4]);
-                            Object floorObject = declaredObjects[paramPart[5]];
+                            Object floorObject = declaredObjectsStatic[paramPart[5]];
 
                             iObj = new Jumper(position, normal, arrowDir, jumperDirection, jumperStrength, floorObject);
                         }
@@ -869,7 +909,7 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
-                            Object ground = declaredObjects[paramPart[2]];
+                            Object ground = declaredObjectsStatic[paramPart[2]];
                             iObj = new LaserSpawner(position, normal, ground);
                         }
                         break;
@@ -878,7 +918,7 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
-                            Object ground = declaredObjects[paramPart[2]];
+                            Object ground = declaredObjectsStatic[paramPart[2]];
                             Color color = GetColorFromText(paramPart[3], lineNum);
                             iObj = new LaserCatcher(position, normal, ground, color);
                         }
@@ -912,7 +952,19 @@ namespace Raymagic
 
         private void AssignOperationFromData(ObjectCategory category, int lineNum, string operationType, string targetObject, string[] operationContent)
         {
-            Object target = declaredObjects[targetObject];
+            Object target = null;
+            if (declaredObjectsStatic.ContainsKey(targetObject))
+            {
+                 target = declaredObjectsStatic[targetObject];
+            }
+            else if (declaredObjectsDynamic.ContainsKey(targetObject))
+            {
+                 target = declaredObjectsDynamic[targetObject];
+            }
+            else
+            {
+                throw new FormatException($"Format error line {lineNum} - {targetObject} target of operation not found");
+            }
 
             try
             {
@@ -993,11 +1045,17 @@ namespace Raymagic
 
                                 target.AddChildObject(opObj, relativeTransform);
                             }
-                            else if (op == BooleanOP.UNION && declaredObjects.ContainsKey(operationContent[2].Split('|')[0]))
+                            else if (op == BooleanOP.UNION && declaredObjectsStatic.ContainsKey(operationContent[2].Split('|')[0])) // static and dynamic objects
                             {
                                 _paramPart = operationContent[2].Split('|');
                                 bool relativeTransform = bool.Parse(_paramPart.Last());
-                                target.AddChildObject(declaredObjects[_paramPart[0]], relativeTransform);
+                                target.AddChildObject(declaredObjectsStatic[_paramPart[0]], relativeTransform);
+                            }
+                            else if (op == BooleanOP.UNION && declaredObjectsDynamic.ContainsKey(operationContent[2].Split('|')[0]))
+                            {
+                                _paramPart = operationContent[2].Split('|');
+                                bool relativeTransform = bool.Parse(_paramPart.Last());
+                                target.AddChildObject(declaredObjectsDynamic[_paramPart[0]], relativeTransform);
                             }
                             else
                             {

@@ -13,16 +13,20 @@ namespace Raymagic
 
         Object intersectObject;
 
+        int triggersNeeded;
+
         Vector3[] doorPlateClosedOpened;
         float lockRotation = -90;
 
-        public Door2(Vector3 floorDoorPosition, Vector3 facing, Object wallObject, Color secondaryColor) : base(floorDoorPosition, secondaryColor)
+        public Door2(Vector3 floorDoorPosition, Vector3 facing, Object wallObject, Color secondaryColor, int triggersNeeded=1) : base(floorDoorPosition, secondaryColor)
         {
             this.facing = facing;
             this.right = Vector3.Cross(facing, new Vector3(0,0,1));
 
             this.stateCount = 2;
             this.wallObject = wallObject;
+
+            this.triggersNeeded = triggersNeeded;
 
             if (facing.Z != 0)
                 throw new Exception("Unable to make this kind of button - facing Z");
@@ -102,6 +106,7 @@ namespace Raymagic
             return SDFs.Combine(best.distance, intersect.distance, best.color, intersect.color, BooleanOP.INTERSECT, 1);
         }
 
+        int interactCounter = 0;
         public override void Interact()
         {
             base.Interact();
@@ -118,7 +123,29 @@ namespace Raymagic
 
         public override void EventListener(Interactable obj, int state)
         {
-            Interact();
+            if (obj.GetType() == typeof(FloorButton))
+            {
+                if (state == 1)
+                {
+                    interactCounter++;
+                    if (interactCounter == triggersNeeded) // all enabled
+                    {
+                        Interact();
+                    }
+                }
+                else if (state == 0)
+                {
+                    interactCounter--;
+                    if (interactCounter == triggersNeeded-1) // all were enabled
+                    {
+                        Interact();
+                    }
+                }
+            }
+            else
+            {
+                Interact();
+            }
         }
 
         public void TriggerEnter(IPortalable obj, PhysicsTrigger _)

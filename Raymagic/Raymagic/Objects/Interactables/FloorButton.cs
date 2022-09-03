@@ -31,16 +31,12 @@ namespace Raymagic
             Cylinder button1 = new Cylinder(this.Position + new Vector3(0,0,15), new Vector3(0,0,1), 6, 38, Color.DarkRed);
             button1.AddChildObject(new Box(new Vector3(0,0,1), new Vector3(55, 5, 2), Color.DarkRed), true);
             button1.AddChildObject(new Box(new Vector3(0,0,1), new Vector3(5, 55, 2), Color.DarkRed), true);
-            button1.AddChildObject(new Capsule(this.Position + new Vector3(0,0,10), 10, 27f, Color.Black, BooleanOP.DIFFERENCE), false);
-
-            // good trigger positions
-            /* body1.AddChildObject(new Sphere(this.Position + new Vector3(0,0,-25), 60, Color.Red), false); */ 
-            /* button1.AddChildObject(new Sphere(this.Position + new Vector3(0,0,70), 38, Color.Red), false); */ 
+            button1.AddChildObject(new Sphere(this.Position + new Vector3(0,0,38), 27, Color.Black, BooleanOP.DIFFERENCE), false);
 
             Cylinder button2 = new Cylinder(this.Position + new Vector3(0,0,10), new Vector3(0,0,1), 6, 38, Color.Red);
             button2.AddChildObject(new Box(new Vector3(0,0,1), new Vector3(55, 5, 2), Color.Red), true);
             button2.AddChildObject(new Box(new Vector3(0,0,1), new Vector3(5, 55, 2), Color.Red), true);
-            button2.AddChildObject(new Capsule(this.Position + new Vector3(0,0,5), 10, 27f, Color.Black, BooleanOP.DIFFERENCE), false);
+            button2.AddChildObject(new Sphere(this.Position + new Vector3(0,0,33), 27, Color.Black, BooleanOP.DIFFERENCE), false);
 
             this.modelStates.Add(button1);
             this.modelStates.Add(button2);

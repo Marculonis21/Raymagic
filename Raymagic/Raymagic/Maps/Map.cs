@@ -61,6 +61,8 @@ namespace Raymagic
             if (enabledUpdate)
             {
                 physicsSpace.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                /* Console.WriteLine($"{physicsObjectsList[0].Position}, {physicsObjectsList[1].Position}"); */
             }
         }
 
@@ -162,11 +164,6 @@ namespace Raymagic
             }
 
             this.physicsSpace = new PhysicsSpace(physicsObjectsList);
-
-            foreach (var item in this.physicsObjectsList)
-            {
-                Console.WriteLine(item.GetType());
-            }
 
             this.mapSize = data.topCorner - data.botCorner;
             this.mapOrigin = data.botCorner;

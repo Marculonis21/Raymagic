@@ -177,7 +177,6 @@ namespace Raymagic
                     Vector3 startPos;
                     Vector3 objectNormal;
 
-                    float lightIntensity = 0;
 
                     if (objectIsTransparent)
                     {
@@ -187,6 +186,8 @@ namespace Raymagic
 
                             foreach(Light light in map.lightList)
                             {
+                                float lightIntensity = 0;
+
                                 if (Vector3.Distance(light.position, testPos) > 750 ||
                                     !light.IsPosInZone(testPos)) continue;
 
@@ -223,6 +224,8 @@ namespace Raymagic
 
                     foreach(Light light in map.lightList)
                     {
+                        float lightIntensity = 0;
+
                         if (Vector3.Distance(light.position, testPos) > 750 ||
                             !light.IsPosInZone(testPos)) continue;
 

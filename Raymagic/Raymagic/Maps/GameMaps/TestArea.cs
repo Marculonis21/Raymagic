@@ -149,8 +149,8 @@ namespace Raymagic
 
             data.staticMapObjects.Add(ramp);
 
-            /* data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray)); */
-            /* data.physicsMapObjects.Add(new MirrorBall(new Vector3(100,200,100), 25)); */
+            data.physicsMapObjects.Add(new PhysicsObject(new Vector3(200,200,100), 25, Color.Green, Color.Gray));
+            data.physicsMapObjects.Add(new MirrorBall(new Vector3(100,200,100), 25));
             /* data.physicsMapObjects.Add(new MirrorBall(new Vector3(200,200,100), 25, Color.DarkGray, Color.Gray)); */
 
             Box boxbox = new Box(new Vector3(400,200,75),

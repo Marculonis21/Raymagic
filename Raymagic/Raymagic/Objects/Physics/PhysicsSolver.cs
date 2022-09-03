@@ -61,7 +61,7 @@ namespace Raymagic
                 if (obj.FindCollision(out Vector3 hitAxis, out float length, out Object collisionObject))
                 {
                     if ((collisionObject == map.portalList[0] && map.portalList[0].otherPortal != null) || 
-                        (collisionObject == map.portalList[1] && map.portalList[1].otherPortal != null))  break;
+                        (collisionObject == map.portalList[1] && map.portalList[1].otherPortal != null)) continue;
 
                     if (objects.Contains(collisionObject))
                     {

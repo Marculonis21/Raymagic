@@ -20,8 +20,8 @@ static
 
 lights
 {
-    light:(80,80,50)|White|2000
-    light:(80,220,150)|White|2000
+    light:(80,50,150)|Red|2000
+    light:(80,250,150)|Blue|2000
 }
 
 dynamic
