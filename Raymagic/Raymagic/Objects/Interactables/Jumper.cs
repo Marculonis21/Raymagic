@@ -22,6 +22,7 @@ namespace Raymagic
             this.arrowDir = arrowDir;
             this.jumperDirection = Vector3.Normalize(jumperDirection);
             this.jumperStrength = strength;
+            /* Console.WriteLine($"{this.jumperDirection} - {this.jumperStrength}"); */
             this.floor = floorObject;
         }
 
@@ -47,7 +48,7 @@ namespace Raymagic
             floor.AddChildObject(c2, false);
             floor.AddChildObject(b1, false);
 
-            Box inside = new Box(this.Position-normal*20,
+            Box inside = new Box(this.Position-normal*20-new Vector3(0,0,1)*1,
                                  arrowDir*120 + right*80 + normal*40,
                                  Color.Gray);
 
@@ -178,7 +179,9 @@ namespace Raymagic
         async Task RotateUpDown(bool up)
         {
             if (up) 
-                await Task.Delay(150);
+            {
+                await Task.Delay(1000);
+            }
 
             for (int i = 0; i < (up ? 3 : 15); i++)
             {

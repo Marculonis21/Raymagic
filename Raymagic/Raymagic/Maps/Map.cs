@@ -82,8 +82,6 @@ namespace Raymagic
         {
             new TestArea();
             new Level1();
-            new Level2();
-            /* new Showcase(); */
 
             string[] files = Directory.GetFiles(txtMapsPath, "*.map");
 

@@ -188,7 +188,7 @@ namespace Raymagic
                             {
                                 float lightIntensity = 0;
 
-                                if (Vector3.Distance(light.position, testPos) > 750 ||
+                                if (Vector3.Distance(light.position, testPos) > 2500 ||
                                     !light.IsPosInZone(testPos)) continue;
 
                                 objectNormal = finalObj.SDF_normal(testPos);
@@ -202,7 +202,7 @@ namespace Raymagic
 
                                 lightIntensity += addIntensity;
 
-                                lightIntensity = Math.Max(lightIntensity, 0.05f); // try around something
+                                lightIntensity = Math.Max(lightIntensity, light.intensity/500000); // try around something
                                 Color addColor = (final.color.ToVector3() * light.color.ToVector3() * lightIntensity).ToColor();
 
                                 transparentColor = new Color(color.R+addColor.R,
@@ -226,7 +226,7 @@ namespace Raymagic
                     {
                         float lightIntensity = 0;
 
-                        if (Vector3.Distance(light.position, testPos) > 750 ||
+                        if (Vector3.Distance(light.position, testPos) > 2500 ||
                             !light.IsPosInZone(testPos)) continue;
 
                         objectNormal = finalObj.SDF_normal(testPos);

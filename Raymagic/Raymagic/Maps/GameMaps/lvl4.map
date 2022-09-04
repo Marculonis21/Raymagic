@@ -1,0 +1,78 @@
+config
+{
+    name: lvl4
+    player_spawn: (400,100,100)
+    top_corner: (800,1250,800)
+    bot_corner: (0,-200,-150)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    # walls
+    
+    plane[floor]:(0,0,-150)|(0,0,1)|Beige
+    plane[roof] :(0,0,798)|(0,0,-1)|Beige
+    plane[wall1] :(2,0,0)|(1,0,0)|Beige
+    plane[wall2] :(798,0,0)|(-1,0,0)|Beige
+    plane[wall3] :(0,0,0)|(0,1,0)|Beige
+    plane[wall4] :(0,1248,0)|(0,-1,0)|Beige
+
+    boolean: wall3: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall3: difference: box:(400,0,75)|(150,400,150)|Black|false
+
+    # indoors
+
+    cylinder[floor1]:(400,0,-150)|(0,0,-1)|150|250|Red|(500,500,500)
+    cylinder[floor2]:(400,1250,-150)|(0,0,-1)|150|300|Blue|(600,600,500)
+
+    cylinder[middleHole]:(400,625,-150)|(0,0,-1)|125|75|Gray|(200,200,200)
+    boolean: middleHole: difference: cylinder:(0,0,-50)|(0,0,-1)|500|50|Black|true
+    
+    box[stairs1]:(700,100,-75)|(200,520,148)|Green|(200,520,150)
+    boolean: stairs1: intersect: plane:(0,260,-75)|(0,1,1.5)|Black|true
+
+    box[stairs2]:(100,1150,-75)|(200,520,148)|Yellow|(200,520,150)
+    boolean: stairs2: intersect: plane:(0,-260,-75)|(0,-1,1.5)|Black|true
+}
+
+lights
+{
+    light:(300,250,400) |White|50000|(0,-200,-150)|(800,1250,800)
+    light:(500,1000,400)|White|50000|(0,-200,-150)|(800,1250,800)
+}
+
+dynamic
+{
+}
+
+physics
+{
+    physics_object[spawnBall]:(400,625,-50)|Gray|Aqua
+}
+
+interactables
+{
+    jumper[jumper1]:(400,175,0)|(0,0,1)|(0,1,0)|(0,1,1.75)|30|floor1
+    jumper[jumper2]:(400,1025,0)|(0,0,1)|(0,-1,0)|(0,-1,1.75)|30|floor2
+
+    button[button1]:(500,175,0)|(0,-1,0)|Green
+    button[button2]:(300,1025,0)|(0,1,0)|Green
+
+    floor_button[floorbutton]:(575,1125,0)|Aqua
+
+    door[id]:(400,-200,0)|(0,-1,0)|wall3|Purple|1
+    door[od]:(400,1250,0)|(0,-1,0)|wall4|Aqua|1
+
+    ball_spawner[spawner]:(400,625,800)|Green|spawnBall|250
+
+    connect: button1 -> spawner
+    connect: button2 -> spawner
+
+    connect: floorbutton -> od
+}
+
+portalable
+{
+}

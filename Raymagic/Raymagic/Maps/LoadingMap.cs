@@ -19,8 +19,6 @@ namespace Raymagic
 
         public static void AddLoadingMaps(ref MapData data)
         {
-            /* data.inDoor; */
-            /* data.outDoor; */
             if (data.inDoor != null)
             {
                 Console.WriteLine("add indoor");
@@ -100,26 +98,56 @@ namespace Raymagic
             Plane wall3   = new Plane(inPosition + inDirection*5,    inDirection, Color.Beige);
             Plane wall4   = new Plane(inPosition + inDirection*598, -inDirection, Color.Beige);
 
-            Plane inIntersect1 = new Plane(inPosition, -inDirection, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect1 = new Plane(inPosition,                  -inDirection, Color.Black, BooleanOP.INTERSECT);
             Plane inIntersect2 = new Plane(inPosition + inDirection*610, inDirection, Color.Black, BooleanOP.INTERSECT);
+
+            Plane inIntersect3 = new Plane(inPosition +  inDirectionRight*155, inDirectionRight, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect4 = new Plane(inPosition + -inDirectionRight*155,-inDirectionRight, Color.Black, BooleanOP.INTERSECT);
+
+            Plane inIntersect5 = new Plane(inPosition + -inDirectionUp*255, -inDirectionUp, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect6 = new Plane(inPosition +  inDirectionUp*255, inDirectionUp, Color.Black, BooleanOP.INTERSECT);
 
             wall1.AddChildObject(inIntersect1, false);
             wall1.AddChildObject(inIntersect2, false);
+            wall1.AddChildObject(inIntersect3, false);
+            wall1.AddChildObject(inIntersect4, false);
+            wall1.AddChildObject(inIntersect5, false);
+            wall1.AddChildObject(inIntersect6, false);
 
             wall2.AddChildObject(inIntersect1, false);
             wall2.AddChildObject(inIntersect2, false);
+            wall2.AddChildObject(inIntersect3, false);
+            wall2.AddChildObject(inIntersect4, false);
+            wall2.AddChildObject(inIntersect5, false);
+            wall2.AddChildObject(inIntersect6, false);
 
             wall3.AddChildObject(inIntersect1, false);
             wall3.AddChildObject(inIntersect2, false);
+            wall3.AddChildObject(inIntersect3, false);
+            wall3.AddChildObject(inIntersect4, false);
+            wall3.AddChildObject(inIntersect5, false);
+            wall3.AddChildObject(inIntersect6, false);
 
             wall4.AddChildObject(inIntersect1, false);
             wall4.AddChildObject(inIntersect2, false);
+            wall4.AddChildObject(inIntersect3, false);
+            wall4.AddChildObject(inIntersect4, false);
+            wall4.AddChildObject(inIntersect5, false);
+            wall4.AddChildObject(inIntersect6, false);
 
             inFloor.AddChildObject(inIntersect1, false);
             inFloor.AddChildObject(inIntersect2, false);
+            inFloor.AddChildObject(inIntersect3, false);
+            inFloor.AddChildObject(inIntersect4, false);
+            inFloor.AddChildObject(inIntersect5, false);
+            inFloor.AddChildObject(inIntersect6, false);
 
             roof.AddChildObject(inIntersect1, false);
             roof.AddChildObject(inIntersect2, false);
+            roof.AddChildObject(inIntersect3, false);
+            roof.AddChildObject(inIntersect4, false);
+            roof.AddChildObject(inIntersect5, false);
+            roof.AddChildObject(inIntersect6, false);
 
             data.staticMapObjects.Add(wall1);
             data.staticMapObjects.Add(wall2);
@@ -128,7 +156,15 @@ namespace Raymagic
             data.staticMapObjects.Add(roof);
             data.staticMapObjects.Add(inFloor);
 
-/*             data.staticMapObjects.Add(new Box(inPosition + inDirection*50, new Vector3(20,20,20), Color.Red)); */
+            //NOT TESTED AS MUCH
+            Door2 outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, Color.Blue, 1);
+            data.interactableObjectList.Add(outLoadingDoor);
+            //
+
+            if (IN)
+            {
+                data.playerSpawn = inPosition + inDirection*400 + inDirectionUp*100;
+            }
 
             Box side = new Box(inPosition + inDirection*300,
                                inDirection*600 + inDirectionRight*10 + inDirectionUp*15,
@@ -179,12 +215,12 @@ namespace Raymagic
             
             data.dynamicMapObjects.Add(railing);
 
-            if (IN)
-            {
-                Console.WriteLine(inPosition + inDirection*300 + inDirectionUp*-240);
-                Console.WriteLine(inLoadingBC);
-                Console.WriteLine(inLoadingTC);
-            }
+            /* if (IN) */
+            /* { */
+            /*     Console.WriteLine(inPosition + inDirection*300 + inDirectionUp*-240); */
+            /*     Console.WriteLine(inLoadingBC); */
+            /*     Console.WriteLine(inLoadingTC); */
+            /* } */
 
             data.mapLights.Add(new Light(inPosition + inDirection*300 + inDirectionUp*-240, 
                                          Color.White, 

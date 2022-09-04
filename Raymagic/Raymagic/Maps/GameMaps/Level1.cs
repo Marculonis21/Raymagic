@@ -92,7 +92,6 @@ namespace Raymagic
             wall4.AddChildObject(inDoorIntersect, false);
             roof.AddChildObject(inDoorIntersect, false);
             floor.AddChildObject(inDoorIntersect, false);
-            
 
             data.interactableObjectList.Add(floorButton);
             data.interactableObjectList.Add(outDoor);

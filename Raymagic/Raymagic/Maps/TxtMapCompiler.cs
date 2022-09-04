@@ -66,7 +66,8 @@ namespace Raymagic
                 "jumper",
                 "laser_spawner",
                 "laser_catcher",
-                "portal_spawner"
+                "portal_spawner",
+                "ball_spawner",
             };
 
             possibleOperations = new List<string>() {
@@ -117,15 +118,15 @@ namespace Raymagic
                 // they contain static elements - needs full recompile
                 // awaits for consistency
                 tasks.Add(ParseStaticAsync(input));
-                tasks.Add(ParseLightsAsync(input));
                 tasks.Add(ParseDynamicAsync(input));
+                tasks.Add(ParseLightsAsync(input));
                 tasks.Add(ParsePhysicsAsync(input));
                 tasks.Add(ParseInteractableAsync(input));
             }
             else
             {
-                tasks.Add(ParseLightsAsync(input));
                 tasks.Add(ParseDynamicAsync(input));
+                tasks.Add(ParseLightsAsync(input));
                 tasks.Add(ParsePhysicsAsync(input));
             }
 
@@ -430,7 +431,16 @@ namespace Raymagic
                         Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                         Color color = GetColorFromText(paramPart[1], lineNum);
                         float intensity = float.Parse(paramPart[2]);
-                        Light light = new Light(position, color, intensity, data.botCorner, data.topCorner);
+
+                        Vector3 botCorner = data.botCorner;
+                        Vector3 topCorner = data.topCorner;
+                        if (paramPart.Length == 5)
+                        {
+                            botCorner = GetVector3FromText(paramPart[3], lineNum);
+                            topCorner = GetVector3FromText(paramPart[4], lineNum);
+                        }
+
+                        Light light = new Light(position, color, intensity, botCorner, topCorner);
                         data.mapLights.Add(light);
                     }
                     else
@@ -607,6 +617,7 @@ namespace Raymagic
                     throw new FormatException($"Format warning line {lineNum} - Unknown input");
                 }
             }
+
         }
 
         private async Task ParsePortalableAsync(string[] input)
@@ -899,9 +910,17 @@ namespace Raymagic
                             Vector3 arrowDir = GetVector3FromText(paramPart[2], lineNum);
                             Vector3 jumperDirection = GetVector3FromText(paramPart[3], lineNum);
                             float jumperStrength = float.Parse(paramPart[4]);
-                            Object floorObject = declaredObjectsStatic[paramPart[5]];
+                            Object ground = null;
+                            if (declaredObjectsStatic.ContainsKey(paramPart[5]))
+                            {
+                                 ground = declaredObjectsStatic[paramPart[5]];
+                            }
+                            else if (declaredObjectsDynamic.ContainsKey(paramPart[5]))
+                            {
+                                 ground = declaredObjectsDynamic[paramPart[5]];
+                            }
 
-                            iObj = new Jumper(position, normal, arrowDir, jumperDirection, jumperStrength, floorObject);
+                            iObj = new Jumper(position, normal, arrowDir, jumperDirection, jumperStrength, ground);
                         }
                         break;
 
@@ -909,7 +928,15 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
-                            Object ground = declaredObjectsStatic[paramPart[2]];
+                            Object ground = null;
+                            if (declaredObjectsStatic.ContainsKey(paramPart[2]))
+                            {
+                                 ground = declaredObjectsStatic[paramPart[2]];
+                            }
+                            else if (declaredObjectsDynamic.ContainsKey(paramPart[2]))
+                            {
+                                 ground = declaredObjectsDynamic[paramPart[2]];
+                            }
                             iObj = new LaserSpawner(position, normal, ground);
                         }
                         break;
@@ -918,7 +945,15 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Vector3 normal = GetVector3FromText(paramPart[1], lineNum);
-                            Object ground = declaredObjectsStatic[paramPart[2]];
+                            Object ground = null;
+                            if (declaredObjectsStatic.ContainsKey(paramPart[2]))
+                            {
+                                 ground = declaredObjectsStatic[paramPart[2]];
+                            }
+                            else if (declaredObjectsDynamic.ContainsKey(paramPart[2]))
+                            {
+                                 ground = declaredObjectsDynamic[paramPart[2]];
+                            }
                             Color color = GetColorFromText(paramPart[3], lineNum);
                             iObj = new LaserCatcher(position, normal, ground, color);
                         }
@@ -933,6 +968,23 @@ namespace Raymagic
                             bool startEnabled = bool.Parse(paramPart[4]);
 
                             iObj = new PortalSpawner(position, facing, portalType, color, startEnabled);
+                        }
+                        break;
+
+                    case "ball_spawner":
+                        {
+                            Vector3 position = GetVector3FromText(paramPart[0], lineNum);
+                            Color color = GetColorFromText(paramPart[1], lineNum);
+                            PhysicsObject ball = null;
+                            if (declaredPhysicsObjects.ContainsKey(paramPart[2]))
+                            {
+                                 ball = declaredPhysicsObjects[paramPart[2]].Item1;
+                                 /* declaredPhysicsObjects.Remove(paramPart[2]); */
+                                 /* data.physicsMapObjects.Remove(ball); */
+                            }
+                            int delay = int.Parse(paramPart[3]);
+
+                            iObj = new BallSpawner(position, color, ball, delay);
                         }
                         break;
                         

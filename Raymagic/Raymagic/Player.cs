@@ -413,13 +413,13 @@ namespace Raymagic
                 BodyCollider(gameTime);
             }
 
-            if (this.velocity.Z < -20)
+            if (this.velocity.Z < -100)
             {
-                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, -20);
+                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, -100);
             }
-            if (this.velocity.Z > 20)
+            if (this.velocity.Z > 100)
             {
-                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 20);
+                this.velocity = new Vector3(this.velocity.X, this.velocity.Y, 100);
             }
 
             this.position += this.velocity;

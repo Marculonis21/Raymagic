@@ -17,21 +17,31 @@ static
     plane[wall3] :(0,2,0)|(0,1,0)|Beige
     plane[wall4] :(0,598,0)|(0,-1,0)|Beige
 
+    boolean: wall3: difference: plane:(0,-10,0)|(0,1,0)|Black|true
+    boolean: roof: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+    boolean: floor: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+
     boolean: wall1: difference: plane:(-18,0,0)|(1,0,0)|Black|false
     boolean: wall2: difference: plane:(-18,0,0)|(1,0,0)|Black|false
     boolean: wall4: difference: plane:(-18,0,0)|(1,0,0)|Black|false
 
     plane[wall5] :(-298,0,0)|(1,0,0)|Beige
     plane[roof2] :(0,0,160)|(0,0,-1)|Beige
-    plane[wall6] :(0,300,0)|(0,-1,0)|DarkGray
+    plane[wall6] :(0,298,0)|(0,-1,0)|DarkGray
+
+    boolean: floor: difference: box:(-200,800,0)|(350,1000,600)|Blue|false
+    boolean: roof: difference: box:(-200,800,0)|(350,1000,600)|Blue|false
+
+    boolean: wall5: difference: plane:(0,300,0)|(0,-1,0)|Black|false
+    boolean: roof2: difference: plane:(0,300,0)|(0,-1,0)|Black|false
 
     boolean: roof2: intersect: plane:(-18,0,0)|(1,0,0)|Black|false
     boolean: wall6: intersect: plane:(-18,0,0)|(1,0,0)|Black|false
     boolean: wall1: difference: box:(2,120,0)|(150,150,300)|Black|false
 
-    boolean: wall5: difference: plane:(0,310,0)|(0,-1,0)|Black|false
-    boolean: roof2: difference: plane:(0,310,0)|(0,-1,0)|Black|false
-    boolean: wall6: difference: plane:(0,310,0)|(0,-1,0)|Black|false
+    boolean: wall5: difference: plane:(0,302,0)|(0,-1,0)|Black|false
+    boolean: roof2: difference: plane:(0,302,0)|(0,-1,0)|Black|false
+    boolean: wall6: difference: plane:(0,302,0)|(0,-1,0)|Black|false
 
     boolean: floor: difference: box:(250,525,0)|(300,150,300)|Black|false
 
@@ -44,19 +54,6 @@ static
     box[plate1]:(425,325,150)|(150,150,15)|Blue|(150,150,20)
     box[plate2]:( 75,325,150)|(150,150,15)|Blue|(150,150,20)
 
-#     box[plate1rail]:(425,325,175)|(150,150,10)|Gray|(150,150,20)
-#     boolean: plate1rail: difference: box:(0,0,0)|(145,145,60)|Black|true
-
-#     box[plate1railCorner]:(425,325,160)|(5,5,20)|Gray|(150,150,20)
-#     symmetry: plate1railCorner: XY|(70,70,0)
-
-#     box[plate2rail]:( 75,325,175)|(150,150,10)|Gray|(150,150,20)
-#     boolean: plate2rail: difference: box:(0,0,0)|(145,145,60)|Black|true
-
-#     box[plate2railCorner]:( 75,325,160)|(5,5,20)|Gray|(150,150,20)
-#     symmetry: plate2railCorner: XY|(70,70,0)
-
-
     boolean: floor: difference: box:(425,325,-90)|(120,120,200)|Black|false
     boolean: floor: difference: box:( 75,325,-90)|(120,120,200)|Black|false
 
@@ -65,13 +62,13 @@ static
 
     box[tile]:(425,325,-5)|(12,12,3)|Gray|(130,130,50)
     boolean: tile: difference: cylinder:(0,0,-10)|(0,0,-1)|20|5|Black|true
-    repeat: tile: (10,10,0)|12
+    repeat: tile: (8,8,0)|12
     boolean: tile: union: cylinder:(0,0,-5)|(0,0,-1)|10|20|DarkGray|true
     boolean: tile: difference: cylinder:(0,0,-20)|(0,0,-1)|40|18|Black|true
 
     box[tile2]:( 75,325,-5)|(12,12,3)|Gray|(130,130,50)
     boolean: tile2: difference: cylinder:(0,0,-10)|(0,0,-1)|20|5|Black|true
-    repeat: tile2: (10,10,0)|12
+    repeat: tile2: (8,8,0)|12
     boolean: tile2: union: cylinder:(0,0,-5)|(0,0,-1)|10|20|DarkGray|true
     boolean: tile2: difference: cylinder:(0,0,-20)|(0,0,-1)|40|18|Black|true
 
@@ -84,14 +81,14 @@ static
 
 lights
 {
-    light:(250,300,200)|White|20000
-    light:(-150,100,150)|White|5000
-    light:(250,525,-100)|Gray|2000
+    light:(250,300,200)|White|20000|(-300,0,-300)|(500,600,300)
+    light:(-150,200,150)|White|2000|(-300,0,0)|(490,300,200)
+    # light:(-150,200,150)|White|10000|(-300,0,0)|(490,600,200)
+    light:(250,525,-100)|Gray|2000|(120,450,-300)|(400,600,200)
 }
 
 dynamic
 {
-
 }
 
 physics
@@ -102,16 +99,16 @@ physics
 
 interactables
 {
-    door[d1]:(-150,300,0)|(0,1,0)|wall6|DarkBlue|1
-    door[d2]:(250,0,0)|(0,1,0)|wall3|DarkRed|2
+    door[id]:(-200,300,0)|(0,1,0)|wall6|DarkBlue|1
+    door[od]:(250,0,0)|(0,1,0)|wall3|DarkRed|2
 
     floor_button[fb1]:(350,200,0)|DarkRed
     floor_button[fb2]:(150,200,0)|DarkRed
 
     portal_spawner[spawner]:(498,325,225)|(-1,0,0)|0|Orange|true
 
-    connect: fb1 -> d2
-    connect: fb2 -> d2
+    # connect: fb1 -> outdoor
+    # connect: fb2 -> outdoor
 }
 
 portalable
