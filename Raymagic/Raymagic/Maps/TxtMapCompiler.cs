@@ -181,7 +181,7 @@ namespace Raymagic
             string[] allLines = full.Split("\n");
             for (int i = 0; i < allLines.Length; i++)
             {
-                allLines[i] = allLines[i].TrimStart();
+                allLines[i] = allLines[i].Trim();
             }
 
             return allLines;
