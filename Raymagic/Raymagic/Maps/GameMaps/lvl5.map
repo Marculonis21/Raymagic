@@ -1,0 +1,93 @@
+config
+{
+    name: lvl5
+    player_spawn: (400,100,100)
+    top_corner: (600,800,400)
+    bot_corner: (-100,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    # walls
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,398)|(0,0,-1)|Beige
+    plane[wall1] :(-98,0,0)|(1,0,0)|Beige
+    plane[wall2] :(598,0,0)|(-1,0,0)|Beige
+    plane[wall3] :(0,2,0)|(0,1,0)|Beige
+    plane[wall4] :(0,798,0)|(0,-1,0)|Beige
+
+    box[entrance]:(0,150,400)|(200,300,800)|Gray|(210,310,800)
+    boolean: entrance: difference: box:(-10,140,75)|(195,290,180)|Red|false
+    boolean: entrance: difference: box:(0,300,75)|(150,150,150)|Red|false
+
+    box[wallmiddle]:(525,350,200)|(150,100,400)|Gray|(200,200,400)
+    box[base2]:(525,600,75)|(150,400,150)|Gray|(200,400,150)
+
+    box[railsH]:(460,150,190)|(10,300,10)|Gray|(20,300,400)
+    repeat: railsH: (0,0,6)|50
+
+    box[railsV]:(460,150,200)|(10,10,400)|Gray|(20,300,400)
+    repeat: railsV: (0,2,0)|70
+
+
+    box[underball]:(530,150,0)|(130,290,5)|White|(300,300,10)
+    box[underball2]:(530,150,0)|(140,300,4)|Gray|(300,300,10)
+
+    box[underlaser]:(200,400,0)|(200,800,4)|White|(300,800,10)
+    box[underlaser2]:(0,600,0)|(200,400,4)|White|(300,800,10)
+
+    box[grayWall]:(100,155,70)|(4,275,125)|White|(4,300,200)
+
+    box[endWall1]:(100,800,70)|(380,6,125)|White|(400,10,200)
+    box[endWall12]:(100,800,70)|(400,4,140)|Gray|(500,10,200)
+
+    box[endWall2]:(-100,600,70)|(10,390,125)|White|(10,400,200)
+    box[endWall22]:(-100,600,70)|(8,400,140)|Gray|(10,400,200)
+
+    box[beforeend]:(525,525,150)|(140,200,4)|White|(200,400,150)
+}
+
+lights
+{
+    light:(300,500,350)|White|30000|(-100,0,0)|(600,800,400)
+    light:(50,150,120)|White|1000|(-200,0,0)|(600,800,400)
+    light:(550,290,200)|Gray|10000|(100,0,0)|(600,300,400)
+
+}
+
+dynamic
+{
+}
+
+physics
+{
+    mirror_ball[mb]:(550,150,100)
+}
+
+interactables
+{
+    door[id]:(-100,150,0)|(-1,0,0)|wall1|DarkGray|1
+    door[od]:(600,500,150)|(-1,0,0)|wall2|DarkRed|1
+
+    laser_spawner[lSpawn]:(150,2,30)|(0,1,0)|wall3
+    laser_catcher[lCatch]:(450,700,30)|(-1,0,0)|base2|Yellow
+
+    lifter[lifter]:(400,550,0)|140|true|Yellow
+
+    floor_button[floor_button]:(525,700,150)|DarkRed
+
+    connect: lCatch -> lifter
+    connect: floor_button -> od
+}
+
+portalable
+{
+    underball
+    underlaser
+    grayWall
+    endWall1
+    endWall2
+    beforeend
+}

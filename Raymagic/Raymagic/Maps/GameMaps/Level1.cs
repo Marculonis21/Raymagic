@@ -16,6 +16,10 @@ namespace Raymagic
 
             data.playerSpawn = new Vector3(100,100,100);
 
+            data.nextLevelDetail = 2;
+            data.nextLevelID = "lvl2";
+            data.nextLevelInColor = Color.Red;
+
             // ############## OUTSIDEWALLS #################
 
             Plane floor = new Plane(new Vector3(0,0,0),
@@ -72,8 +76,8 @@ namespace Raymagic
             floorButton.stateChangeEvent += outDoor.EventListener;
             data.outDoor = outDoor;
 
-            Door2 inDoor = new Door2(new Vector3(2,100,0), new Vector3(-1,0,0), wall1, Color.Gray);
-            /* data.inDoor = inDoor; */
+            Door2 inDoor = new Door2(new Vector3(2,100,0), new Vector3(-1,0,0), wall1, Color.DarkGray);
+            data.inDoor = inDoor;
 
             // needs intersects to trim lvl walls
             Plane outDoorItersect = new Plane(outDoor.Position + -outDoor.facing*10, outDoor.facing, Color.Black, BooleanOP.DIFFERENCE);

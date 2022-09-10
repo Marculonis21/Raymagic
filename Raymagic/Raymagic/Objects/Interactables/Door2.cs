@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework;
 
 namespace Raymagic
 {
+    public delegate void DoorEvents(Door2 door, bool IN);
+
     public class Door2 : Interactable
     {
         public Vector3 facing {get; private set;} // for loading levels setter
@@ -17,6 +19,9 @@ namespace Raymagic
 
         Vector3[] doorPlateClosedOpened;
         float lockRotation = -90;
+
+        public event DoorEvents doorClosedEvent;
+        public bool IN;
 
         public Door2(Vector3 floorDoorPosition, Vector3 facing, Object wallObject, Color secondaryColor, int triggersNeeded=1) : base(floorDoorPosition, secondaryColor)
         {
@@ -206,6 +211,19 @@ namespace Raymagic
 
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
             }
+
+            while (state == 1)
+            {
+                Console.WriteLine("waiting");
+                var playerPos = Player.instance.position;
+                if (Vector3.Dot(playerPos - this.Position, this.facing) < 0) 
+                {
+                    Console.WriteLine("closing closing closing");
+                    state = 0;
+                    CloseDoor();
+                }
+                await Task.Delay(250);
+            }
         }
 
         async Task CloseDoor()
@@ -217,12 +235,10 @@ namespace Raymagic
                 plateObjects[0].Translate(this.right* 5f);
                 plateObjects[1].Translate(this.right*-5f);
 
-                /* lockObjects[0].Translate(this.right* 5f, true); */
-                /* lockObjects[1].Translate(this.right*-5f, true); */
-
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
             }
 
+            doorClosedEvent?.Invoke(this, this.IN);
         }
         
         async void DoorOpenAsync()

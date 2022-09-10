@@ -247,6 +247,18 @@ namespace Raymagic
                     var ae = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.levelEndAnchor = GetVector3FromText(ae, lineNum);
                 }
+                else if (line.StartsWith("next_lvl:"))
+                {
+                    /* partsFound["anchor_end"] = true; */
+                    var nextLvlID = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.nextLevelID = nextLvlID;
+                }
+                else if (line.StartsWith("next_lvl_detail:"))
+                {
+                    /* partsFound["anchor_end"] = true; */
+                    var nextLvlDetail = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.nextLevelDetail = float.Parse(nextLvlDetail);
+                }
                 else    
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown config input - expects 'name', 'player_spawn', 'top_corner', 'bot_corner'");

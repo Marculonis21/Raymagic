@@ -6,7 +6,8 @@ namespace Raymagic
     {
         Cylinder piston;
         Plane difPlane;
-        const float lifterSpeed = 4;
+        const float lifterSpeed = 10;
+        float maxHeight;
 
         bool inverted;
 
@@ -14,7 +15,9 @@ namespace Raymagic
         public Lifter(Vector3 position, float maxHeight, bool inverted, Color secondaryColor) : base(position, secondaryColor)
         {
             this.stateCount = 2;
-            this.inverted = true;
+            this.inverted = inverted;
+
+            this.maxHeight = maxHeight;
 
             pistonStartStopHeights[0] = this.Position.Z + 10;
             pistonStartStopHeights[1] = maxHeight;
@@ -46,10 +49,13 @@ namespace Raymagic
 
             if (this.inverted)
             {
-                piston.Translate(new Vector3(0,0,1) * pistonStartStopHeights[1], true);
+                piston.Translate(new Vector3(0,0,1) * maxHeight, true);
+
+                pistonStartStopHeights[1] = maxHeight;
+                pistonStartStopHeights[0] = this.Position.Z + 10;
             }
 
-            this.boundingBoxSize = new Vector3(90,90, pistonStartStopHeights[1]+4);
+            this.boundingBoxSize = new Vector3(90,90, maxHeight+4);
             this.boundingBox = new Box(this.Position + new Vector3(0,0,boundingBoxSize.Z/2),
                                        this.boundingBoxSize,
                                        Color.Yellow);
@@ -110,7 +116,8 @@ namespace Raymagic
         {
             while (piston.Position.Z != pistonStartStopHeights[1])
             {
-                if (state == 0) break; // state was changed to close
+                if ((state == 0 && !inverted) ||
+                     state == 1 && inverted)  break; // state was changed to close
 
                 piston.Translate(new Vector3(0,0,1) * lifterSpeed, true);
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });
@@ -121,7 +128,8 @@ namespace Raymagic
         {
             while (piston.Position.Z != pistonStartStopHeights[0])
             {
-                if (state == 1) break; // state was changed to close
+                if ((state == 1 && !inverted) ||
+                     state == 0 && inverted) break; // state was changed to close
 
                 piston.Translate(new Vector3(0,0,1) * -lifterSpeed, true);
                 await Task.Delay(10).ContinueWith(t => { while(Screen.instance.DrawPhase) { } });

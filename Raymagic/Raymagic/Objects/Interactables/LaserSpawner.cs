@@ -119,7 +119,7 @@ namespace Raymagic
                     }
                 }
 
-                await Task.Delay(100).ContinueWith(t1 => { while(Screen.instance.DrawPhase) { } });
+                await Task.Delay(10).ContinueWith(t1 => { while(Screen.instance.DrawPhase) { } });
                 Map.instance.laserObjectList.Clear();
                 Map.instance.laserObjectList.AddRange(newLaserList);
             }

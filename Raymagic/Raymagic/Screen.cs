@@ -15,10 +15,12 @@ namespace Raymagic
 
         Point screenDimensions;
         int detailSize;
+        int cursorSize = 10;
 
         public bool DrawPhase {get; private set;}
 
         Stopwatch watch;
+
 
         private Screen() {} 
 
@@ -140,13 +142,13 @@ namespace Raymagic
 
         private void CursorDrawPhase()
         {
-            graphics.DrawLine(new Point(screenDimensions.X/2,screenDimensions.Y/2-player.cursorSize), 
-                              new Point(screenDimensions.X/2,screenDimensions.Y/2+player.cursorSize), 
+            graphics.DrawLine(new Point(screenDimensions.X/2,screenDimensions.Y/2-cursorSize), 
+                              new Point(screenDimensions.X/2,screenDimensions.Y/2+cursorSize), 
                               5, 
                               Color.Gold);
 
-            graphics.DrawLine(new Point(screenDimensions.X/2-player.cursorSize,screenDimensions.Y/2), 
-                              new Point(screenDimensions.X/2+player.cursorSize,screenDimensions.Y/2), 
+            graphics.DrawLine(new Point(screenDimensions.X/2-cursorSize,screenDimensions.Y/2), 
+                              new Point(screenDimensions.X/2+cursorSize,screenDimensions.Y/2), 
                               5, 
                               Color.Gold);
 

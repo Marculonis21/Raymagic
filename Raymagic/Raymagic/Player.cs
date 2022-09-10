@@ -8,15 +8,16 @@ namespace Raymagic
 {
     public class Player : IPortalable
     {
+        Map map = Map.instance;
+
         //SINGLETON
         public Vector3 position {get; private set;}
         public Vector2 rotation;
         public Vector3 velocity {get; private set;}
+        public Vector3 lookDir {get; private set;}
 
         Vector2 size;
         public Object model {get; private set;}
-
-        public Vector3 lookDir {get; private set;}
 
         const float walkingSpeed = 2.5f;
         const float airControll = 0.05f;
@@ -27,6 +28,9 @@ namespace Raymagic
 
         public bool GodMode = false;
         Vector3 preGodPositionCache;
+
+        Dictionary<string, Keys> playerControls = new Dictionary<string, Keys>();
+
 
         bool interactButtonDown = false;
         bool grabButtonDown = false;
@@ -40,19 +44,11 @@ namespace Raymagic
 
         public bool playerPause = false;
 
-        public int cursorSize = 10;
-
-        Map map = Map.instance;
-
-        Dictionary<string, Keys> playerControls = new Dictionary<string, Keys>();
-
         private Player()
         {
             position = map.GetPlayerStart();
             rotation = new Vector2(270,120);
             size = new Vector2(25,75);
-
-            /* model = new PlayerModel(size.Y, size.X); */
 
             playerControls.Add("forward_move",  Keys.W);
             playerControls.Add("backward_move", Keys.S);
@@ -216,10 +212,10 @@ namespace Raymagic
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]) && !this.testONButtonDown)
             {
                 this.testONButtonDown = true;
-                Screen.instance.processingTest = true;
+                /* Screen.instance.processingTest = true; */
 
                 // long running task? thread feels better - completely separated
-                /* new Thread(() => map.PreLoadMap("loadTest2")).Start(); */
+                new Thread(() => map.PreLoadMap("lvl5", 2)).Start();
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {

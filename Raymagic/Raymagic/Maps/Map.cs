@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -264,14 +265,18 @@ namespace Raymagic
         }
 
         public bool mapPreloading = false;
-        public bool preloadedReady = false;
+        public bool mapPreloadingLoadingMap = false;
+        public bool changeMap = false;
+        Stopwatch sw = new Stopwatch();
         public void PreLoadMap(string id="", float mapDetail=2, bool next=false)
         {
-            if (id == "")
+            mapPreloadingLoadingMap = false;
+            changeMap = false;
+
+            if (id == "" && !next)
             {
                 throw new Exception("Map preloading failed - need of next map ID");
             }
-
             if (!next && !maps.ContainsKey(id))
             {
                 throw new Exception($"Map preloading failed - map ID {id} not found in map list");
@@ -283,6 +288,7 @@ namespace Raymagic
                 mapDetail = this.nextLevelDetail;
             }
 
+            sw.Start();
             Console.WriteLine("preloading started");
             mapPreloading = true;
             var _data                   = maps[id];
@@ -301,7 +307,7 @@ namespace Raymagic
 
             foreach (var item in _interactableObjectList)
             {
-                item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
+                item.ObjectSetup(ref _staticObjectList, ref _dynamicObjectList, ref _physicsObjectsList);
             }
             foreach (var item in _physicsObjectsList)
             {
@@ -311,7 +317,7 @@ namespace Raymagic
             var _BVH = new BVH();
             _BVH.BuildBVHDownUp(_dynamicObjectList, _interactableObjectList);
 
-            var _physicsSpace = new PhysicsSpace(physicsObjectsList);
+            var _physicsSpace = new PhysicsSpace(_physicsObjectsList);
 
             var _mapSize      = _data.topCorner - _data.botCorner;
             var _mapOrigin    = _data.botCorner;
@@ -324,6 +330,15 @@ namespace Raymagic
             _distanceMap = LoadDistanceMap(id, mapDetail, _distanceMap);
 
             mapPreloading = false;
+
+            sw.Stop();
+            Console.WriteLine($"DONEDONE {sw.ElapsedMilliseconds}");
+            return;
+
+            while (!changeMap)
+            {
+                Thread.Sleep(1000);
+            }
 
             Player.instance.TranslateAbsolute(_levelStartAnchor + (Player.instance.position-this.levelEndAnchor));
 
@@ -346,11 +361,42 @@ namespace Raymagic
             this.nextLevelDetail        = _nextLevelDetail;
         }
 
+        public void LoadingDoorClosed(Door2 door, bool IN)
+        {
+            var playerPos = Player.instance.position;
+            if (Vector3.Dot(playerPos - door.Position, door.facing) > 0) 
+            {
+                Console.WriteLine("door closed but nothing happens");
+                return;
+            }
+
+            if (IN)
+            {
+                Console.WriteLine("IN CLOSED OUT");
+                new Thread(() => PreLoadMap(next:true)).Start();
+            }
+            else // coming out of the map into loading map
+            {
+                Console.WriteLine("CLOSED OUT");
+                if (this.mapPreloading) // still loading next map - speed up
+                {
+                    Console.WriteLine("preloading hyper");
+                    this.mapPreloadingLoadingMap = true;
+                }
+                else // changeMap
+                {
+                    Console.WriteLine("changing map");
+                    this.changeMap = true;
+                }
+            }
+
+        }
+
         public Vector3 GetPlayerStart()
         {
             return data.playerSpawn;
         }
-        
+
         // SERIALIZATION - compression update from https://itecnote.com/tecnote/c-custom-serialization-deserialization-together-with-deflatestreams/
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {

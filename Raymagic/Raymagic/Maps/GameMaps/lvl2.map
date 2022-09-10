@@ -6,6 +6,8 @@ config
     bot_corner: (0,0,0)
     anchor_start: (0,0,75)
     anchor_end: (0,0,75)
+    next_lvl: lvl3
+    next_lvl_detail: 2
 }
 
 static
@@ -23,6 +25,11 @@ static
     boolean: wall2: difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall3: difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall4: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+
+    boolean: wall1: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+    boolean: wall2: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+    boolean: wall3: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+    boolean: wall4: difference: plane:(0,-8,0)|(0,1,0)|Black|false
 
     box[endWall]:(250,700,150)|(500,250,300)|Beige|(550,300,350)
     boolean: endWall: difference: box:(0,-20,-75)|(250,300,150)|Black|True
@@ -107,14 +114,16 @@ interactables
     portal_spawner[portal2]:(500,350,60)|(-1,0,0)|1|Red|false
     portal_spawner[portalFinish]:(375,640,60)|(-1,0,0)|1|Aqua|false
 
-    door[outDoor]:(210,700,0)|(0,-1,0)|wall4|Green
+    door[indoor]:(250,0,135)|(0,-1,0)|wall3|Gray|1
+    door[outdoor]:(210,700,0)|(0,-1,0)|wall4|Green|1
+
     button[buttonRight]:(150,350,0)|(1,0,0)|Pink
     button[buttonLeft] :(360,500,0)|(-1,0,0)|Red
     button[buttonFront]:(170,560,0)|(0,-1,0)|Aqua
 
     floor_button[floorbutton]:(445,500,0)|Green
 
-    connect: floorbutton -> outDoor
+    connect: floorbutton -> outdoor
     connect: buttonRight -> portal1
     connect: buttonLeft -> portal2
     connect: buttonFront -> portalFinish

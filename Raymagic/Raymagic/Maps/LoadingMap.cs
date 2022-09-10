@@ -22,12 +22,16 @@ namespace Raymagic
             if (data.inDoor != null)
             {
                 Console.WriteLine("add indoor");
+                data.inDoor.IN = true;
+                data.inDoor.doorClosedEvent += Map.instance.LoadingDoorClosed;
                 AddToDoor(ref data, data.inDoor, true);
             }
 
             if (data.outDoor != null)
             {
                 Console.WriteLine("add outdoor");
+                data.outDoor.IN = false;
+                data.outDoor.doorClosedEvent += Map.instance.LoadingDoorClosed;
                 AddToDoor(ref data, data.outDoor, false);
             }
 
@@ -43,6 +47,21 @@ namespace Raymagic
             var inDirectionUp = new Vector3(0,0,1);
 
             var inPosition = door.Position;
+
+            if (IN)
+            {
+                data.playerSpawn = inPosition + inDirection*400 + inDirectionUp*100;
+
+                data.levelStartAnchor = inPosition + inDirection*300 + inDirectionUp*75;
+                PhysicsTrigger inDoorTrigger = new PhysicsTrigger(inPosition + inDirection*100 + inDirectionUp*50, 100);
+                inDoorTrigger.onCollisionEnter += data.inDoor.TriggerEnter;
+                inDoorTrigger.onCollisionExit += data.inDoor.TriggerExit;
+                data.physicsMapObjects.Add(inDoorTrigger);
+            }
+            else
+            {
+                data.levelEndAnchor = inPosition + inDirection*300 + inDirectionUp*75;
+            }
 
             Vector3 inLoadingBC;
             Vector3 inLoadingTC;
@@ -151,20 +170,22 @@ namespace Raymagic
 
             data.staticMapObjects.Add(wall1);
             data.staticMapObjects.Add(wall2);
-            /* data.staticMapObjects.Add(wall3); */
             data.staticMapObjects.Add(wall4);
             data.staticMapObjects.Add(roof);
             data.staticMapObjects.Add(inFloor);
 
             //NOT TESTED AS MUCH
-            Door2 outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, Color.Blue, 1);
-            data.interactableObjectList.Add(outLoadingDoor);
-            //
-
+            Door2 outLoadingDoor;
             if (IN)
             {
-                data.playerSpawn = inPosition + inDirection*400 + inDirectionUp*100;
+                outLoadingDoor = new Door2(inPosition + inDirection*598, inDirection, wall4, Color.Blue, 1);
             }
+            else
+            {
+                outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, Color.Blue, 1);
+            }
+            data.interactableObjectList.Add(outLoadingDoor);
+            //
 
             Box side = new Box(inPosition + inDirection*300,
                                inDirection*600 + inDirectionRight*10 + inDirectionUp*15,
@@ -225,6 +246,12 @@ namespace Raymagic
             data.mapLights.Add(new Light(inPosition + inDirection*300 + inDirectionUp*-240, 
                                          Color.White, 
                                          20000, 
+                                         inLoadingBC,
+                                         inLoadingTC));
+
+            data.mapLights.Add(new Light(inPosition + inDirection*100 + inDirectionUp*100, 
+                                         Color.Gray, 
+                                         1000, 
                                          inLoadingBC,
                                          inLoadingTC));
         }
