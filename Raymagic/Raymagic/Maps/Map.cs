@@ -305,6 +305,7 @@ namespace Raymagic
             var _physicsObjectsList     = _data.physicsMapObjects;
             var _portalableObjectList   = new List<IPortalable>();
             _portalableObjectList.AddRange(_physicsObjectsList.Where(x => !x.isTrigger));
+            _portalableObjectList.Add(Player.instance);
             var _interactableObjectList = _data.interactableObjectList;
             var _lightList              = _data.mapLights;
             var _levelStartAnchor       = _data.levelStartAnchor;
@@ -349,6 +350,7 @@ namespace Raymagic
             {
                 Thread.Sleep(1000);
             }
+            mapPreloadingLoadingMap = false;
 
             Console.WriteLine("Player and data transfer");
             
