@@ -15,7 +15,6 @@ namespace Raymagic
 
         public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
-
             Vector3 right = Vector3.Cross(normal, new Vector3(0,0,1));
             Vector3 up = Vector3.Cross(normal, -right);
 
@@ -52,7 +51,10 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position,
                                        this.boundingBoxSize,
                                        Color.Lime);
+        }
 
+        public override void ObjectStartup()
+        {
             CalculateLaserPathAsync();
         }
 

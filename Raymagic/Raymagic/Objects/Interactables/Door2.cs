@@ -214,7 +214,6 @@ namespace Raymagic
 
             while (state == 1)
             {
-                Console.WriteLine("waiting");
                 var playerPos = Player.instance.position;
                 if (Vector3.Dot(playerPos - this.Position, this.facing) < 0) 
                 {

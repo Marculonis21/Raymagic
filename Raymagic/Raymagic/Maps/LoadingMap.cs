@@ -178,11 +178,11 @@ namespace Raymagic
             Door2 outLoadingDoor;
             if (IN)
             {
-                outLoadingDoor = new Door2(inPosition + inDirection*598, inDirection, wall4, Color.Blue, 1);
+                outLoadingDoor = new Door2(inPosition + inDirection*598, inDirection, wall4, data.nextLevelInColor, 1);
             }
             else
             {
-                outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, Color.Blue, 1);
+                outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, data.nextLevelInColor, 1);
             }
             data.interactableObjectList.Add(outLoadingDoor);
             //

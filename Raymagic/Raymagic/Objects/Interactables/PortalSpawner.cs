@@ -26,11 +26,6 @@ namespace Raymagic
 
         public override void ObjectSetup(ref List<Object> staticObjectList, ref List<Object> dynamicObjectList, ref List<PhysicsObject> physicsObjectsList)
         {
-            if (startEnabled)
-            {
-                Interact();
-            }
-
             facing.Normalize();
             Vector3 right = Vector3.Cross(facing, new Vector3(0,0,1));
             right = new Vector3((float)Math.Abs(right.X), (float)Math.Abs(right.Y), (float)Math.Abs(right.Z));
@@ -60,6 +55,14 @@ namespace Raymagic
             this.boundingBox = new Box(this.Position,
                                        this.boundingBoxSize,
                                        Color.Black);
+        }
+
+        public override void ObjectStartup()
+        {
+            if (startEnabled)
+            {
+                Interact();
+            }
         }
 
         public override SDFout SDF(Vector3 testPos, float minDist, out bool IsTransparent)

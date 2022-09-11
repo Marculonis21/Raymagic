@@ -20,12 +20,14 @@ static
     plane[wall4] :(0,698,0)|(0,-1,0)|Beige
 
     boolean: floor: difference: plane:(210,710,0)|(0,-1,0)|Black|false
-    boolean: roof: difference: plane:(210,710,0)|(0,-1,0)|Black|false
+    boolean: roof : difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall1: difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall2: difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall3: difference: plane:(210,710,0)|(0,-1,0)|Black|false
     boolean: wall4: difference: plane:(210,710,0)|(0,-1,0)|Black|false
 
+    boolean: floor: difference: plane:(0,-8,0)|(0,1,0)|Black|false
+    boolean: roof : difference: plane:(0,-8,0)|(0,1,0)|Black|false
     boolean: wall1: difference: plane:(0,-8,0)|(0,1,0)|Black|false
     boolean: wall2: difference: plane:(0,-8,0)|(0,1,0)|Black|false
     boolean: wall3: difference: plane:(0,-8,0)|(0,1,0)|Black|false
@@ -46,6 +48,8 @@ static
 
     box[in]:(250,0,150)|(500,200,300)|Beige|(500,250,300)
     boolean: in: difference: box:(0,20,60)|(200,300,150)|Black|True
+
+    boolean: in: difference: plane:(0,-8,0)|(0,1,0)|Black|false
 
     box[glassleft1] :(390,430,150)|(4,300,300)|DarkGray|(10,300,300)|transparent
     box[glassleft2] :(445,280,150)|(110,4,300)|Gray|(110,10,300)|transparent
@@ -114,7 +118,7 @@ interactables
     portal_spawner[portal2]:(500,350,60)|(-1,0,0)|1|Red|false
     portal_spawner[portalFinish]:(375,640,60)|(-1,0,0)|1|Aqua|false
 
-    door[indoor]:(250,0,135)|(0,-1,0)|wall3|Gray|1
+    door[indoor]:(250,0,135)|(0,-1,0)|wall3|Violet|1
     door[outdoor]:(210,700,0)|(0,-1,0)|wall4|Green|1
 
     button[buttonRight]:(150,350,0)|(1,0,0)|Pink

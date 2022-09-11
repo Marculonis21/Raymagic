@@ -156,6 +156,7 @@ namespace Raymagic
             foreach (var item in interactableObjectList)
             {
                 item.ObjectSetup(ref this.staticObjectList, ref this.dynamicObjectList, ref this.physicsObjectsList);
+                item.ObjectStartup();
             }
             foreach (var item in physicsObjectsList)
             {
@@ -292,6 +293,12 @@ namespace Raymagic
             Console.WriteLine("preloading started");
             mapPreloading = true;
             var _data                   = maps[id];
+
+            if (_data.inDoor != null || _data.outDoor != null)
+            {
+                LoadingMap.AddLoadingMaps(ref _data);
+            }
+
             var _mapName                = _data.mapName;
             var _staticObjectList       = _data.staticMapObjects;
             var _dynamicObjectList      = _data.dynamicMapObjects;
@@ -318,6 +325,10 @@ namespace Raymagic
             _BVH.BuildBVHDownUp(_dynamicObjectList, _interactableObjectList);
 
             var _physicsSpace = new PhysicsSpace(_physicsObjectsList);
+            foreach (var item in _physicsObjectsList)
+            {
+                Console.WriteLine(item.Position);
+            }
 
             var _mapSize      = _data.topCorner - _data.botCorner;
             var _mapOrigin    = _data.botCorner;
@@ -333,12 +344,15 @@ namespace Raymagic
 
             sw.Stop();
             Console.WriteLine($"DONEDONE {sw.ElapsedMilliseconds}");
-            return;
 
-            while (!changeMap)
+            while (!changeMap && !mapPreloadingLoadingMap)
             {
                 Thread.Sleep(1000);
             }
+
+            Console.WriteLine("Player and data transfer");
+            
+            Task.Run(() => { while(Screen.instance.DrawPhase) { } });
 
             Player.instance.TranslateAbsolute(_levelStartAnchor + (Player.instance.position-this.levelEndAnchor));
 
@@ -359,6 +373,16 @@ namespace Raymagic
             this.levelEndAnchor         = _levelEndAnchor;
             this.nextLevelID            = _nextLevelID;
             this.nextLevelDetail        = _nextLevelDetail;
+
+            foreach (var item in physicsObjectsList)
+            {
+                Console.WriteLine(item.Position);
+            }
+
+            foreach (var item in interactableObjectList)
+            {
+                item.ObjectStartup();
+            }
         }
 
         public void LoadingDoorClosed(Door2 door, bool IN)

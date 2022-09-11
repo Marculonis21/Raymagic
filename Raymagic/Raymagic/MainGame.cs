@@ -156,7 +156,7 @@ namespace Raymagic
             {
                 // empties thread for map preloading in threadpool */
                 // TODO:TEST SPEED
-                Thread.Sleep(5);  
+                Thread.Sleep(10);  
             }
         }
         
