@@ -11,7 +11,7 @@ namespace Raymagic
 {
     public class LoadingMap
     {
-        static Vector3 loadingMapSize = new Vector3(600,300,500);
+        static Vector3 loadingMapSize = new Vector3(400,300,500);
 
         public LoadingMap()
         {
@@ -50,9 +50,9 @@ namespace Raymagic
 
             if (IN)
             {
-                data.playerSpawn = inPosition + inDirection*400 + inDirectionUp*100;
+                data.playerSpawn = inPosition + inDirection*loadingMapSize.X/2 + inDirectionUp*100;
 
-                data.levelStartAnchor = inPosition + inDirection*300 + inDirectionUp*75;
+                data.levelStartAnchor = inPosition + inDirection*loadingMapSize.X/2 + inDirectionUp*75;
                 PhysicsTrigger inDoorTrigger = new PhysicsTrigger(inPosition + inDirection*100 + inDirectionUp*50, 100);
                 inDoorTrigger.onCollisionEnter += data.inDoor.TriggerEnter;
                 inDoorTrigger.onCollisionExit += data.inDoor.TriggerExit;
@@ -60,7 +60,7 @@ namespace Raymagic
             }
             else
             {
-                data.levelEndAnchor = inPosition + inDirection*300 + inDirectionUp*75;
+                data.levelEndAnchor = inPosition + inDirection*loadingMapSize.X/2 + inDirectionUp*75;
             }
 
             Vector3 inLoadingBC;
@@ -109,22 +109,22 @@ namespace Raymagic
             }
             data.topCorner = new Vector3(tcx,tcy,tcz);
 
-            Plane inFloor = new Plane(inPosition + -inDirectionUp*248,  inDirectionUp, Color.Black);
-            Plane roof    = new Plane(inPosition +  inDirectionUp*248, -inDirectionUp, Color.Beige);
+            Plane inFloor = new Plane(inPosition + -inDirectionUp*(loadingMapSize.Z/2-5),  inDirectionUp, Color.Black);
+            Plane roof    = new Plane(inPosition +  inDirectionUp*(loadingMapSize.Z/2-5), -inDirectionUp, Color.Beige);
 
-            Plane wall1   = new Plane(inPosition +  inDirectionRight*148, -inDirectionRight, Color.Black);
-            Plane wall2   = new Plane(inPosition + -inDirectionRight*148,  inDirectionRight, Color.Black);
-            Plane wall3   = new Plane(inPosition + inDirection*5,    inDirection, Color.Beige);
-            Plane wall4   = new Plane(inPosition + inDirection*598, -inDirection, Color.Beige);
+            Plane wall1   = new Plane(inPosition +  inDirectionRight*(loadingMapSize.Y/2-5), -inDirectionRight, Color.Black);
+            Plane wall2   = new Plane(inPosition + -inDirectionRight*(loadingMapSize.Y/2-5),  inDirectionRight, Color.Black);
+            Plane wall3   = new Plane(inPosition + inDirection*5, inDirection, Color.Beige);
+            Plane wall4   = new Plane(inPosition + inDirection*(loadingMapSize.X-5), -inDirection, Color.Beige);
 
-            Plane inIntersect1 = new Plane(inPosition,                  -inDirection, Color.Black, BooleanOP.INTERSECT);
-            Plane inIntersect2 = new Plane(inPosition + inDirection*610, inDirection, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect1 = new Plane(inPosition,                                    -inDirection, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect2 = new Plane(inPosition + inDirection*(loadingMapSize.X+10), inDirection, Color.Black, BooleanOP.INTERSECT);
 
-            Plane inIntersect3 = new Plane(inPosition +  inDirectionRight*155, inDirectionRight, Color.Black, BooleanOP.INTERSECT);
-            Plane inIntersect4 = new Plane(inPosition + -inDirectionRight*155,-inDirectionRight, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect3 = new Plane(inPosition +  inDirectionRight*(loadingMapSize.Y/2+5), inDirectionRight, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect4 = new Plane(inPosition + -inDirectionRight*(loadingMapSize.Y/2+5),-inDirectionRight, Color.Black, BooleanOP.INTERSECT);
 
-            Plane inIntersect5 = new Plane(inPosition + -inDirectionUp*255, -inDirectionUp, Color.Black, BooleanOP.INTERSECT);
-            Plane inIntersect6 = new Plane(inPosition +  inDirectionUp*255, inDirectionUp, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect5 = new Plane(inPosition + -inDirectionUp*(loadingMapSize.Z/2+5), -inDirectionUp, Color.Black, BooleanOP.INTERSECT);
+            Plane inIntersect6 = new Plane(inPosition +  inDirectionUp*(loadingMapSize.Z/2+5), inDirectionUp, Color.Black, BooleanOP.INTERSECT);
 
             wall1.AddChildObject(inIntersect1, false);
             wall1.AddChildObject(inIntersect2, false);
@@ -178,17 +178,17 @@ namespace Raymagic
             Door2 outLoadingDoor;
             if (IN)
             {
-                outLoadingDoor = new Door2(inPosition + inDirection*598, inDirection, wall4, data.nextLevelInColor, 1);
+                outLoadingDoor = new Door2(inPosition + inDirection*(loadingMapSize.X-5), inDirection, wall4, data.nextLevelInColor, 1);
             }
             else
             {
-                outLoadingDoor = new Door2(inPosition + inDirection*598, -inDirection, wall4, data.nextLevelInColor, 1);
+                outLoadingDoor = new Door2(inPosition + inDirection*(loadingMapSize.X-5), -inDirection, wall4, data.nextLevelInColor, 1);
             }
             data.interactableObjectList.Add(outLoadingDoor);
             //
 
-            Box side = new Box(inPosition + inDirection*300,
-                               inDirection*600 + inDirectionRight*10 + inDirectionUp*15,
+            Box side = new Box(inPosition + inDirection*loadingMapSize.X/2,
+                               inDirection*loadingMapSize.X + inDirectionRight*10 + inDirectionUp*15,
                                Color.Gray);
             if (inDirection.X == 1 || inDirection.X == -1)
             {
@@ -201,37 +201,37 @@ namespace Raymagic
             data.staticMapObjects.Add(side);
 
 
-            Box floorTile = new Box(inPosition + inDirection*300,
+            Box floorTile = new Box(inPosition + inDirection*loadingMapSize.X/2,
                                     new Vector3(12,12,3),
                                     Color.DarkGray, 
-                                    boundingBoxSize: inDirection*600 + inDirectionRight*120 + inDirectionUp * 20);
+                                    boundingBoxSize: inDirection*loadingMapSize.X + inDirectionRight*120 + inDirectionUp * 20);
             floorTile.AddChildObject(new Cylinder(inDirectionUp*-10, new Vector3(0,0,-1), 20, 5, Color.Black, BooleanOP.DIFFERENCE), true);
             if (inDirection.X == 1 || inDirection.X == -1)
             {
-                floorTile.SetRepetition(new Vector3(25,4,0), 12);
+                floorTile.SetRepetition(new Vector3(20,4,0), 12);
             }
             else
             {
-                floorTile.SetRepetition(new Vector3(4,25,0), 12);
+                floorTile.SetRepetition(new Vector3(4,20,0), 12);
             }
 
             data.dynamicMapObjects.Add(floorTile);
 
-            Box railing = new Box(inPosition + inDirection*300 + inDirectionUp*50,
+            Box railing = new Box(inPosition + inDirection*loadingMapSize.X/2 + inDirectionUp*50,
                                   inDirection*30 + inDirectionRight*5 + inDirectionUp*5,
                                   Color.Orange,
-                                  boundingBoxSize: inDirection*600 + inDirectionRight*140 + inDirectionUp*100);
+                                  boundingBoxSize: inDirection*loadingMapSize.X + inDirectionRight*140 + inDirectionUp*100);
             railing.AddChildObject(new Cylinder(new Vector3(), new Vector3(0,0,1),50,2,Color.Red), true);
 
             if (inDirection.X == 1 || inDirection.X == -1)
             {
                 railing.SetSymmetry("Y",new Vector3(0,60,0));
-                railing.SetRepetition(new Vector3(9,0,0), 30);
+                railing.SetRepetition(new Vector3(6,0,0), 30);
             }
             else
             {
                 railing.SetSymmetry("X",new Vector3(60,0,0));
-                railing.SetRepetition(new Vector3(0,9,0), 30);
+                railing.SetRepetition(new Vector3(0,6,0), 30);
             }
             
             data.dynamicMapObjects.Add(railing);
@@ -243,7 +243,7 @@ namespace Raymagic
             /*     Console.WriteLine(inLoadingTC); */
             /* } */
 
-            data.mapLights.Add(new Light(inPosition + inDirection*300 + inDirectionUp*-240, 
+            data.mapLights.Add(new Light(inPosition + inDirection*loadingMapSize.X/2 -inDirectionUp*(loadingMapSize.Z/2-10), 
                                          Color.White, 
                                          20000, 
                                          inLoadingBC,
