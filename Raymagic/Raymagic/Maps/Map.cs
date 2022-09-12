@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using MessagePack;
 
 namespace Raymagic
 {
@@ -340,17 +341,22 @@ namespace Raymagic
                                            (int)(_mapSize.Z/mapDetail)];
 
             _distanceMap = LoadDistanceMap(id, mapDetail, _distanceMap);
-
             mapPreloading = false;
+
+            if (_distanceMap == null) // failed to load distance map
+            {
+                Console.WriteLine("stopped preloading");
+                return;
+            }
 
             sw.Stop();
             Console.WriteLine($"DONEDONE {sw.ElapsedMilliseconds}");
 
-            while (!changeMap && !mapPreloadingLoadingMap)
+            mapPreloadingLoadingMap = false;
+            while (!changeMap)
             {
                 Thread.Sleep(1000);
             }
-            mapPreloadingLoadingMap = false;
 
             Console.WriteLine("Player and data transfer");
             
@@ -385,6 +391,8 @@ namespace Raymagic
             {
                 item.ObjectStartup();
             }
+
+            GC.Collect();
         }
 
         public void LoadingDoorClosed(Door2 door, bool IN)
@@ -392,28 +400,26 @@ namespace Raymagic
             var playerPos = Player.instance.position;
             if (Vector3.Dot(playerPos - door.Position, door.facing) > 0) 
             {
-                Console.WriteLine("door closed but nothing happens");
+                /* Console.WriteLine("door closed but nothing happens"); */
                 return;
             }
 
             if (IN)
             {
-                Console.WriteLine("IN CLOSED OUT");
-                new Thread(() => PreLoadMap(next:true)).Start();
+                /* Console.WriteLine("IN CLOSED OUT"); */
+                /* new Thread(() => PreLoadMap(next:true)).Start(); */
+                Task.Factory.StartNew(() => PreLoadMap(next:true), TaskCreationOptions.LongRunning).Start();
             }
             else // coming out of the map into loading map
             {
-                Console.WriteLine("CLOSED OUT");
+                /* Console.WriteLine("CLOSED OUT"); */
                 if (this.mapPreloading) // still loading next map - speed up
                 {
-                    Console.WriteLine("preloading hyper");
+                    /* Console.WriteLine("preloading hyper"); */
                     this.mapPreloadingLoadingMap = true;
                 }
-                else // changeMap
-                {
-                    Console.WriteLine("changing map");
-                    this.changeMap = true;
-                }
+
+                this.changeMap = true;
             }
 
         }
@@ -423,16 +429,20 @@ namespace Raymagic
             return data.playerSpawn;
         }
 
+        Stopwatch saveWatch = new Stopwatch();
         // SERIALIZATION - compression update from https://itecnote.com/tecnote/c-custom-serialization-deserialization-together-with-deflatestreams/
         public void SaveDistanceMap(string name, float distanceMapDetail)
         {
-            SaveContainer saveContainer = new SaveContainer(this.distanceMap);
+            saveWatch.Start();
+            SaveContainer saveContainer = new SaveContainer();
+            saveContainer.Setup(this.distanceMap);
 
-            IFormatter bf = new BinaryFormatter();
+            var bytes = MessagePackSerializer.Serialize(saveContainer);
+
             using (var uncompressed = new MemoryStream())
             using (var fileStream = File.Create($"Maps/Data/{name}-{distanceMapDetail}.dm"))
             {
-                bf.Serialize(uncompressed, saveContainer);
+                uncompressed.Write(bytes, 0, bytes.Length);
                 uncompressed.Seek(0, SeekOrigin.Begin);
 
                 using (var deflateStream = new DeflateStream(fileStream, CompressionMode.Compress))
@@ -440,15 +450,18 @@ namespace Raymagic
                     uncompressed.CopyTo(deflateStream);
                 }
             }
+
+            saveWatch.Stop();
+            Console.WriteLine(saveWatch.ElapsedMilliseconds);
             
             GC.Collect();
         }
 
         public DMValue[,,] LoadDistanceMap(string name, float distanceMapDetail, DMValue[,,] distanceMap)
         {
+            saveWatch.Start();
             try
             {
-                IFormatter bf = new BinaryFormatter();
                 using (var fileStream = File.OpenRead($"Maps/Data/{name}-{distanceMapDetail}.dm"))
                 using (var decompressed = new MemoryStream())
                 {
@@ -458,17 +471,20 @@ namespace Raymagic
                     }
 
                     decompressed.Seek(0, SeekOrigin.Begin);
-                    SaveContainer saveContainer = (SaveContainer)bf.Deserialize(decompressed);
+                    SaveContainer saveContainer = (SaveContainer)MessagePackSerializer.Deserialize(typeof(SaveContainer), decompressed);
                     distanceMap = saveContainer.Deserialize(distanceMap);
                 }
 
                 Console.WriteLine($"Distance map Maps/Data/{name}-{distanceMapDetail}.dm loaded");
 
+                saveWatch.Stop();
+                Console.WriteLine(saveWatch.ElapsedMilliseconds);
+
                 return distanceMap;
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("unable to load");
+                Console.WriteLine("unable to load next");
             }
 
             return null;
