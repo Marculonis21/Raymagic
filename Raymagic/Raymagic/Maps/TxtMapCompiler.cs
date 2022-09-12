@@ -987,13 +987,8 @@ namespace Raymagic
                         {
                             Vector3 position = GetVector3FromText(paramPart[0], lineNum);
                             Color color = GetColorFromText(paramPart[1], lineNum);
-                            PhysicsObject ball = null;
-                            if (declaredPhysicsObjects.ContainsKey(paramPart[2]))
-                            {
-                                 ball = declaredPhysicsObjects[paramPart[2]].Item1;
-                                 /* declaredPhysicsObjects.Remove(paramPart[2]); */
-                                 /* data.physicsMapObjects.Remove(ball); */
-                            }
+                            PhysicsObject ball = declaredPhysicsObjects[paramPart[2]].Item1;
+                            data.physicsMapObjects.Remove(ball);
                             int delay = int.Parse(paramPart[3]);
 
                             iObj = new BallSpawner(position, color, ball, delay);

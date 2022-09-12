@@ -8,6 +8,9 @@
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/Extreme.Numerics.Generic.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/Extreme.Numerics.SinglePrecision.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/MathNet.Numerics.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/MessagePack.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/MessagePack.Annotations.dll
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/Microsoft.NET.StringTools.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/MonoGame.Framework.dll
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/runtimes/linux-x64/native/libSDL2-2.0.so.0
 /home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/bin/Debug/net6.0/runtimes/linux-x64/native/libopenal.so.1

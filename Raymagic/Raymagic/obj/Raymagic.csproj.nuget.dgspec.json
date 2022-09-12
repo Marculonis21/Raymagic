@@ -50,6 +50,10 @@
               "target": "Package",
               "version": "[4.15.0, )"
             },
+            "MessagePack": {
+              "target": "Package",
+              "version": "[2.4.35, )"
+            },
             "MonoGame.Content.Builder.Task": {
               "target": "Package",
               "version": "[3.8.0.1641, )"

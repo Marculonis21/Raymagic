@@ -1,16 +1,24 @@
 using System;
 using Microsoft.Xna.Framework;
+using MessagePack;
 
 namespace Raymagic
 {
-    [Serializable]
-    class SaveContainer
+    [Serializable, MessagePackObject]
+    public class SaveContainer
     {
-        float[,,] distanceMap;
-        byte[,,,] colorMap;
-        int [,,] objIndex;
+        [Key(0)]
+        public float[,,] distanceMap;
+        [Key(1)]
+        public byte[,,,] colorMap;
+        [Key(2)]
+        public int [,,] objIndex;
 
-        public SaveContainer(DMValue[,,] map)
+        public SaveContainer()
+        {
+        }
+
+        public void Setup(DMValue[,,] map)
         {
             distanceMap = new float[map.GetLength(0),map.GetLength(1),map.GetLength(2)];
             colorMap = new byte[map.GetLength(0),map.GetLength(1),map.GetLength(2),3];

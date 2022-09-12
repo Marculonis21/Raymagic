@@ -17,8 +17,8 @@ namespace Raymagic
             data.playerSpawn = new Vector3(100,100,100);
 
             data.nextLevelDetail = 2;
-            data.nextLevelID = "lvl1";
-            data.nextLevelInColor = Color.DarkGray;
+            data.nextLevelID = "lvl2";
+            data.nextLevelInColor = Color.Violet;
 
             // ############## OUTSIDEWALLS #################
 

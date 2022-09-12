@@ -27,17 +27,9 @@ namespace Raymagic
 
             Box line1 = new Box(new Vector3(0,0,-75), new Vector3(110,10,10), Color.Black, BooleanOP.DIFFERENCE);
             Box line2 = new Box(new Vector3(0,0,-75), new Vector3(10,110,10), Color.Black, BooleanOP.DIFFERENCE);
-            /* Box line3 = new Box(new Vector3(0,0,-75), new Vector3(110,10,10), Color.Black, BooleanOP.UNION); */
-            /* Box line4 = new Box(new Vector3(0,0,-75), new Vector3(110,10,10), Color.Black, BooleanOP.UNION); */
-            /* line1.Rotate(  0,new Vector3(0,0,1),line1.Position); */
-            /* line2.Rotate( 45,new Vector3(0,0,1),line2.Position); */
-            /* line3.Rotate( 90,new Vector3(0,0,1),line3.Position); */
-            /* line4.Rotate(135,new Vector3(0,0,1),line4.Position); */
 
             body.AddChildObject(line1, true);
             body.AddChildObject(line2, true);
-            /* body.AddChildObject(line3, true); */
-            /* body.AddChildObject(line4, true); */
 
             Cylinder indicator = new Cylinder(this.Position + new Vector3(0,0,-75),new Vector3(0,0,1),8,62, this.secondaryColor);
             indicator.AddChildObject(new Cylinder(new Vector3(0,0,100), new Vector3(0,0,1), 200, 55, Color.Black, BooleanOP.DIFFERENCE), true);

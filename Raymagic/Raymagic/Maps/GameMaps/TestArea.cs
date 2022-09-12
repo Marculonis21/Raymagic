@@ -175,16 +175,16 @@ namespace Raymagic
             /* button.stateChangeEvent += portalSpawner.EventListener; */
             /* data.interactableObjectList.Add(portalSpawner); */
 
-            /* Jumper jj = new Jumper(new Vector3(150,150,0), */
-            /*                        new Vector3(0,0,1), */
-            /*                        new Vector3(1,0,0), */
-            /*                        new Vector3(1,0,3), */
-            /*                        15, */
-            /*                        mainPlaneW); */
+            Jumper jj = new Jumper(new Vector3(150,150,0),
+                                   new Vector3(0,0,1),
+                                   new Vector3(1,0,0),
+                                   new Vector3(0,0,1),
+                                   15,
+                                   mainPlaneW);
 
             /* button.stateChangeEvent += jj.EventListener; */
 
-            /* data.interactableObjectList.Add(jj); */
+            data.interactableObjectList.Add(jj);
 
             /* data.interactableObjectList.Add(new LaserSpawner(new Vector3(2,150,30), new Vector3(1,0,0), plane1)); */
             /* data.interactableObjectList.Add(new LaserCatcher(new Vector3(150,150,0), new Vector3(0,0,1), mainPlaneW, Color.Aqua)); */

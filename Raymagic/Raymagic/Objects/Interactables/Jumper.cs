@@ -22,7 +22,6 @@ namespace Raymagic
             this.arrowDir = arrowDir;
             this.jumperDirection = Vector3.Normalize(jumperDirection);
             this.jumperStrength = strength;
-            /* Console.WriteLine($"{this.jumperDirection} - {this.jumperStrength}"); */
             this.floor = floorObject;
         }
 
@@ -180,7 +179,7 @@ namespace Raymagic
         {
             if (up) 
             {
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
 
             for (int i = 0; i < (up ? 3 : 15); i++)
