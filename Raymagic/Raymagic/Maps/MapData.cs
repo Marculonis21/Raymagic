@@ -25,6 +25,9 @@ namespace Raymagic
         public string nextLevelID;
         public float nextLevelDetail;
         public Color nextLevelInColor;
+        public Color lastLevelInColor;
+        public int gameLevelOrder = -1;
+        public string gameLevelName = "";
 
         public List<Object> staticMapObjects = new List<Object>();
         public List<Object> dynamicMapObjects = new List<Object>();

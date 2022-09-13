@@ -8,6 +8,8 @@ config
     anchor_end: (0,0,75)
     next_lvl: lvl3
     next_lvl_detail: 2
+    game_lvl_order: 2
+    game_lvl_name: "Through the portal" 
 }
 
 static

@@ -6,6 +6,10 @@ config
     bot_corner: (-300,0,-300)
     anchor_start: (0,0,75)
     anchor_end: (0,0,75)
+    next_lvl: lvl4
+    next_lvl_detail: 2
+    game_lvl_order: 3
+    game_lvl_name: "Getting the hang of it" 
 }
 
 static

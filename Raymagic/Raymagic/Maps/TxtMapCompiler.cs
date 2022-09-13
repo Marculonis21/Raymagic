@@ -62,7 +62,6 @@ namespace Raymagic
                 "floor_button",
                 "door",
                 "lifter",
-
                 "jumper",
                 "laser_spawner",
                 "laser_catcher",
@@ -197,8 +196,8 @@ namespace Raymagic
             partsFound.Add("player_spawn",false);
             partsFound.Add("top_corner",false);
             partsFound.Add("bot_corner",false);
-            partsFound.Add("anchor_start",false);
-            partsFound.Add("anchor_end",false);
+            /* partsFound.Add("anchor_start",false); */
+            /* partsFound.Add("anchor_end",false); */
 
             int lineNum;
             for (int i = start+1; i < end; i++)
@@ -237,27 +236,45 @@ namespace Raymagic
                 }
                 else if (line.StartsWith("anchor_start:"))
                 {
-                    partsFound["anchor_start"] = true;
+                    /* partsFound["anchor_start"] = true; */
                     var As = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.levelStartAnchor = GetVector3FromText(As, lineNum);
                 }
                 else if (line.StartsWith("anchor_end:"))
                 {
-                    partsFound["anchor_end"] = true;
+                    /* partsFound["anchor_end"] = true; */
                     var ae = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.levelEndAnchor = GetVector3FromText(ae, lineNum);
                 }
                 else if (line.StartsWith("next_lvl:"))
                 {
-                    /* partsFound["anchor_end"] = true; */
                     var nextLvlID = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.nextLevelID = nextLvlID;
                 }
                 else if (line.StartsWith("next_lvl_detail:"))
                 {
-                    /* partsFound["anchor_end"] = true; */
                     var nextLvlDetail = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.nextLevelDetail = float.Parse(nextLvlDetail);
+                }
+                else if (line.StartsWith("next_lvl_door_color:"))
+                {
+                    var nextLvlDoorColor = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.nextLevelInColor = GetColorFromText(nextLvlDoorColor, lineNum);
+                }
+                else if (line.StartsWith("last_lvl_door_color:"))
+                {
+                    var lastLvlDoorColor = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.lastLevelInColor = GetColorFromText(lastLvlDoorColor, lineNum);
+                }
+                else if (line.StartsWith("game_lvl_order:"))
+                {
+                    var gameLvlOrder = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.gameLevelOrder = int.Parse(gameLvlOrder);
+                }
+                else if (line.StartsWith("game_lvl_name:"))
+                {
+                    var gameLvlName = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    data.gameLevelName = gameLvlName;
                 }
                 else    
                 {
@@ -280,14 +297,6 @@ namespace Raymagic
             if (!partsFound["bot_corner"])
             {
                 throw new FormatException("config - missing 'bot_corner' attribute");
-            }
-            if (!partsFound["anchor_start"])
-            {
-                throw new FormatException("config - missing 'anchor_start' attribute");
-            }
-            if (!partsFound["anchor_end"])
-            {
-                throw new FormatException("config - missing 'anchor_end' attribute");
             }
         }
 
@@ -315,6 +324,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
@@ -374,6 +384,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
@@ -433,6 +444,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
@@ -492,6 +504,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
@@ -541,6 +554,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (LineContainsObject(line, lineNum, out objectPart, out paramPart))
                 {
@@ -646,6 +660,7 @@ namespace Raymagic
 
                 if (line.StartsWith("#")) continue;
                 if (line == "") continue;
+                if (LineContainsHelp(line, lineNum)) {}
 
                 if (declaredObjectsStatic.ContainsKey(line))
                 {
@@ -1289,6 +1304,258 @@ namespace Raymagic
 
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        private bool LineContainsHelp(string line, int lineNum) 
+        {
+            if (line.StartsWith("help:"))
+            {
+                var info = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                string text = "";
+
+                if (info == "config")
+                {
+                    text += $"Config block help found on line {lineNum}\n";
+                    text += $"Changes to this block needs level restart";
+                    text += $"\n";
+                    text += $"  *'name: <map id>'              ... choose map id\n";
+                    text += $"  *'player_spawn: <vector>'      ... choose where player spawns\n";
+                    text += $"  *'bot_corner: <vector>' \n";
+                    text += $"  *'top_corner: <vector>'        ... choose bot and top corner of distance map\n";
+                    text += $"  'next_lvl: <next map id>'      ... choose next map id\n";
+                    text += $"  'next_lvl_detail: <int>'       ... choose next map level detail\n";
+                    text += $"  'next_lvl_door_color: <color>' ... choose next load level door color\n";
+                    text += $"  'last_lvl_door_color: <color>' ... choose last load level door color\n";
+                    text += $"  'game_lvl_order: <int>'        ... set map order for game mode\n";
+                    text += $"  'game_lvl_name: <string>'      ... set map name for game mode\n";
+                }
+                else if (info == "static" || info == "dynamic")
+                {
+                    if (info == "static")
+                    {
+                        text += $"Static block help found on line {lineNum}\n";
+                        text += $"Changes to this block needs level restart and distance map rebuild\n";
+                    }
+                    else
+                    {
+                        text += $"Dynamic block help found on line {lineNum}\n";
+                        text += $"Changes to this block can be done at runtime\n";
+                    }
+                    text += $"\n";
+                    text += $"  '#comment'\n";
+                    text += $"  '$<variable name>:<vector/color/bool> ... declare custom variable'\n";
+                    text += $"  declare custom variable'\n";
+                    text += $"  '<object>[<object info name>]: <object declaration>'\n";
+                    text += $"Objects: box, box_frame, capsule, cylinder, plane, sphere\n";
+                    text += $"\n";
+                    text += $"  '<operation>: <operation declaration>'\n"; 
+                    text += $"Operations: boolean, rotateX, rotateY, rotateZ, rotate\n";
+                    text += $"            repeat, symmetry, connect\n";
+                }
+                else if (info == "lights")
+                {
+                    text += $"Lights block help found on line {lineNum}\n";
+                    text += $"Changes to this block can be done at runtime\n";
+                    text += $"\n";
+                    text += $"  '#comment'\n";
+                    text += $"  'light:<light declaration>'\n";
+                }
+                else if (info == "physics")
+                {
+                    text += $"Physics block help found on line {lineNum}\n";
+                    text += $"Changes to this block can be done at runtime\n";
+                    text += $"\n";
+                    text += $"  '#comment'\n";
+                    text += $"  '<physics object>[<object name>]:<object declaration>'\n";
+                    text += $"Physics objects: physics_object, mirror_ball, physics_trigger\n";
+                }
+                else if (info == "interactables")
+                {
+                    text += $"Interactables block help found on line {lineNum}\n";
+                    text += $"Changes to this block needs level restart and distance map rebuild\n";
+                    text += $"\n";
+                    text += $"  '#comment'\n";
+                    text += $"  '<interactable object>[<object name>]:<object declaration>'\n";
+                    text += $"Interactable objects: button, floor_button, door, lifter, jumper\n";
+                    text += $"                      laser_spawner, laser_catcher\n";
+                    text += $"                      portal_spawner, ball_spawner\n";
+                    text += $"  'connect: <interactable ID - signal sender> -> <interactable ID singal receiver>\n'";
+                }
+                else if (info == "portalable")
+                {
+                    text += $"Portalable block help found on line {lineNum}\n";
+                    text += $"Changes to this block can be done at runtime\n";
+                    text += $"  '#comment'\n";
+                    text += $"  '<object ID> ... set object to be able to receive portals'\n";
+                }
+                // object help
+                else if (info == "box")
+                {
+                    text += $"Box object help found on line {lineNum}\n";
+                    text += $"  'box[<object ID>]:<vector>|<vector>|<color name>|<vector>'\n";
+                    text += $"                    position|size    |color       |bounding box'";
+                }
+                else if (info == "box_frame")
+                {
+                    text += $"Box_frame object help found on line {lineNum}\n";
+                    text += $"  'box_frame[<object ID>]:<vector>|<vector>|<float>   |<color name>|<vector>'\n";
+                    text += $"                          position|size    |frame size|color       |bounding box'";
+                }
+                else if (info == "capsule")
+                {
+                    text += $"Capsule object help found on line {lineNum}\n";
+                    text += $"  'capsule[<object ID>]:<vector>|<float>|<float>|<color name>|<vector>'\n";
+                    text += $"                        position|height |radius |color       |bounding box'";
+                }
+                else if (info == "cylinder")
+                {
+                    text += $"Cylinder object help found on line {lineNum}\n";
+                    text += $"  'cylinder[<object ID>]:<vector>     |<vector>          |<float>|<float>|<color name>|<vector>'\n";
+                    text += $"                         base position|base normal vector|height |radius |color       |bounding box'";
+                }
+                else if (info == "plane")
+                {
+                    text += $"Plane object help found on line {lineNum}\n";
+                    text += $"*can be used only in static block or as part of boolean operation*";
+                    text += $"  'plane[<object ID>]:<vector>|<vector>    |<color name>\n";
+                    text += $"                      position|plane normal|color       ";
+                }
+                else if (info == "sphere")
+                {
+                    text += $"Sphere help found on line {lineNum}\n";
+                    text += $"  'sphere[<object ID>]:<vector>|<float>|<color name>|<vector>'\n";
+                    text += $"                       position|size   |color       |bounding box'";
+                }
+                else if (info == "physics_object")
+                {
+                    text += $"Physics_object help found on line {lineNum}\n";
+                    text += $"  'physics_object[<object ID>]:<vector>|<color name>|<color name>'\n";
+                    text += $"                               position|color1      |color2      '";
+                }
+                else if (info == "mirror_ball")
+                {
+                    text += $"Mirror_ball help found on line {lineNum}\n";
+                    text += $"  'mirror_ball[<object ID>]:<vector>'\n";
+                    text += $"                            position'";
+                }
+                else if (info == "physics_trigger")
+                {
+                    text += $"Trigger reacting to player and physics objects help found on line {lineNum}\n";
+                    text += $"  'physics_trigger[<object ID>]:<vector>|<float>'\n";
+                    text += $"                                position|trigger size'";
+                }
+                else if (info == "button")
+                {
+                    text += $"Button help found on line {lineNum}\n";
+                    text += $"  'button[<object ID>]:<vector>|<vector>  |<color>'\n";
+                    text += $"                       position|facing dir|color  '";
+                }
+                else if (info == "floor_button")
+                {
+                    text += $"Floor_button help found on line {lineNum}\n";
+                    text += $"  'floor_button[<object ID>]:<vector>|<color>'\n";
+                    text += $"                             position|color  '";
+                }
+                else if (info == "door")
+                {
+                    text += $"Door help found on line {lineNum}\n";
+                    text += $"  'door[<object ID>]:<vector>|<vector>            |<object ID>   |<color>|<int>'\n";
+                    text += $"                     position|facing dir (limited)|wall object ID|color  |connections needed for interaction'";
+                }
+                else if (info == "lifter")
+                {
+                    text += $"Lifter help found on line {lineNum}\n";
+                    text += $"  'lifter[<object ID>]:<vector>|<float>   |<bool>       |<color>'\n";
+                    text += $"                       position|max height|inverted mode|color  '";
+                }
+                else if (info == "jumper")
+                {
+                    text += $"Jumper help found on line {lineNum}\n";
+                    text += $"  'jumper[<object ID>]:<vector>|<vector>|<vector> |<vector>|<float>      |<object ID>'\n";
+                    text += $"                       position|normal  |arrow dir|jump dir|jump strength|ground object ID'";
+                }
+                else if (info == "laser_spawner")
+                {
+                    text += $"Laser_spawner help found on line {lineNum}\n";
+                    text += $"  'laser_spawner[<object ID>]:<vector>|<vector>|<object ID>     |'\n";
+                    text += $"                              position|normal  |ground object ID|'";
+                }
+                else if (info == "laser_catcher")
+                {
+                    text += $"Laser_catcher help found on line {lineNum}\n";
+                    text += $"  'laser_catcher[<object ID>]:<vector>|<vector>|<object ID>     |<color>'\n";
+                    text += $"                              position|normal  |ground object ID|color  '";
+                }
+                else if (info == "ball_spawner")
+                {
+                    text += $"Ball_spawner help found on line {lineNum}\n";
+                    text += $"  'ball_spawner[<object ID>]:<vector>|<color>|<physics object ID>|<int>'\n";
+                    text += $"                             position|color  |spawn ball ID      |ms delay from open to spawn'";
+                }
+                // operation info
+                else if (info == "rotateX"||info == "rotateY"||info == "rotateZ")
+                {
+                    text += $"rotateX/Y/Z help found on line {lineNum}\n";
+                    text += $"  'rotateX/Y/Z: <object ID>:      <float>|<vector>'\n";
+                    text += $"                object to rotate: angle  |pivot pos\n";
+                }
+                else if (info == "rotate")
+                {
+                    text += $"rotate help found on line {lineNum}\n";
+                    text += $"  'rotate: <object ID>:      <float>|<vector>|<vector>'\n";
+                    text += $"           object to rotate: angle  |axis    |pivot pos\n";
+                }
+                else if (info == "repeat")
+                {
+                    text += $"repeat help found on line {lineNum}\n";
+                    text += $"  'repeat: <object ID>:      <vector>        |<float>'\n";
+                    text += $"           object to repeat: repetition limit|repetition distance";
+                }
+                else if (info == "symmetry")
+                {
+                    text += $"symmetry help found on line {lineNum}\n";
+                    text += $"  'symmetry: <object ID>:         <symmetry axis options>  |<vector>'\n";
+                    text += $"             object for symmetry: \"XYZ\" (any combination)|symmetry plane offset";
+                }
+                else if (info == "boolean")
+                {
+                    text += $"boolean help found on line {lineNum}\n";
+                    text += $"Boolean operations: difference, intersect, union\n";
+                    text += $"                    smooth_difference, smooth_intersect, smooth_union\n";
+                    text += $"  'boolean: <object ID>: <boolean op>: <operation object decleration>'\n";
+                    text += $"                 object: boolean op  : object";
+                    text += $"\n";
+                    text += $"  'boolean: <object ID>: <smooth_boolean op>[<float>]:         <operation object decleration>'\n";
+                    text += $"                 object:   smooth boolean op[smooth strength]: object";
+                }
+                throw new FormatException(text);
+            }
+            else if (line.StartsWith("help"))
+            {
+                string text = "";
+                text += $"Help found on line {lineNum}\n";
+                text += $"Use 'help: <topic>' to choose more specific topic\n";
+                text += $"\n";
+                text += $"Code blocks: config, static, dynamic, lights, \n";
+                text += $"             physics, interactables, portalable\n";
+                text += $"Objects: box, box_frame, capsule, cylinder, plane, sphere\n";
+                text += $"Lights: light\n";
+                text += $"Physics objects: physics_object, mirror_ball, physics_trigger\n";
+                text += $"Interactable objects: button, floor_button, door, lifter, jumper\n";
+                text += $"                      laser_spawner, laser_catcher\n";
+                text += $"                      portal_spawner, ball_spawner\n";
+                text += $"\n";
+                text += $"Operations: boolean, rotateX, rotateY, rotateZ, rotate\n";
+                text += $"            repeat, symmetry, connect\n";
+                text += $"\n";
+                text += $"Variable declaration: '$<variable name>:<vector/color/bool>'\n";
+                text += $"                       can be used instead of vector/color/bool in declaration\n";
+                text += $"                       with the use of '$<variable name>'";
+
+                throw new FormatException(text);
             }
 
             return false;

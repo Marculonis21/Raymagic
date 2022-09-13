@@ -20,6 +20,9 @@ namespace Raymagic
             data.nextLevelID = "lvl2";
             data.nextLevelInColor = Color.Violet;
 
+            data.gameLevelOrder = 1;
+            data.gameLevelName = "First Level";
+
             // ############## OUTSIDEWALLS #################
 
             Plane floor = new Plane(new Vector3(0,0,0),

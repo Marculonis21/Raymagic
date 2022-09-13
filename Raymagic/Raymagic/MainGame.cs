@@ -27,6 +27,8 @@ namespace Raymagic
 
         Screen screen;
 
+        ConsoleMenu menu;
+
         public MainGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -43,18 +45,16 @@ namespace Raymagic
             map = Map.instance;
             map.LoadMaps();
 
-            UserInit();
+            menu = ConsoleMenu.instance;
+
+            /* UserInit(); */
+            menu.DisplayMenu();
 
             player = Player.instance;
 
             base.Initialize();
 
             GC.Collect();
-        }
-
-        public static void TestMethod(int state)
-        {
-            Console.WriteLine("Triggered " + state.ToString());
         }
 
         protected override void LoadContent()
@@ -70,50 +70,6 @@ namespace Raymagic
             Informer.instance.SetGraphics(this.graphics);
         }
         
-        private void UserInit()
-        {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            Console.CursorLeft = (Console.WindowWidth/2) - 15;
-            Console.WriteLine("-------------------------------");
-            Console.CursorLeft = (Console.WindowWidth/2) - 15;
-            Console.WriteLine("| --- WELCOME TO RAYMAGIC --- |");
-            Console.CursorLeft = (Console.WindowWidth/2) - 15;
-            Console.WriteLine("-------------------------------");
-
-            Console.WriteLine("MAP SELECT:");
-
-            int i = 1;
-            foreach(string key in map.maps.Keys)
-            {
-                Console.CursorLeft = 3;
-                Console.WriteLine($"{i}: {key}");
-                i++;
-            }
-            Console.WriteLine();
-
-            int input;
-            while(true)
-            {
-                if(int.TryParse(Console.ReadLine(), out input))
-                {
-                    if(input > 0 && input < map.maps.Count + 1)
-                    {
-                        i = 1;
-                        foreach(string key in map.maps.Keys)
-                        {
-                            if(input == i)
-                            {
-                                Console.WriteLine($"Map chosen: {key}");
-                                map.SetMap(key);
-                            }
-                            i++;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
 
         protected override void Update(GameTime gameTime)
         {

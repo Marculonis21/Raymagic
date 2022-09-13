@@ -21,7 +21,7 @@ namespace Raymagic
         {
             if (data.inDoor != null)
             {
-                Console.WriteLine("add indoor");
+                /* Console.WriteLine("add indoor"); */
                 data.inDoor.IN = true;
                 data.inDoor.doorClosedEvent += Map.instance.LoadingDoorClosed;
                 AddToDoor(ref data, data.inDoor, true);
@@ -29,7 +29,7 @@ namespace Raymagic
 
             if (data.outDoor != null)
             {
-                Console.WriteLine("add outdoor");
+                /* Console.WriteLine("add outdoor"); */
                 data.outDoor.IN = false;
                 data.outDoor.doorClosedEvent += Map.instance.LoadingDoorClosed;
                 AddToDoor(ref data, data.outDoor, false);

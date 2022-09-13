@@ -217,7 +217,7 @@ namespace Raymagic
                 var playerPos = Player.instance.position;
                 if (Vector3.Dot(playerPos - this.Position, this.facing) < 0) 
                 {
-                    Console.WriteLine("closing closing closing");
+                    /* Console.WriteLine("closing closing closing"); */
                     state = 0;
                     CloseDoor();
                 }

@@ -57,14 +57,12 @@ namespace Raymagic
         public static readonly Map instance = new Map();
 
         public bool enabledUpdate = true;
-        public float portalMomentumConstant = 0.96787f;
+        public float portalMomentumConstant = 0.96787f; // portal transfer MAGIC
         public void Update(GameTime gameTime)
         {
             if (enabledUpdate)
             {
                 physicsSpace.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-
-                /* Console.WriteLine($"{physicsObjectsList[0].Position}, {physicsObjectsList[1].Position}"); */
             }
         }
 
@@ -133,7 +131,7 @@ namespace Raymagic
             Informer.instance.RemoveInfo("map_compilation2");
         }
 
-        public void SetMap(string id)
+        public void SetMap(string id, bool gameMode=false)
         {
             LoadingMap ld = new LoadingMap();
 
@@ -172,6 +170,19 @@ namespace Raymagic
             this.levelStartAnchor = data.levelStartAnchor;
             this.levelEndAnchor = data.levelEndAnchor;
 
+            if (gameMode) // game mode skips all menu interactions and loads detail 2 (good enough) of selected map
+            {
+                this.distanceMapDetail = 2;
+                
+                distanceMap = new DMValue[(int)Math.Ceiling(mapSize.X/distanceMapDetail), 
+                                          (int)Math.Ceiling(mapSize.Y/distanceMapDetail),
+                                          (int)Math.Ceiling(mapSize.Z/distanceMapDetail)];
+
+                BVH.BuildBVHDownUp(this.dynamicObjectList, this.interactableObjectList);
+                this.distanceMap = LoadDistanceMap(id, this.distanceMapDetail, this.distanceMap);
+                Console.CursorVisible = true;
+                return;
+            }
 
             Console.WriteLine("\nSelect distance map detail: ");
             while (true)
@@ -187,14 +198,12 @@ namespace Raymagic
                 }
             }
 
-            /* Maps/{name}-{distanceMapDetail}.dm */
             distanceMap = new DMValue[(int)Math.Ceiling(mapSize.X/distanceMapDetail), 
                                       (int)Math.Ceiling(mapSize.Y/distanceMapDetail),
                                       (int)Math.Ceiling(mapSize.Z/distanceMapDetail)];
 
             Console.WriteLine("");
             BVH.BuildBVHDownUp(this.dynamicObjectList, this.interactableObjectList);
-            /* BdH.InfoPrint(); */
 
             if(File.Exists($"Maps/Data/{mapName}-{distanceMapDetail}.dm"))
             {
@@ -233,7 +242,6 @@ namespace Raymagic
 
                 int layer = (int)((mapSize.Y/distanceMapDetail) * (mapSize.X/distanceMapDetail));
                 Parallel.For(0, layer, i => 
-                /* for (int i = 0; i < layer; i++) */
                 {
                     int y = (int)(i / (mapSize.X/distanceMapDetail));
                     int x = (int)(i % (mapSize.X/distanceMapDetail));
@@ -255,7 +263,6 @@ namespace Raymagic
                         index++;
                     }
 
-                    /* Console.WriteLine($"{x}:{y}:{z}"); */
                     distanceMap[x,y,z] = new DMValue(bestObjIndex, best);
                 });
             }
@@ -291,7 +298,7 @@ namespace Raymagic
             }
 
             sw.Start();
-            Console.WriteLine("preloading started");
+            // START PRELOADING NEXT LEVEL
             mapPreloading = true;
             var _data                   = maps[id];
 
@@ -327,10 +334,6 @@ namespace Raymagic
             _BVH.BuildBVHDownUp(_dynamicObjectList, _interactableObjectList);
 
             var _physicsSpace = new PhysicsSpace(_physicsObjectsList);
-            foreach (var item in _physicsObjectsList)
-            {
-                Console.WriteLine(item.Position);
-            }
 
             var _mapSize      = _data.topCorner - _data.botCorner;
             var _mapOrigin    = _data.botCorner;
@@ -345,21 +348,19 @@ namespace Raymagic
 
             if (_distanceMap == null) // failed to load distance map
             {
-                Console.WriteLine("stopped preloading");
                 return;
             }
 
             sw.Stop();
-            Console.WriteLine($"DONEDONE {sw.ElapsedMilliseconds}");
+            /* Console.WriteLine($"DONEDONE {sw.ElapsedMilliseconds}"); */
 
             mapPreloadingLoadingMap = false;
-            while (!changeMap)
+            while (!changeMap) // if player still playing level, wait with data transfer to next level
             {
                 Thread.Sleep(1000);
             }
 
-            Console.WriteLine("Player and data transfer");
-            
+            /* Console.WriteLine("Player and data transfer"); */
             Task.Run(() => { while(Screen.instance.DrawPhase) { } });
 
             Player.instance.TranslateAbsolute(_levelStartAnchor + (Player.instance.position-this.levelEndAnchor));
@@ -382,11 +383,6 @@ namespace Raymagic
             this.nextLevelID            = _nextLevelID;
             this.nextLevelDetail        = _nextLevelDetail;
 
-            foreach (var item in physicsObjectsList)
-            {
-                Console.WriteLine(item.Position);
-            }
-
             foreach (var item in interactableObjectList)
             {
                 item.ObjectStartup();
@@ -398,24 +394,19 @@ namespace Raymagic
         public void LoadingDoorClosed(Door2 door, bool IN)
         {
             var playerPos = Player.instance.position;
-            if (Vector3.Dot(playerPos - door.Position, door.facing) > 0) 
+            if (Vector3.Dot(playerPos - door.Position, door.facing) > 0) // door closing but player on wrong side
             {
-                /* Console.WriteLine("door closed but nothing happens"); */
                 return;
             }
 
-            if (IN)
+            if (IN) // player in level - start next level loading
             {
-                /* Console.WriteLine("IN CLOSED OUT"); */
-                /* new Thread(() => PreLoadMap(next:true)).Start(); */
                 Task.Factory.StartNew(() => PreLoadMap(next:true), TaskCreationOptions.LongRunning).Start();
             }
             else // coming out of the map into loading map
             {
-                /* Console.WriteLine("CLOSED OUT"); */
                 if (this.mapPreloading) // still loading next map - speed up
                 {
-                    /* Console.WriteLine("preloading hyper"); */
                     this.mapPreloadingLoadingMap = true;
                 }
 
@@ -484,7 +475,7 @@ namespace Raymagic
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("unable to load next");
+                Console.WriteLine("LOAD ABORT - unable to load next distance map - file missing");
             }
 
             return null;
