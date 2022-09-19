@@ -23,6 +23,8 @@ namespace Raymagic
             data.gameLevelOrder = 1;
             data.gameLevelName = "First Level";
 
+            data.gameLevelInputs = 0;
+
             // ############## OUTSIDEWALLS #################
 
             Plane floor = new Plane(new Vector3(0,0,0),

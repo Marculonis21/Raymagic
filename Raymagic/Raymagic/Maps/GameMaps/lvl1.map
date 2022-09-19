@@ -6,6 +6,7 @@ config
     bot_corner: (0,0,0)
     anchor_start: (0,0,75)
     anchor_end: (0,0,75)
+    game_lvl_inputs: 0
 }
 
 static

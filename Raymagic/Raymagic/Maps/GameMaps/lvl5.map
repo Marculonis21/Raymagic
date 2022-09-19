@@ -6,6 +6,11 @@ config
     bot_corner: (-100,0,0)
     anchor_start: (0,0,75)
     anchor_end: (0,0,75)
+    # next_lvl: lvl5
+    # next_lvl_detail: 2
+    game_lvl_order: 5
+    game_lvl_name: "LASERRR!"
+    game_lvl_inputs: 2
 }
 
 static
@@ -43,7 +48,7 @@ static
     box[endWall1]:(100,800,70)|(380,6,125)|White|(400,10,200)
     box[endWall12]:(100,800,70)|(400,4,140)|Gray|(500,10,200)
 
-    box[endWall2]:(-100,600,70)|(10,390,125)|White|(10,400,200)
+    box[endWall2]:(-100,600,70)|(10,390,125)|Gray|(10,400,200)
     box[endWall22]:(-100,600,70)|(8,400,140)|Gray|(10,400,200)
 
     box[beforeend]:(525,525,150)|(140,200,4)|White|(200,400,150)
@@ -88,6 +93,5 @@ portalable
     underlaser
     grayWall
     endWall1
-    endWall2
     beforeend
 }

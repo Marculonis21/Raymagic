@@ -215,7 +215,7 @@ namespace Raymagic
                 /* Screen.instance.processingTest = true; */
 
                 // long running task? thread feels better - completely separated
-                new Thread(() => map.PreLoadMap("lvl5", 2)).Start();
+                /* new Thread(() => map.PreloadMap("lvl5", 2)).Start(); */
             }
             if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
             {
@@ -550,7 +550,12 @@ namespace Raymagic
                 rPressed = true;
             }
 
-            if ((mouse.LeftButton == ButtonState.Released && lPressed) || (mouse.RightButton == ButtonState.Released && rPressed))
+            if (map.levelInputs == 0)
+            {
+                return;
+            }
+
+            if ((mouse.LeftButton == ButtonState.Released && lPressed && map.levelInputs == 2) || (mouse.RightButton == ButtonState.Released && rPressed))
             {
                 RayMarchingHelper.PhysicsRayMarch(new Ray(this.position, this.lookDir), 300, 0, out float length, out Vector3 hit, out Object hitObj, caller:this.model);
                 if (hitObj.IsPortalable || (hitObj == map.portalList[0] && lPressed) || (hitObj == map.portalList[1] && rPressed))
@@ -559,7 +564,15 @@ namespace Raymagic
                     {
                         hit += hitObj.SDF_normal(hit)*-2;
                     }
-                    int type = lPressed ? 0 : 1;
+                    int type; 
+                    if (map.levelInputs == 2)
+                    {
+                        type = lPressed ? 0 : 1;
+                    }
+                    else
+                    {
+                        type = 1;
+                    }
                     map.portalList[type] = (new Portal(hit, hitObj.SDF_normal(hit), type));
                 }
                 lPressed = rPressed = false;

@@ -109,30 +109,30 @@ namespace Raymagic
             data.isCompiled = true;
             data.path = path;
 
-            await Task.Run(() => ParseConfigAsync(input));
-            List<Task> tasks = new List<Task>();
-
-            if (full)
-            {
-                // they contain static elements - needs full recompile
-                // awaits for consistency
-                tasks.Add(ParseStaticAsync(input));
-                tasks.Add(ParseDynamicAsync(input));
-                tasks.Add(ParseLightsAsync(input));
-                tasks.Add(ParsePhysicsAsync(input));
-                tasks.Add(ParseInteractableAsync(input));
-            }
-            else
-            {
-                tasks.Add(ParseDynamicAsync(input));
-                tasks.Add(ParseLightsAsync(input));
-                tasks.Add(ParsePhysicsAsync(input));
-            }
-
             try
             {
+                await Task.Run(() => ParseConfigAsync(input));
+                List<Task> tasks = new List<Task>();
+
+                if (full)
+                {
+                    // they contain static elements - needs full recompile
+                    // awaits for consistency
+                    tasks.Add(ParseStaticAsync(input));
+                    tasks.Add(ParseDynamicAsync(input));
+                    tasks.Add(ParseLightsAsync(input));
+                    tasks.Add(ParsePhysicsAsync(input));
+                    tasks.Add(ParseInteractableAsync(input));
+                    tasks.Add(ParsePortalableAsync(input));
+                }
+                else
+                {
+                    tasks.Add(ParseDynamicAsync(input));
+                    tasks.Add(ParseLightsAsync(input));
+                    tasks.Add(ParsePhysicsAsync(input));
+                }
+
                 await Task.WhenAll(tasks);
-                await Task.Run(() => ParsePortalableAsync(input));
 
                 if (!full)
                 {
@@ -196,15 +196,10 @@ namespace Raymagic
             partsFound.Add("player_spawn",false);
             partsFound.Add("top_corner",false);
             partsFound.Add("bot_corner",false);
-            /* partsFound.Add("anchor_start",false); */
-            /* partsFound.Add("anchor_end",false); */
 
             int lineNum;
             for (int i = start+1; i < end; i++)
             {
-                /* Console.WriteLine($"config {i}"); */
-                /* await Task.Yield(); */
-
                 var line = input[i];
                 lineNum = i+1;
 
@@ -276,6 +271,16 @@ namespace Raymagic
                     var gameLvlName = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
                     data.gameLevelName = gameLvlName;
                 }
+                else if (line.StartsWith("game_lvl_inputs:"))
+                {
+                    var gameLvlInputs = line.Split(":", 2, StringSplitOptions.TrimEntries)[1];
+                    int inputs = int.Parse(gameLvlInputs);
+                    if (inputs < 0 || inputs > 2)
+                    {
+                        throw new FormatException($"Format warning line {lineNum} - game inputs can be only 0 - no portals, 1 - blue portal, 2 - both portals");
+                    }
+                    data.gameLevelInputs = inputs;
+                }
                 else    
                 {
                     throw new FormatException($"Format warning line {lineNum} - Unknown config input - expects 'name', 'player_spawn', 'top_corner', 'bot_corner'");
@@ -316,8 +321,6 @@ namespace Raymagic
             int lineNum;
             for (int i = start+1; i < end; i++)
             {
-                /* Console.WriteLine($"static {i}"); */
-                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -376,8 +379,6 @@ namespace Raymagic
             int lineNum;
             for (int i = start+1; i < end; i++)
             {
-                /* Console.WriteLine($"dynamic {i}"); */
-                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -437,9 +438,6 @@ namespace Raymagic
             {
                 lineNum = i+1;
 
-                /* Console.WriteLine($"lights {i}"); */
-                /* await Task.Yield(); */
-
                 var line = input[i];
 
                 if (line.StartsWith("#")) continue;
@@ -496,8 +494,6 @@ namespace Raymagic
             int lineNum;
             for (int i = start+1; i < end; i++)
             {
-                /* Console.WriteLine($"physics {i}"); */
-                /* await Task.Yield(); */
                 lineNum = i+1;
 
                 var line = input[i];
@@ -664,15 +660,17 @@ namespace Raymagic
 
                 if (declaredObjectsStatic.ContainsKey(line))
                 {
+                    Console.WriteLine($"static {line}");
                     declaredObjectsStatic[line].SetPortalable(true);
                 }
                 else if (declaredObjectsDynamic.ContainsKey(line))
                 {
+                    Console.WriteLine($"dynamic {line}");
                     declaredObjectsDynamic[line].SetPortalable(true);
                 }
                 else
                 {
-                    throw new FormatException($"Format error line {lineNum} - Portalable block input are only names of declared object on new lines to set portalable");
+                    throw new FormatException($"Format error line {lineNum} - Portalable block inputs are only names of declared object on new lines to set them portalable");
                 }
             }
         }
@@ -1331,6 +1329,7 @@ namespace Raymagic
                     text += $"  'last_lvl_door_color: <color>' ... choose last load level door color\n";
                     text += $"  'game_lvl_order: <int>'        ... set map order for game mode\n";
                     text += $"  'game_lvl_name: <string>'      ... set map name for game mode\n";
+                    text += $"  'game_lvl_inputs: <int>:'      ... set possible inputs for level (0/1/2)\n";
                 }
                 else if (info == "static" || info == "dynamic")
                 {
@@ -1387,7 +1386,7 @@ namespace Raymagic
                 else if (info == "portalable")
                 {
                     text += $"Portalable block help found on line {lineNum}\n";
-                    text += $"Changes to this block can be done at runtime\n";
+                    text += $"Changes to this block needs level restart and distance map rebuild\n";
                     text += $"  '#comment'\n";
                     text += $"  '<object ID> ... set object to be able to receive portals'\n";
                 }

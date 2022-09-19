@@ -28,6 +28,7 @@ namespace Raymagic
         public Vector3 levelEndAnchor;
         public string nextLevelID;
         public float nextLevelDetail;
+        public int levelInputs;
 
         public float distanceMapDetail;
         public DMValue[,,] distanceMap;
@@ -151,6 +152,7 @@ namespace Raymagic
             this.lightList = data.mapLights;
             this.nextLevelID = data.nextLevelID;
             this.nextLevelDetail = data.nextLevelDetail;
+            this.levelInputs = data.gameLevelInputs;
 
             foreach (var item in interactableObjectList)
             {
@@ -277,7 +279,7 @@ namespace Raymagic
         public bool mapPreloadingLoadingMap = false;
         public bool changeMap = false;
         Stopwatch sw = new Stopwatch();
-        public void PreLoadMap(string id="", float mapDetail=2, bool next=false)
+        public void PreloadMap(string id="", float mapDetail=2, bool next=false)
         {
             mapPreloadingLoadingMap = false;
             changeMap = false;
@@ -320,6 +322,7 @@ namespace Raymagic
             var _levelEndAnchor         = _data.levelEndAnchor;
             var _nextLevelID            = _data.nextLevelID;
             var _nextLevelDetail        = _data.nextLevelDetail;
+            var _gameLevelInputs        = _data.gameLevelInputs;
 
             foreach (var item in _interactableObjectList)
             {
@@ -382,6 +385,7 @@ namespace Raymagic
             this.levelEndAnchor         = _levelEndAnchor;
             this.nextLevelID            = _nextLevelID;
             this.nextLevelDetail        = _nextLevelDetail;
+            this.levelInputs            = _gameLevelInputs;
 
             foreach (var item in interactableObjectList)
             {
@@ -401,7 +405,7 @@ namespace Raymagic
 
             if (IN) // player in level - start next level loading
             {
-                Task.Factory.StartNew(() => PreLoadMap(next:true), TaskCreationOptions.LongRunning).Start();
+                Task.Factory.StartNew(() => PreloadMap(next:true), TaskCreationOptions.LongRunning).Start();
             }
             else // coming out of the map into loading map
             {

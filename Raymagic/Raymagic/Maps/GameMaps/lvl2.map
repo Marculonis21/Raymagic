@@ -10,6 +10,7 @@ config
     next_lvl_detail: 2
     game_lvl_order: 2
     game_lvl_name: "Through the portal" 
+    game_lvl_inputs: 0
 }
 
 static

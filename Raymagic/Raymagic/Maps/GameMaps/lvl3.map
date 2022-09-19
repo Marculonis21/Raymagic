@@ -10,6 +10,7 @@ config
     next_lvl_detail: 2
     game_lvl_order: 3
     game_lvl_name: "Getting the hang of it" 
+    game_lvl_inputs: 1
 }
 
 static

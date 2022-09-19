@@ -7,7 +7,6 @@ namespace Raymagic
 {
     public class ConsoleMenu
     {
-
         Map map = Map.instance;
 
         private ConsoleMenu() {} 
@@ -356,6 +355,11 @@ namespace Raymagic
                         y++;
                     }
                 }
+
+                string mapName = map.maps[mapList[mapSelectPosition].Item2].gameLevelName;
+                Console.CursorTop = Console.WindowHeight - 8;
+                Console.CursorLeft = (Console.WindowWidth/2) - (int)(mapName.Length/2);
+                Console.WriteLine(mapName);
 
                 var pressed = Console.ReadKey().Key;
                 if (pressed == ConsoleKey.LeftArrow|| pressed == ConsoleKey.A)

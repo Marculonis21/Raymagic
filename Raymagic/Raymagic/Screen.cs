@@ -96,7 +96,7 @@ namespace Raymagic
                 colorBuffer[x,y] = Color;
             }); 
 
-            // PROGRESSIVE RENDERING
+            // PROGRESSIVE RENDERING TEST (not for game)
             /* Random random = new Random(); */
             /* Parallel.For(0, rayCount/4,new ParallelOptions{ MaxDegreeOfParallelism = Environment.ProcessorCount}, i => */
             /* { */
@@ -119,12 +119,12 @@ namespace Raymagic
             watch.Stop();
         }
 
-        private void ImageProcessingPhase()
-        {
-            watch.Restart();
+        /* private void ImageProcessingPhase() */
+        /* { */
+        /*     watch.Restart(); */
 
-            watch.Stop();
-        }
+        /*     watch.Stop(); */
+        /* } */
 
         private void TileDrawPhase()
         {
@@ -142,15 +142,41 @@ namespace Raymagic
 
         private void CursorDrawPhase()
         {
-            graphics.DrawLine(new Point(screenDimensions.X/2,screenDimensions.Y/2-cursorSize), 
-                              new Point(screenDimensions.X/2,screenDimensions.Y/2+cursorSize), 
-                              5, 
-                              Color.Gold);
+            if (Map.instance.levelInputs == 0)
+            {
+                graphics.DrawLine(new Point(screenDimensions.X/2,screenDimensions.Y/2-cursorSize), 
+                                new Point(screenDimensions.X/2,screenDimensions.Y/2+cursorSize), 
+                                5, 
+                                Color.Gold);
 
-            graphics.DrawLine(new Point(screenDimensions.X/2-cursorSize,screenDimensions.Y/2), 
-                              new Point(screenDimensions.X/2+cursorSize,screenDimensions.Y/2), 
-                              5, 
-                              Color.Gold);
+                graphics.DrawLine(new Point(screenDimensions.X/2-cursorSize,screenDimensions.Y/2), 
+                                new Point(screenDimensions.X/2+cursorSize,screenDimensions.Y/2), 
+                                5, 
+                                Color.Gold);
+            }
+
+            else if (Map.instance.levelInputs == 1)
+            {
+                graphics.DrawBorder(new Point(screenDimensions.X/2,screenDimensions.Y/2), cursorSize, cursorSize, 2, Color.Blue);
+                if (Map.instance.portalList[1] != null)
+                {
+                    graphics.DrawRectangle(new Point(screenDimensions.X/2,screenDimensions.Y/2), cursorSize*2, cursorSize*2, Color.Blue);
+                }
+            }
+            else if (Map.instance.levelInputs == 2)
+            {
+                graphics.DrawBorder(new Point(screenDimensions.X/2-cursorSize,screenDimensions.Y/2-cursorSize), cursorSize*2, cursorSize*2, 1, Color.Orange);
+                graphics.DrawBorder(new Point(screenDimensions.X/2+cursorSize,screenDimensions.Y/2+cursorSize), cursorSize*2, cursorSize*2, 1, Color.Blue);
+
+                if (Map.instance.portalList[0] != null)
+                {
+                    graphics.DrawRectangle(new Point(screenDimensions.X/2-cursorSize,screenDimensions.Y/2-cursorSize), cursorSize*2, cursorSize*2, Color.Orange);
+                }
+                if (Map.instance.portalList[1] != null)
+                {
+                    graphics.DrawRectangle(new Point(screenDimensions.X/2+cursorSize,screenDimensions.Y/2+cursorSize), cursorSize*2, cursorSize*2, Color.Blue);
+                }
+            }
 
             graphics.End();
 

@@ -6,6 +6,11 @@ config
     bot_corner: (0,-200,-150)
     anchor_start: (0,0,75)
     anchor_end: (0,0,75)
+    next_lvl: lvl5
+    next_lvl_detail: 2
+    game_lvl_order: 4
+    game_lvl_name: "Timing is key"
+    game_lvl_inputs: 0
 }
 
 static
