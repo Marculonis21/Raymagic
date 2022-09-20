@@ -3,8 +3,8 @@
 *.user
 *.sln.docstates
 
-*.dm
-*.dmt
+# *.dm
+# *.dmt
 
 # Build results
 
