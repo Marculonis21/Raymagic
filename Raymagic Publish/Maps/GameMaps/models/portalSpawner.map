@@ -1,0 +1,49 @@
+config
+{
+    name: portalSpawner
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+    # box[box]:(200,200,50)|(100,100,100)|Red
+}
+
+lights
+{
+    light:(150,150,190)|White|20000
+}
+
+dynamic
+{
+    box[x]:(10,10,10)|(100,10,10)|Green|(100,100,100)
+    box[y]:(10,10,10)|(10,100,10)|Red  |(100,100,100)
+    box[z]:(10,10,10)|(10,10,100)|Blue |(100,100,100)
+
+    box[spawnerSide]:(150,5,75)|(10,5,100)|Gray|(100,100,100)
+    boolean: spawnerSide: union: cylinder:(0,1,50)|(0,0,1)|100|3|Aqua|True
+    symmetry: spawnerSide:X|(50,0,0)
+
+    sphere[typeIndicator]:(150,5,75)|5|Orange|(100,100,100)
+    repeat: typeIndicator: (0,0,2)|20
+    boolean: typeIndicator: intersect: plane:(0,6,0)|(0,1,0)|Black|False
+    symmetry: typeIndicator:X|(47,0,0)
+}
+
+physics
+{
+}
+
+interactables
+{
+}
