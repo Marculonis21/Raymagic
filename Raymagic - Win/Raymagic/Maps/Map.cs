@@ -50,6 +50,7 @@ namespace Raymagic
 
         public float gravity = 3000f;
 
+        public bool gameMode = false;
         private Map()
         {
             maps = new Dictionary<string, MapData>();
@@ -58,7 +59,7 @@ namespace Raymagic
         public static readonly Map instance = new Map();
 
         public bool enabledUpdate = true;
-        public float portalMomentumConstant = 0.96787f; // portal transfer MAGIC
+        public float portalMomentumConstant = 0.96787f; // portal velocity transfer MAGIC
         public void Update(GameTime gameTime)
         {
             if (enabledUpdate)
@@ -131,9 +132,10 @@ namespace Raymagic
             Informer.instance.RemoveInfo("map_compilation1");
             Informer.instance.RemoveInfo("map_compilation2");
         }
-
         public void SetMap(string id, bool gameMode=false)
         {
+            this.gameMode = gameMode;
+
             LoadingMap ld = new LoadingMap();
 
             this.data = maps[id];
@@ -172,7 +174,7 @@ namespace Raymagic
             this.levelStartAnchor = data.levelStartAnchor;
             this.levelEndAnchor = data.levelEndAnchor;
 
-            if (gameMode) // game mode skips all menu interactions and loads detail 2 (good enough) of selected map
+            if (gameMode) // game mode skips all menu interactions and loads detail 2/4 (good enough) of selected map
             {
                 this.distanceMapDetail = 2;
 
@@ -286,6 +288,12 @@ namespace Raymagic
         Stopwatch sw = new Stopwatch();
         public void PreloadMap(string id="", float mapDetail=2, bool next=false)
         {
+            if (!gameMode)
+            {
+                Console.WriteLine("Sandbox mode - no map preloading");
+                return;
+            }
+
             mapPreloadingLoadingMap = false;
             changeMap = false;
 
@@ -376,6 +384,7 @@ namespace Raymagic
             /* Console.WriteLine("Player and data transfer"); */
             Task.Run(() => { while(Screen.instance.DrawPhase) { } });
 
+            this.data = _data;
 
             Player.instance.TranslateAbsolute(_levelStartAnchor + (Player.instance.position-this.levelEndAnchor));
 
@@ -462,7 +471,8 @@ namespace Raymagic
 
             saveWatch.Stop();
             Console.WriteLine(saveWatch.ElapsedMilliseconds);
-            
+            saveWatch.Reset();
+
             GC.Collect();
         }
 
@@ -488,6 +498,7 @@ namespace Raymagic
 
                 saveWatch.Stop();
                 Console.WriteLine(saveWatch.ElapsedMilliseconds);
+                saveWatch.Reset();
 
                 return distanceMap;
             }

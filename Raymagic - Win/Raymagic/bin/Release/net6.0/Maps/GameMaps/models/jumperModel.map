@@ -1,0 +1,76 @@
+config
+{
+    name: jumperModel
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+    # box[box]:(200,200,50)|(100,100,100)|Red
+}
+
+lights
+{
+    light:(125,100,190)|White|10000
+}
+
+dynamic
+{
+    box[newFloor]:(150,150,0)|(200,200,40)|Beige|(200,200,50)
+    boolean: newFloor: union: box:(0,0,0)|(150,100,40)|Red|True
+    boolean: newFloor: difference:cylinder:(-30,0,50)|(0,0,1)|50|30|Black|True
+    boolean: newFloor: difference:cylinder:(30,0,50)|(0,0,1)|50|30|Black|True
+    boolean: newFloor: difference:box:(0,0,20)|(60,60,40)|Black|True
+
+    box[inside]:(150,150,0)|(120,80,40)|Gray|(200,200,50)
+    boolean: inside: difference:cylinder:(-30,0,50)|(0,0,1)|48|28|Black|True
+    boolean: inside: difference:cylinder:(30,0,50)|(0,0,1)|48|28|Black|True
+    boolean: inside: difference:box:(0,0,20)|(56,56,36)|Black|True
+
+    cylinder[rotator]:(205,160,20)|(0,1,0)|20|5|DarkGray|(20,20,20)
+    # rotateX: rotator: 90
+
+    box[plate]:(150,150,15)|(10,80,150)|Black|(200,200,200)
+    boolean: plate: intersect: capsule:(0,0,-58)|60|28|Red|True
+    boolean: plate: difference: capsule:(0,0,-55)|64|24|Red|True
+    rotateY: plate: 90
+
+
+    box[arrow]:(120,150,15)|(10,20,10)|Aqua|(20,20,20)
+    boolean: arrow: union: box:(20,0,0)|(30,35,10)|Aqua|True
+    boolean: arrow:difference: plane:(22,0,0)|(-1,-1,0)|Aqua|True
+    boolean: arrow:difference: plane:(22,0,0)|(-1,1,0)|Aqua|True
+
+    box[glassPlate]:(150,150,17)|(4,80,150)|Black|(200,200,200)|transparent
+    boolean: glassPlate: intersect: capsule:(0,0,-58)|60|28|Red|True
+    rotateY: glassPlate: 90
+
+    box[wiring1]:(150,150,15)|(115,4,8)|Black|(125,100,20)
+
+    box[wiring2]:(150,150,15)|(4,50,8)|Black|(125,100,20)
+    repeat: wiring2: (1,0,0)|30
+
+    # rotateY: plate:      -40|(205,150,18)
+    # rotateY: glassPlate: -40|(205,150,18) 
+    # rotateY: arrow:      -40|(205,150,18)
+    # rotateY: wiring1:    -40|(205,150,18)
+    # rotateY: wiring2:    -40|(205,150,18)
+}
+
+physics
+{
+}
+
+interactables
+{
+}

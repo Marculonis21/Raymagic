@@ -50,6 +50,7 @@ namespace Raymagic
             rotation = new Vector2(270,120);
             size = new Vector2(25,75);
 
+            // easy settings implementation
             playerControls.Add("forward_move",  Keys.W);
             playerControls.Add("backward_move", Keys.S);
             playerControls.Add("left_move",     Keys.A);
@@ -57,6 +58,7 @@ namespace Raymagic
             playerControls.Add("jump",          Keys.Space);
             playerControls.Add("interact",      Keys.E);
             playerControls.Add("grab",          Keys.F);
+            playerControls.Add("reset",         Keys.R);
             playerControls.Add("pause",         Keys.Escape);
             playerControls.Add("playerMode",    Keys.F1);
             playerControls.Add("godMode",       Keys.F2);
@@ -143,7 +145,7 @@ namespace Raymagic
 
             this.Rotate(new Vector2(mouse.X - lastMouseX, mouse.Y - lastMouseY));
 
-            // move model to "feet" position
+            // always move model to "feet" position
             if (!GodMode)
             {
                 model.TranslateAbsolute(this.position + new Vector3(0,0,-1)*(size.Y/2) + new Vector3(0,0,-1)*(size.X/2));
@@ -173,65 +175,73 @@ namespace Raymagic
                 this.grabButtonDown = false;
             }
 
-            if (Keyboard.GetState().IsKeyDown(playerControls["godMode"])) 
+            if (Keyboard.GetState().IsKeyDown(playerControls["reset"]))
             {
-                GodMode = true;
-                this.preGodPositionCache = this.position;
-                this.velocity = new Vector3(0,0,0);
-            }
-            if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"])) 
-            {
-                GodMode = false;
-                this.position = this.preGodPositionCache;
-                this.velocity = new Vector3(0,0,0);
+                position = map.GetPlayerStart();
             }
 
-            if (Keyboard.GetState().IsKeyDown(playerControls["activeModel"]) && !activeModelButtonDown)
+            if (!map.gameMode)
             {
-                activeModelButtonDown = true;
-
-                map.activeMapReload = !map.activeMapReload;
-                if (map.activeMapReload)
+                if (Keyboard.GetState().IsKeyDown(playerControls["godMode"]))
                 {
-                    map.MapReloadingAsync(500);
+                    GodMode = true;
+                    this.preGodPositionCache = this.position;
+                    this.velocity = new Vector3(0, 0, 0);
+                }
+                if (Keyboard.GetState().IsKeyDown(playerControls["playerMode"]))
+                {
+                    GodMode = false;
+                    this.position = this.preGodPositionCache;
+                    this.velocity = new Vector3(0, 0, 0);
+                }
+
+                if (Keyboard.GetState().IsKeyDown(playerControls["activeModel"]) && !activeModelButtonDown)
+                {
+                    activeModelButtonDown = true;
+
+                    map.activeMapReload = !map.activeMapReload;
+                    if (map.activeMapReload)
+                    {
+                        map.MapReloadingAsync(500);
+                    }
+                }
+                if (!Keyboard.GetState().IsKeyDown(playerControls["activeModel"]))
+                {
+                    activeModelButtonDown = false;
+                }
+
+                if (GodMode)
+                {
+                    if (Keyboard.GetState().IsKeyDown(playerControls["god_down"]))
+                        this.position += new Vector3(0, 0, -2);
+                    if (Keyboard.GetState().IsKeyDown(playerControls["god_up"]))
+                        this.position += new Vector3(0, 0, +2);
+                }
+
+
+                if (Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]) && !this.testONButtonDown)
+                {
+                    this.testONButtonDown = true;
+                    /* Screen.instance.processingTest = true; */
+
+                    // long running task? thread feels better - completely separated
+                    /* new Thread(() => map.PreloadMap("lvl5", 2)).Start(); */
+                }
+                if (Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
+                {
+                    this.testOFFButtonDown = true;
+                    Screen.instance.processingTest = false;
+                }
+
+                if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_ON"]))
+                {
+                    this.testONButtonDown = false;
+                }
+                if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_OFF"]))
+                {
+                    this.testOFFButtonDown = false;
                 }
             }
-            if (!Keyboard.GetState().IsKeyDown(playerControls["activeModel"]))
-            {
-                activeModelButtonDown = false;
-            }
-
-            if(GodMode)
-            {
-                if(Keyboard.GetState().IsKeyDown(playerControls["god_down"]))
-                    this.position += new Vector3(0,0,-2);
-                if(Keyboard.GetState().IsKeyDown(playerControls["god_up"]))
-                    this.position += new Vector3(0,0,+2);
-            }
-
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_ON"]) && !this.testONButtonDown)
-            {
-                this.testONButtonDown = true;
-                /* Screen.instance.processingTest = true; */
-
-                // long running task? thread feels better - completely separated
-                /* new Thread(() => map.PreloadMap("lvl5", 2)).Start(); */
-            }
-            if(Keyboard.GetState().IsKeyDown(playerControls["TESTANYTHING_OFF"]) && !this.testOFFButtonDown)
-            {
-                this.testOFFButtonDown = true;
-                Screen.instance.processingTest = false;
-            }
-
-            if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_ON"]))
-            {
-                this.testONButtonDown = false;
-            }
-            if (Keyboard.GetState().IsKeyUp(playerControls["TESTANYTHING_OFF"]))
-            {
-                this.testOFFButtonDown = false;
-            }
-
 
             PortalPlacement(mouse);
 
@@ -291,6 +301,7 @@ namespace Raymagic
                         testAzimuth = 360 - (float)xDegree;
                     }
 
+                    // forcing rotation on set object
                     Vector3 gRot = grabbing.Rotation;
                     grabbing.Rotate(testAzimuth - gRot.Z, "z", grabbing.Position);
                     if (yDegree > 0)
@@ -312,6 +323,8 @@ namespace Raymagic
                             grabbing.Rotate(-gRot.X, "y", grabbing.Position);
                         }
                     }
+
+                    // mirror ball laser always faces outwards
                     var mb = grabbing as MirrorBall;
 
                     mb.outDir = Vector3.Normalize(new Vector3(lookDir.X, lookDir.Y, 0));
@@ -409,6 +422,7 @@ namespace Raymagic
                 BodyCollider(gameTime);
             }
 
+            // speed limits (play around)
             if (this.velocity.Z < -100)
             {
                 this.velocity = new Vector3(this.velocity.X, this.velocity.Y, -100);

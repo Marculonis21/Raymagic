@@ -164,6 +164,7 @@ namespace Raymagic
                     "  A",
                     "  D",
                     "  SPACE",
+                    "  R",
                     "",
                     "Aim:",
                     "  MOUSE",
@@ -173,6 +174,12 @@ namespace Raymagic
                     "Interaction:",
                     "  E",
                     "  F",
+                    "",
+                    "Sandbox/Other:",
+                    "  F1",
+                    "  F2",
+                    "  F12",
+                    "  1/2/3/4/5/6/7/8/9/0",
                 };
 
                 string[] info = new string[] {
@@ -182,6 +189,7 @@ namespace Raymagic
                     "walk left",
                     "walk right",
                     "jump",
+                    "reset to start",
                     "",
                     "",
                     "aiming",
@@ -191,6 +199,12 @@ namespace Raymagic
                     "",
                     "interact",
                     "pick up",
+                    "",
+                    "",
+                    "player mode",
+                    "god mode",
+                    "enable/disable map active reload (for WIP maps only)",
+                    "change pixel size resolution (1-10 px)",
                 };
 
                 Console.CursorTop = 5;
@@ -208,7 +222,11 @@ namespace Raymagic
                     Console.CursorLeft = (Console.WindowWidth/2) - 25;
                     Console.Write(lines[i]);
                     Console.CursorLeft = (Console.WindowWidth/2) - 1;
-                    if (lines[i] != "" && lines[i] != "Interaction:" && lines[i] != "Movement:" && lines[i] != "Aim:")
+                    if (lines[i] != "" && 
+                        lines[i] != "Interaction:" && 
+                        lines[i] != "Movement:" && 
+                        lines[i] != "Aim:" &&
+                        lines[i] != "Sandbox/Other:")
                     {
                         Console.Write("-->");
                     }
@@ -311,7 +329,7 @@ namespace Raymagic
                 Console.CursorLeft = 10;
                 Console.WriteLine("SELECT START LEVEL:");
                 Console.CursorLeft = 10;
-                Console.WriteLine("###########");
+                Console.WriteLine("###################");
 
 
                 int lineSize = 5;

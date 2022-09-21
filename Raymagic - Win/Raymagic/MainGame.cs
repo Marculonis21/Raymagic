@@ -47,7 +47,6 @@ namespace Raymagic
 
             menu = ConsoleMenu.instance;
 
-            /* UserInit(); */
             menu.DisplayMenu();
 
             player = Player.instance;
@@ -73,9 +72,6 @@ namespace Raymagic
 
         protected override void Update(GameTime gameTime)
         {
-            /* if (Keyboard.GetState().IsKeyDown(Keys.Escape) && player.playerPause) */
-            /*     Exit(); */
-
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) detailSize = 1;
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) detailSize = 2; 
             if (Keyboard.GetState().IsKeyDown(Keys.D3)) detailSize = 3; 
@@ -111,7 +107,6 @@ namespace Raymagic
             if (map.mapPreloadingLoadingMap)
             {
                 // empties thread for map preloading in threadpool */
-                // TODO:TEST SPEED
                 Thread.Sleep(10);  
             }
         }

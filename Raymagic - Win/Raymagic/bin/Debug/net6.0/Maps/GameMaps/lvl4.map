@@ -1,0 +1,102 @@
+config
+{
+    name: lvl4
+    player_spawn: (400,100,100)
+    top_corner: (800,1250,800)
+    bot_corner: (0,-200,-150)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+    next_lvl: lvl5
+    next_lvl_detail: 2
+    game_lvl_order: 4
+    game_lvl_name: "Timing is key"
+    game_lvl_inputs: 0
+}
+
+static
+{
+    # walls
+    
+    plane[floor]:(0,0,-150)|(0,0,1)|Beige
+    plane[roof] :(0,0,795)|(0,0,-1)|Beige
+    plane[wall1] :(2,0,0)|(1,0,0)|Beige
+    plane[wall2] :(795,0,0)|(-1,0,0)|Beige
+    plane[wall3] :(0,0,0)|(0,1,0)|Beige
+    plane[wall4] :(0,1245,0)|(0,-1,0)|Beige
+
+    boolean: floor: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: roof: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall1: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall2: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall3: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall4: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: wall3: difference: cylinder:(400,200,50)|(0,1,0)|398|125|Black|false
+
+    boolean: floor: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean:  roof: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean: wall1: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean: wall2: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean: wall3: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean: wall4: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+
+    # indoors
+
+    cylinder[floor1]:(400,0,-150)|(0,0,-1)|150|250|Gray|(500,500,500)
+    cylinder[floor2]:(400,1250,-150)|(0,0,-1)|150|300|Gray|(600,600,500)
+
+    boolean: floor1: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+    boolean: floor2: difference: plane:(0,-205,0)|(0,1,0)|Black|false
+
+    boolean: floor1: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+    boolean: floor2: difference: plane:(0,1255,0)|(0,-1,0)|Black|false
+
+    cylinder[middleHole]:(400,625,-150)|(0,0,-1)|125|75|Gray|(200,200,200)
+    boolean: middleHole: difference: cylinder:(0,0,-50)|(0,0,-1)|500|50|Black|true
+    
+    box[stairs1]:(700,100,-75)|(200,520,148)|DarkGray|(200,520,150)
+    boolean: stairs1: intersect: plane:(0,260,-75)|(0,1,1.5)|Black|true
+
+    box[stairs2]:(100,1150,-75)|(200,520,148)|DarkGray|(200,520,150)
+    boolean: stairs2: intersect: plane:(0,-260,-75)|(0,-1,1.5)|Black|true
+}
+
+lights
+{
+    light:(300,250,400) |White|50000|(0,-200,-150)|(800,1250,800)
+    light:(500,1000,400)|White|50000|(0,-200,-150)|(800,1250,800)
+}
+
+dynamic
+{
+}
+
+physics
+{
+    physics_object[spawnBall]:(400,625,-50)|Gray|Aqua
+}
+
+interactables
+{
+    jumper[jumper1]:(400,175,0)|(0,0,1)|(0,1,0)|(0,1,1.75)|30|floor1
+    jumper[jumper2]:(400,1025,0)|(0,0,1)|(0,-1,0)|(0,-1,1.75)|30|floor2
+    # jumper[jumperMiddle]:(400,625,-25)|(0,0,1)|(0,-1,0)|(0,0,1)|5|middleHole
+
+    button[button1]:(500,175,0)|(0,-1,0)|Green
+    button[button2]:(300,1025,0)|(0,1,0)|Green
+
+    floor_button[floorbutton]:(575,1125,0)|Aqua
+
+    door[indoor]:(400,-200,0)|(0,-1,0)|wall3|Purple|1
+    door[outdoor]:(400,1250,0)|(0,-1,0)|wall4|Aqua|1
+
+    ball_spawner[spawner]:(400,625,800)|Green|spawnBall|250
+
+    connect: button1 -> spawner
+    connect: button2 -> spawner
+
+    connect: floorbutton -> outdoor
+}
+
+portalable
+{
+}

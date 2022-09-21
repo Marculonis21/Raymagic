@@ -1,0 +1,78 @@
+config
+{
+    name: HEYY!! LASERS
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+    # box[box]:(200,200,50)|(100,100,100)|Red
+}
+
+lights
+{
+    light:(125,100,190)|White|10000
+}
+
+dynamic
+{
+    box[newFloor]:(150,150,10)|(200,200,20)|Beige|(200,200,20)
+
+    boolean: newFloor: difference: box:(0,0,10)|(35,35,20)|Black|True
+
+    box[inside]:(150,150,15)|(35,35,10)|Gray|(50,50,50)
+    boolean: inside: difference: box:(0,0,4)|(31,31,10)|Black|True
+
+    box[wiring1]:(150,150,15)|(40,2,4)|Black|(50,50,10)
+    rotateZ: wiring1: 45
+    box[wiring2]:(150,150,15)|(2,40,4)|Black|(50,50,10)
+    rotateZ: wiring2: 45
+
+    cylinder[base]:(150,150,22)|(0,0,1)|15|10|White|(50,50,50)
+    boolean: base: union: sphere:(0,0,-5)|10|Gray|True
+    boolean: base: intersect: plane:(0,0,2)|(0,0,1)|Black|True
+    boolean: base: union: sphere:(0,0,-4)|9|White|True
+
+    sphere[top2]:(150,150,17)|10|Gray|(50,50,50)
+    boolean: top2: intersect: plane:(0,0,8)|(0,0,-1)|Black|True
+    boolean: base: union: top2|False
+
+    boolean: base: union: cylinder:(0,0,0)|(0,0,-1)|6|2|DarkRed|True
+    boolean: base: union: cylinder:(0,0,0)|(0,0,-1)|9|1|Red|True
+# ^^^^ starter
+
+    boolean: newFloor: difference: box:(50,0,10)|(35,35,20)|Black|True
+
+    box[inside2]:(200,150,15)|(35,35,10)|Gray|(50,50,50)
+    boolean: inside2: difference: box:(0,0,4)|(31,31,10)|Black|True
+
+    box[wiring1b]:(200,150,15)|(40,2,4)|Black|(50,50,10)
+    rotateZ: wiring1b: 45
+    box[wiring2b]:(200,150,15)|(2,40,4)|Black|(50,50,10)
+    rotateZ: wiring2b: 45
+
+    cylinder[base2]:(200,150,22)|(0,0,1)|18|12|White|(50,50,50)
+    boolean: base2: difference: sphere:(0,0,5)|12|Gray|True
+    boolean: base2: union: box:(0,0,-5)|(25,2,11)|Gray|True
+    boolean: base2: union: box:(0,0,-5)|(2,25,11)|Gray|True
+    boolean: base2: difference: sphere:(0,0,5)|12|Gray|True
+    boolean: base2: union: sphere:(0,0,-10)|12|DarkGray|True
+}
+
+physics
+{
+}
+
+interactables
+{
+}

@@ -1,0 +1,63 @@
+config
+{
+    name: ballSpawnerModel
+    player_spawn: (100,100,100)
+    top_corner: (300,300,200)
+    bot_corner: (0,0,0)
+    anchor_start: (0,0,75)
+    anchor_end: (0,0,75)
+}
+
+static
+{
+    plane[floor]:(0,0,0)|(0,0,1)|Beige
+    plane[roof] :(0,0,198)|(0,0,-1)|Beige
+    plane[wall1]:(2,0,0)|(1,0,0)|Beige
+    plane[wall2]:(298,0,0)|(-1,0,0)|Beige
+    plane[wall3]:(0,2,0)|(0,1,0)|Beige
+    plane[wall4]:(0,298,0)|(0,-1,0)|Beige
+}
+
+lights
+{
+    light:(80,50,150)|Red|2000
+    light:(80,250,150)|Blue|2000
+}
+
+dynamic
+{
+    $CENTERTOP:(150,150,200)
+    cylinder[body]:$CENTERTOP|(0,0,1)|75|60|Gray|200,200,200
+    boolean: body: smooth_difference[5]: capsule:(-50,-50,-70)|40|20|Red|true
+    boolean: body: smooth_difference[5]: capsule:( 50,-50,-70)|40|20|Red|true
+    boolean: body: smooth_difference[5]: capsule:(-50, 50,-70)|40|20|Red|true
+    boolean: body: smooth_difference[5]: capsule:( 50, 50,-70)|40|20|Red|true
+
+    cylinder[indicator]:(150,150,128)|(0,0,1)|5|62|Aqua|(200,200,200)
+    boolean: indicator: difference: cylinder:(0,0,20)|(0,0,1)|40|55|Black|true
+
+    # a další v jiných úhlech 45
+    boolean: body: difference: box:(0,0,-75)|(110,10,10)|Aqua|true
+    boolean: body: difference: box:(0,0,-75)|(10,110,10)|Aqua|true
+
+    boolean: body: difference: cylinder:(0,0,-100)|(0,0,-1)|100|40|Black|true
+
+    box[door1]:(100,100,135)|(98,98,8)|DarkGray|(100,100,10)
+    box[door2]:(200,100,135)|(98,98,8)|DarkGray|(100,100,10)
+    box[door3]:(100,200,135)|(98,98,8)|DarkGray|(100,100,10)
+    box[door4]:(200,200,135)|(98,98,8)|DarkGray|(100,100,10)
+
+    boolean: door1: intersect: sphere: (150,150,135)|50|Black|false
+    boolean: door2: intersect: sphere: (150,150,135)|50|Black|false
+    boolean: door3: intersect: sphere: (150,150,135)|50|Black|false
+    boolean: door4: intersect: sphere: (150,150,135)|50|Black|false
+
+}
+
+physics
+{
+}
+
+interactables
+{
+}
