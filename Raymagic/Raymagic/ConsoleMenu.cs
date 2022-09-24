@@ -153,7 +153,7 @@ namespace Raymagic
                 Console.CursorLeft = (Console.WindowWidth/2) - 15;
                 Console.WriteLine("-------------------------------");
                 Console.CursorLeft = (Console.WindowWidth/2) - 15;
-                Console.WriteLine("| ---       Controls      --- |");
+                Console.WriteLine("| ---       CONTROLS      --- |");
                 Console.CursorLeft = (Console.WindowWidth/2) - 15;
                 Console.WriteLine("-------------------------------");
 

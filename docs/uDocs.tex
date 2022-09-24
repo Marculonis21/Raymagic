@@ -1,0 +1,204 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{titling}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{graphicx}
+\graphicspath{ {../../} }
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+
+\renewcommand{\contentsname}{Obsah}
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\roman{subsection}}
+
+\titleformat{\section}
+{\Large\bfseries}
+{\thesection}
+{0.5em}
+{}
+
+
+\titleformat{\subsection}
+{\large\bfseries}
+{\thesubsection.}
+{0.5em}
+{}
+
+\title{
+        \vspace{1in}
+        \rule{\linewidth}{0.5pt}
+		\usefont{OT1}{bch}{b}{n}
+        \huge Uživatelská dokumentace \\Raymagic\\
+        \vspace{-10pt}
+        \rule{\linewidth}{1pt}
+}
+\author{
+		\normalfont\normalsize
+        Marek Bečvář\\[-3pt]
+}
+\date{}
+
+
+
+\begin{document}
+\maketitle 
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{O programu} 
+\paragraph{}
+Raymagic je interaktivní ukázka ze hry Portal vytvořená na vlastním
+vykreslovacím prostředí. 
+
+V této ukázce může uživatel odehrát řadu úrovní, 
+které byly pro tento projekt vytvořeny, a vytvářet a upravovat si vlastní mapy a objektz pomocí speciálního
+jazyka, vyvinutého pro tento projekt. 
+
+\subsection{Zdroje}
+V programu je využito fontu \textbf{Computer Modern} ze stránky\\
+\url{https://www.1001fonts.com/cmu-font.html}. 
+Font je zpřístupněn pod licencí: \emph{SIL Open Font License (OFL)}, otevřený
+pro osobní i komerční užití. \\\small{(\emph{Celé znění licence je přiložené ve
+složce Content/Fonts, ze které je font načítán.})}
+
+
+\section{Spuštění programu}
+\paragraph{C\#}
+Projekt je vytvořen v C\# .NET Core 6 s využitím frameworku Monogame verze 3.8.
+\url{https://www.monogame.net}. Projekt byl vytvářen na platformě Linux. Pro
+uživatele jsou dostupné nerozlišitelné spustitelné verze pro platformy Linux i
+Windows.
+
+\subsection{Spuštění}
+\paragraph{}
+Pro spuštění programu není potřeba žádných dalších kroků, kromě spuštění
+přiloženého spustitelného souboru.
+
+\subsection{Doporučené systémové zdroje}
+Aplikace velmi aktivně využívá všech dostupných vláken procesoru, proto pro
+bezproblémový chod doporučuji využít CPU, které tyto potřeby uspokojí. Pro
+načítání úrovní na začátku hry a mezi úrovněmi potřeba minimálně 4 GB RAM.
+
+\section{Herní prostředí}
+\paragraph{Spuštění}
+Pro spuštění programu je potřeba pouze spustit přiložený spustitelný soubor.
+Hráč se následně octne na základní obrazovce (hlavním menu), běžící v konzoli. 
+
+\subsection{Startovní nabídka}
+\paragraph{}
+Toto menu představuje rozcestník jednotlivých funkcí aplikace. V menu se hráč
+pohybuje pomocí šipek na klávesnici a svoji volbu potvrzuje klávesou ENTER.
+Vystoupení z vnořeného menu je dosaženo klávesou ESCAPE.
+
+\paragraph{GAMEMODE}
+Pod tlačítkem GAMEMODE se nachází menu se seznamem úrovní kampaně, kterou hráč
+má možnost v rámci tohoto projektu projít. Hráč si zde volí, v jaké úrovni chce
+svůj průchod začít. Ve spodní části menu se pak nachází jméno právě vybrané
+mapy.
+
+\paragraph{SANDBOX}
+Tlačítko základního menu SANDBOX uživatele umožní volit ze všech map, ať už
+zkompilovaných předem, nebo ve složce \url{Maps/GameMaps} najitých souborů s
+příponou \textbf{.map}, popisující ve vlastním čitelném jazyce úrovně do hry.
+
+% \begin{center}
+%    \includegraphics[width=0.9\linewidth]{img3.png}
+% \end{center}
+
+\paragraph{CONTROLS}
+Popis všech ovládacích prvků.
+
+\paragraph{ABOUT RAYMAGIC}
+Krátký popis projekt.
+
+\subsection{Hra}
+Po načtení zvolené mapy, ať už z \textbf{GAMEMODE} nebo \textbf{SANDBOX} módu,
+se hráč objeví ve zvolené mapě a může hru ovládat dle kláves představených v
+menu \textbf{CONTROLS}.
+
+
+\section{Editor map}
+\paragraph{} 
+Součástí projektu je i editor map a objektů, který byl vytvořený jako ulehčení
+pro vytváření a upravování map a návrh 3D interaktivních objektů, se kterými se
+hráč ve setkává. Ve finální verzi je většina map ve hře vytvořená a fungující
+přímo z editoru (což na hru nemá žádný dopad).
+
+\subsection{Soubor .map}
+\paragraph{}
+Mapy, které jsou vytvářené s editorem lze jednoduše najít ve složce
+\url{Maps/GameMaps}, podle přípony \textbf{.map}. Jedná se o vlastní příponu
+souboru, která ale pouze označuje textový soubor, který aplikace vyhledává a za
+běhu s ním pracuje.
+
+\subsection{Práce s editorem}
+\paragraph{}
+Aby mohl uživatel s editorem pracovat, musí si nejprve vytvořit vlastní .map
+soubor (pro první pokusy doporučeno kopírovat již existující mapy s WIP flagem
+a pouze změnit \emph{name} v config bloku na vlastní jméno). 
+
+Dále je potřeba vytvořenou mapu načíst, což jde jednoduše skrz \textbf{SANDBOX}
+menu, kam bude záznam o mapě automaticky po restartování aplikace přidán.
+Po načtení mapy ještě editor neběží, ale můžeme ho zapnout pomocí klávesy
+\textbf{F12}. Pokud vše proběhlo správně, na levé straně u informačních výpisů
+naběhla nová informační kolonka s nápisem "\emph{Compiling done}".
+
+V tuto chvíli se soubor s informacemi o mapě každou půl vteřinu kontroluje a
+pokud v něm uložíme změny do správných bloků, změny se okamžitě promítnou do
+naší mapy. 
+
+\subsection{Pravidla jazyka editoru}
+\paragraph{}
+Editor podporuje vlastní zadávací jazyk, vytvořený konkrétně pro tuto aplikaci.
+Pro správné fungování editoru je potřeba dodržovat pravidla tohoto jazyka. Při
+porušení pravidel se mapa nepřeloží, nebo při aktivních úpravách vypíše
+chybovou hlášku do informační kolonky.
+
+\paragraph{Rozdělení}
+Kód se dělí na bloky, do kterých můžeme zapisovat další výrazy.
+Povolené bloky: 
+\begin{itemize}
+    \item \textbf{config} \color{red}*\normalcolor 
+    \item \textbf{static} \color{red}*\normalcolor 
+    \item \textbf{dynamic} \color{red}*\normalcolor \color{blue}*\normalcolor
+    \item \textbf{lights} \color{red}*\normalcolor \color{blue}*\normalcolor
+    \item \textbf{physics} \color{blue}*\normalcolor
+    \item \textbf{interactable}
+    \item \textbf{portalable}
+\end{itemize}
+Bloky označené \color{red}*\normalcolor jsou povinné. Bloky označené
+\color{blue}*\normalcolor jsou editovatelné za běhu programu.
+
+\paragraph{Help}
+Pro pomoc při psaní můžeme při kompilaci vložit do libovolného z povolených
+bloků \textbf{help}, který v daném místě hned kompilaci přeruší a vypíše do
+informační kolonky rozsáhlý seznam, který popisuje pravidla a využití všech
+podporovaných funkcí jazyka. Klasický \textbf{help} je nejobecnější seznam.
+Pokud uživatel potřebuje bližší informace o nějakém z bloků, nebo o pravidlech 
+nějakého z objektů, může obdržet koncentrovanější informace na dané téma pomocí
+\\\textbf{help: <zvolené téma>} (\emph{př. help: config, help: box, help: light}).
+
+\paragraph{Limitace - indoor, outdoor}
+Pokud v interaktivním bloku vytvoříme dveře, se specifickým jménem
+\textbf{indoor} nebo \textbf{outdoor}, při dalším načtení mapy se do mapy
+automaticky vloží načítací mapa připojená na vstupní/výstupní dveře mapy.
+Mapa, která má automaticky připojené načítací mapy, již nemůže být upravovaná
+za běhu programu!
+
+\section{Závěr}
+Projekt byl vytvoření jako záverečná semestrální práce pro předměty
+\\\emph{NPRG035 Programování C\#} a {NPRG038 Pokročilé programování C\#} -
+zimní a letní semestr 2021/22 - Matfyz UK.
+\end{document}

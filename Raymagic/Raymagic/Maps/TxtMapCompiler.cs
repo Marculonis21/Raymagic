@@ -365,7 +365,7 @@ namespace Raymagic
 
         private async Task ParseDynamicAsync(string[] input)
         {
-            Tuple<int,int> startEnd = GetBlockStartEnd("dynamic", input, false);
+            Tuple<int,int> startEnd = GetBlockStartEnd("dynamic", input, true);
             (int start, int end) = startEnd;
 
             List<Object> objectList = new List<Object>();
