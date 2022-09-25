@@ -1,0 +1,239 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{titling}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{graphicx}
+\graphicspath{ {../../} }
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+
+\renewcommand{\contentsname}{Obsah}
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\roman{subsection}}
+\renewcommand{\thesubsubsection}{\roman{subsection}.\roman{subsubsection}}
+
+\titleformat{\section}
+{\Large\bfseries}
+{\thesection}
+{0.5em}
+{}
+
+
+\titleformat{\subsection}
+{\large\bfseries}
+{\thesubsection.}
+{0.5em}
+{}
+
+\titleformat{\subsubsection}
+{\large\bfseries}
+{\thesubsubsection}
+{0.5em}
+{}
+
+\title{
+        \vspace{1in}
+        \rule{\linewidth}{0.5pt}
+		\usefont{OT1}{bch}{b}{n}
+        \huge Programátorská dokumentace \\Raymagic\\
+        \vspace{-10pt}
+        \rule{\linewidth}{1pt}
+}
+\author{
+		\normalfont\normalsize
+        Marek Bečvář\\[-3pt]\normalsize
+}
+\date{}
+
+
+\begin{document}
+\maketitle 
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Popis} 
+% \subsection{Popis}
+\paragraph{} 
+Projekt měl za cíl vytvořit v jazyce C\# a frameworku Monogame 3D vykreslovací
+raymarching engine, na kterém je postavená interaktivní ukázka hry napodobující 
+hru Portal se všemi základními poznávacími vlastnostmi.
+
+\subsection{Naplnění funkčních požadavků}
+\emph{(z finální verze specifikace zápočtového projektu)}
+
+\vspace{-5px}
+\begin{itemize}
+    \item úspěšná paralelizace algoritmu raymarching pro vykreslování
+    \item implementace abstraktní třídy pro objekt, umožňující jednoduché
+        rozšíření možných objektů
+    \item fyzikální simulace jednotná pro hráče a všechny fyzikální objekty
+    \item interaktivní objekty předávající signály o interakci pomocí delegátů
+    \item funkční portály, přenos paprsků přes portály, přenos hráče a dalších
+        přenosných objektů přes portály, zachování rychlostí v portálech
+    \item načítání map v průběhu běhu úrovní, seamless automaticky generované
+        načítací mapy
+    \item implementace logiky hry Portal
+\end{itemize}
+
+\section{High-level}
+\subsection{Herní loop}
+\paragraph{}
+Entry point programu je samozřejmě třída metoda \texttt{Main} třídy
+\texttt{Program}. Ta ale hned spouští třídu třídu frameworku Monogame
+\texttt{MainGame}, kterou budu zde brát jako za skutečný entry point. Zde
+proběhne všechna dlouhodobá inicializace (třídy zpracovávající grafiku, hráče,
+provně, ...), načtení využitého fontu a dalších a následuje přechod do update a
+draw smyčky, kde se program do ukončení točí. 
+
+\paragraph{Update loop}
+Z \texttt{MainGame} třídy se z update cyklu program dělí do řady míst. Posílají
+se do třídy hráče pro kontrolu stisku kláves, tak pro update fyziky hráče. Řeší
+se zde zároveň také update úrovní (vypočet fyzikálních objektů v úrovních a
+interaktivních objektech) a test portálů, jestli jimi neprošly nějaké objekty.
+
+\paragraph{Draw loop}
+Draw loop poté už pouze volá hlavní třídu starající se o vykreslování na
+obrazovku \texttt{Screen} a dále každý frame povoluje informačnímu systému
+\texttt{Informer} vypisovat skrz minulý cyklus nastřádané informace.
+
+\paragraph{Upozornění: Objekty nezávislé na interních cyklech}
+Ve hře existuje řada objektů, které se neřídí těmito cyklickými updaty, ale
+fungují ve vlastním načasování (obvykle skrz nekonečné cykly s delay přes Task
+třídu). Příklady těchto jsou například lasery a interaktivní objekty. Pro
+správné fungování těchto typů objektů musíme kontrolovat a čekat, aby nejprve
+doběhl vlastní cyklus programu a až poté je možno dělat nějaké změny (zabránit
+tak kolizím a úpravám listů, se kterými právě pracujeme).
+
+\subsection{Hráč}
+\paragraph{}
+Všechna logika hráče je situovaná ve třídě hráče - \texttt{Player}. Od
+inicializace a vytváření modelu hráče po update fyziky a kontrolu vstupů
+uživatele pro hráče je vše řešené uvnitř této třídy.
+
+\subsection{Objekty}
+\paragraph{Šablona}
+Hlavní třídou objektů je abstraktní třída \texttt{Object}, od které dědí
+všechny 3D objekty aplikace. Stará se o všechnu práci s vykreslováním, spravuje
+potřebné transformace objektů a tvoří solidní základ pro rozšíření seznamu
+objektů. 
+
+\paragraph{Signed distance function}
+Třída blízko spojená s třídou pro objekty je třída \texttt{SDFs}, která pouze
+obsahuje výpis všech statiských metod využívaných pro jednotlivé objekty. Pokud
+je potřeba přidat do programu nový objekt, nejprve je potřeba přidat do této
+třídy odpovídající metodu, která bude využívána ve výpočtech \textbf{SDF} pro
+objekt.
+
+\paragraph{Odvozené třídy objektů}
+Abtrakní třída \texttt{Objekt} je navržena dostatečně solidně, že při
+rozšířování seznamu objektů stačí vytvořit novou třídu pojmenovanou jak chceme,
+dodat do třídy \texttt{SDFs} novou statickou metodu pro výpočet \textbf{SDF} a
+vytvořit třídě vlastní konstruktor, odpovídající potřebám daného objektu.
+
+\subsection{Fyzikální objekty}
+\paragraph{Fyzikální prostor} 
+Fyzikální prostor držící všechny aktuální fyzikální objekty v úrovni je
+zajišťování třídou \texttt{PhysicsSpace}, jehož update metoda je volána z
+update funkce mapy každý frame.
+
+\paragraph{Fyzikální solver}
+Řešič fyzikálních situací je implementován v třídě \texttt{PhysicsSolver}.
+Tomu je z prostoru předáván seznam objektů a solver následně nad seznamem
+provádí operace založené na \textbf{verlet integration} metodě.
+
+\subsection{Raymarching algoritmus}
+\paragraph{} 
+Velkou důležitou částí aplikace je samotný raymarching algoritmus. Ten se
+nachází ve třech statických metodách třídy \texttt{RayMarchingHelper}. První
+metoda řeší raymarching vracející barvu výsledného objektu, na který proces
+narazil. Druhá je metoda využívající raymarching pro propagaci paprsků světla.
+Třetí metoda je fyzikální raymarching, vracející výsledný nalezený objekt,
+vzdálenost, kam paprsek urazil a další. Tento typ raymarchingu je využívaný pro
+kontroly kolizí objektů a míření hráče.
+
+\subsection{Překladač - editor map}
+Velkou částí projektu je překladač vlastního programovacího jazyka pro zadávání
+úrovní a modelování objektů - \texttt{TxtMapCompiler}. Tato třída obsahuje celý
+proces překládání a kontrolu chyb v \textbf{.map} textových souborech využívaných
+pro zadávání map.
+
+\section{Popis dalších tříd}
+\subsection{ConsoleMenu}
+Třída vytvářející celé úvodní konzolové menu, ve kterém hráč volí mezi
+dostupnými herními módy a dalšími možnostmi. Kvůli jednoduchosti problému je ve 
+třídě zároveň vykreslování i logika menu.
+
+\subsection{Graphics}
+Třída zajišťující veškeré vykreslování, jak barevných polí, tak veškerého textu
+po spuštění grafické aplikace (po konzolovém menu).
+
+\subsection{Informer}
+Informační statická třída sbírající debug informace z libovolných tříd a z
+vlastního překladače za doby překladu. Výpis nashromážděných dat je pak
+proveden v draw loopu třídy \texttt{MainGame}.
+
+\subsection{Screen}
+Třída starající se o vykreslování výsledků raymarching algoritmu na obrazovku
+(pohled hráče) a vykreslení aktuálních kurzorů pro hráče.
+
+\subsection{Map / MapData / SaveContainer}
+\texttt{Map} je třída spravující všechny informace ohledně aktuální a načítání
+následující úrovně. Pracuje zde všechna logika okolo načítání a před-načítání
+dalších map. Šablona pro všechna data o úrovních je třída \texttt{MapData}. Do
+této třídy jsou data ukládána ať už při vytváření map skrz kód nebo skrz
+vlastní editor a v této formě jsou dál po aplikaci data předávána.
+\texttt{SaveContainer} je kontejner obalující předpočítaná data map
+(předpočítané vzdálenostní funkce statických objektů, včetně odkazů na
+objekty), umožňující jejich serializaci.
+
+\subsection{BVH / BVHNode}
+Projekt při optimalizaci vykreslování dynamických objektů využívá BVH -
+\emph{Bounding Volume Hierarchy}. To spočívá v ohraničení objektů pomocí
+bounding boxů a následné rozdělení prostoru bounding boxů do stromové
+struktury. Díky tomu následně musíme pouze ty objekty, které nás opravdu
+zajímají (projdou testem bounding boxů). Vytváření této struktury a hledání
+objektů pomocí této struktury zajišťují třídy \texttt{BVH} a \texttt{BVHNode}.
+
+\subsection{Interactable}
+Třída \texttt{Interactable} je podobně jako třída \texttt{Object} abstraktní
+třídou, šablonou pro objekty, se kterými může hráč nějak interagovat (obvykle
+objekty centrální pro logické problémy v jednotlivých úrovních). Tyto třídy
+obsahují metody na připravení modelu objektu, jelikož modely těchto objektů
+jsou často skládané z více typů objektů (dynamické i statické). Dále upravuje
+styl jejich vykreslování. Oproti klasickým objektům se zde často pracuje s
+Tasky pro různé interaktivní funkce a s delegáty pro předávání signálů mezi
+objekty.
+
+\subsection{PhysicsObject}
+Šablona dalších a zároveň aktivně využívaný fyzikální objekt, představující
+dvoubarevnou kuličku, použitelná pro řešení fyzikálních hádanek.
+
+\subsection{TransformHelper}
+Třída obsahující řadu statických funkcí pracující s transformačními maticemi, 
+které jsou využívané při rotaci a translaci objektů ve hře (důležité pro
+raymarching algoritmus).
+
+\subsection{Portal / PortalLogic}
+Samostatná třída (parciální třídy) pro portál a jeho logiku. \texttt{Portal}
+obsahuje funkce vykreslování portálu, nebo vykreslování přenosu paprsků přes
+portál, pokud jsou oba aktivní. \texttt{PortalLogic} se stará o kontrolu a
+přenos portalovatelných objektů přes portály.
+
+\section{Závěr}
+Projekt byl vytvořen jako záverečná semestrální práce pro předměty
+\\\emph{NPRG035 Programování C\#} a {NPRG038 Pokročilé programování C\#} -
+zimní a letní semestr 2021/22 - Matfyz UK.
+
+\end{document}

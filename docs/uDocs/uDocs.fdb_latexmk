@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1664021771 "uDocs.tex" "uDocs.pdf" "uDocs" 1664021772
+["pdflatex"] 1664100014 "uDocs.tex" "uDocs.pdf" "uDocs" 1664100014
   "/etc/texmf/web2c/texmf.cnf" 1613049494 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/marculonis/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1095.600pk" 1613157369 28952 6b7335aaeb0491cbbffd6a5d6adde869 ""
   "/home/marculonis/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk" 1613158288 31928 ca05e7594d89d75012b12472a6466409 ""
@@ -105,13 +105,13 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1581979058 38841 ce3692aa899bb693b90b87eaa5d4d84e ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1613049500 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1613049505 4791332 e4ec492d7606bb9062c2e2cd9fe47cae ""
-  "uDocs.aux" 1664021772 3673 183385e1080a52bc3708b248279efc4e "pdflatex"
-  "uDocs.out" 1664021772 778 3633412398dd8d7866cb04e93558d1f2 "pdflatex"
-  "uDocs.tex" 1664021770 7743 c5a5f32e4537fc2603ab7a0a02ef340b ""
-  "uDocs.toc" 1664021772 1822 6854a6ccf87f03622d98f320e11caf9b "pdflatex"
+  "uDocs.aux" 1664100014 3673 183385e1080a52bc3708b248279efc4e "pdflatex"
+  "uDocs.out" 1664100014 778 3633412398dd8d7866cb04e93558d1f2 "pdflatex"
+  "uDocs.tex" 1664100005 7741 1be79293cc30bf55ba21722d88b2e7ca ""
+  "uDocs.toc" 1664100014 1822 6854a6ccf87f03622d98f320e11caf9b "pdflatex"
   (generated)
   "uDocs.aux"
-  "uDocs.log"
   "uDocs.out"
-  "uDocs.toc"
   "uDocs.pdf"
+  "uDocs.log"
+  "uDocs.toc"
