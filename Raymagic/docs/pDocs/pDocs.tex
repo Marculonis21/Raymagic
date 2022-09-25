@@ -68,7 +68,7 @@
 \paragraph{} 
 Projekt měl za cíl vytvořit v jazyce C\# a frameworku Monogame 3D vykreslovací
 raymarching engine, na kterém je postavená interaktivní ukázka hry napodobující 
-hru Portal se všemi základními poznávacími vlastnostmi.
+hru Portal se všemi základními vlastnostmi.
 
 \subsection{Naplnění funkčních požadavků}
 \emph{(z finální verze specifikace zápočtového projektu)}
@@ -90,16 +90,15 @@ hru Portal se všemi základními poznávacími vlastnostmi.
 \section{High-level}
 \subsection{Herní loop}
 \paragraph{}
-Entry point programu je samozřejmě třída metoda \texttt{Main} třídy
-\texttt{Program}. Ta ale hned spouští třídu třídu frameworku Monogame
-\texttt{MainGame}, kterou budu zde brát jako za skutečný entry point. Zde
-proběhne všechna dlouhodobá inicializace (třídy zpracovávající grafiku, hráče,
-provně, ...), načtení využitého fontu a dalších a následuje přechod do update a
-draw smyčky, kde se program do ukončení točí. 
+Entry point programu je samozřejmě metoda \texttt{Main} třídy
+\texttt{Program}. Ta ale hned spouští třídu frameworku Monogame
+\texttt{MainGame}. Zde proběhne všechna dlouhodobá inicializace (třídy zpracovávající 
+grafiku, hráče, úrovní, atd.) načtení využitého fontu a dalších a následuje 
+přechod do update a draw smyčky, kde se program do ukončení točí. 
 
 \paragraph{Update loop}
-Z \texttt{MainGame} třídy se z update cyklu program dělí do řady míst. Posílají
-se do třídy hráče pro kontrolu stisku kláves, tak pro update fyziky hráče. Řeší
+Z \texttt{MainGame} třídy se z update cyklu program dělí do řady míst.
+Informace se posílají do třídy hráče jak pro kontrolu stisku kláves, tak pro update fyziky hráče. Řeší
 se zde zároveň také update úrovní (vypočet fyzikálních objektů v úrovních a
 interaktivních objektech) a test portálů, jestli jimi neprošly nějaké objekty.
 
@@ -110,7 +109,7 @@ obrazovku \texttt{Screen} a dále každý frame povoluje informačnímu systému
 
 \paragraph{Upozornění: Objekty nezávislé na interních cyklech}
 Ve hře existuje řada objektů, které se neřídí těmito cyklickými updaty, ale
-fungují ve vlastním načasování (obvykle skrz nekonečné cykly s delay přes Task
+fungují s vlastním načasování (obvykle skrz nekonečné cykly s delay přes Task
 třídu). Příklady těchto jsou například lasery a interaktivní objekty. Pro
 správné fungování těchto typů objektů musíme kontrolovat a čekat, aby nejprve
 doběhl vlastní cyklus programu a až poté je možno dělat nějaké změny (zabránit
@@ -126,7 +125,7 @@ uživatele pro hráče je vše řešené uvnitř této třídy.
 \paragraph{Šablona}
 Hlavní třídou objektů je abstraktní třída \texttt{Object}, od které dědí
 všechny 3D objekty aplikace. Stará se o všechnu práci s vykreslováním, spravuje
-potřebné transformace objektů a tvoří solidní základ pro rozšíření seznamu
+potřebné transformace objektů a tvoří solidní základ pro rozšiřování seznamu
 objektů. 
 
 \paragraph{Signed distance function}
@@ -160,7 +159,7 @@ nachází ve třech statických metodách třídy \texttt{RayMarchingHelper}. Pr
 metoda řeší raymarching vracející barvu výsledného objektu, na který proces
 narazil. Druhá je metoda využívající raymarching pro propagaci paprsků světla.
 Třetí metoda je fyzikální raymarching, vracející výsledný nalezený objekt,
-vzdálenost, kam paprsek urazil a další. Tento typ raymarchingu je využívaný pro
+vzdálenost a kam paprsek dorazil. Tento typ raymarchingu je využívaný pro
 kontroly kolizí objektů a míření hráče.
 
 \subsection{Překladač - editor map}
