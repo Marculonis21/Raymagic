@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SaVa9G195yZ3hJBsEq59DbFRDowe5k3xj6LG5N2jyrEtbnb5ljNuV5nDfO1oFOGJrrdV8kI5MNb+71Glnlb2MA==",
+  "dgSpecHash": "RZOwafTA/XHm8s8yLzwh76ibOdid7LN23dgg5vfQmbx1DG1sgobmTD7ZXSJp+JfMZdfKhSTsM+xw756Tiq7ZUw==",
   "success": true,
-  "projectFilePath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
+  "projectFilePath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
   "expectedPackageFiles": [
     "/home/marculonis/.nuget/packages/extreme.numerics/8.0.0/extreme.numerics.8.0.0.nupkg.sha512",
     "/home/marculonis/.nuget/packages/extreme.numerics.generic/8.0.0/extreme.numerics.generic.8.0.0.nupkg.sha512",

@@ -4,7 +4,7 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Content/Fonts/MainFont.spritefont</File>
+    <File>/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic/Content/Fonts/MainFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

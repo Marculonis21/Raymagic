@@ -840,11 +840,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
+      "projectUniqueName": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
       "projectName": "Raymagic",
-      "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
+      "projectPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic/Raymagic.csproj",
       "packagesPath": "/home/marculonis/.nuget/packages/",
-      "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/obj/",
+      "outputPath": "/home/marculonis/Desktop/Projects/Csharp/Raymagic/Raymagic/Raymagic/Raymagic/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/marculonis/.nuget/NuGet/NuGet.Config"
