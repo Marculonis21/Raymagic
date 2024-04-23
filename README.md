@@ -16,4 +16,4 @@ Final version is published as semestral project for subjects NPRG035 and NPRG038
 Small fun weekend side project using the technology I developed for the main program **Raymagic** to be able to draw and light up 3D objects in console with ascii characters.
 Finally after many years being able to kind of reproduce this [https://www.youtube.com/watch?v=DEqXNfs_HhY&t=16s&ab_channel=LexFridman](https://youtu.be/DEqXNfs_HhY).
 
-![alt](./imgs/img1.png)
+![alt](./imgs/img2.png)
