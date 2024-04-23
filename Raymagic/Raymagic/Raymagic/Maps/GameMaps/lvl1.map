@@ -38,12 +38,24 @@ dynamic
     box[frame]:(225,150,100)|(150,10,200)|Black|(200,100,200)
     boolean: frame: difference: box:(0,0,0)|(140,100,190)|Black|true
     
-    capsule[aasdf]:(0,100,-90)|70|65|Blue|(250,250,250)
+    # capsule[aasdf]:(0,100,-90)|70|65|Blue|(250,250,250)
 
     # box[sdafas]:(250,200,100)|(100,100,100)|Red|(100,100,100)
     
-    # box[wallPanels1]:(3,50,55)|(5,60,60)|Gray|(200,700,200)
-    # repeat: wallPanels1: (0,10,2)|61
+    box[wallPanels1]:(3,50,55)|(5,60,60)|Red|(200,700,200)
+    # help: boolean
+    boolean: wallPanels1: smooth_union[20]: sphere:(5,0,0)|10|Yellow|True
+    repeat: wallPanels1: (0,5,1)|70
+
+    box[line1] :(150,150,10)|(150,5,20)|Yellow|(150,150,20)
+    boolean: line1: union: box:(0,5,0)|(150,5,20)|Black|True
+    repeat: line1: (0,10,0)|10
+
+    rotateZ: line1: 45
+
+    boolean: line1: intersect: box:(150,150,5)|(100,100,10)|Black|False
+    boolean: line1: difference: box:(150,150,20)|(90,90,45)|Black|False
+    boolean: line1: union: box:(150,150,0)|(100,100,4)|Gray|False
 
     # box[floorPlate]:(200,250,2)|(30,33,4)|LightGray|(500,500,10)
     # boolean: floorPlate: union: box:(15,15,-1)|(65,65,4)|Black|True

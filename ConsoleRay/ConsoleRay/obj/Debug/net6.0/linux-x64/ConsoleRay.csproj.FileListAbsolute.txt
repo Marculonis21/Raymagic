@@ -1,0 +1,5 @@
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/Debug/net6.0/linux-x64/ConsoleRay.csproj.AssemblyReference.cache
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/Debug/net6.0/linux-x64/ConsoleRay.GeneratedMSBuildEditorConfig.editorconfig
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/Debug/net6.0/linux-x64/ConsoleRay.AssemblyInfoInputs.cache
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/Debug/net6.0/linux-x64/ConsoleRay.AssemblyInfo.cs
+/home/marculonis/Desktop/Projects/Csharp/Raymagic/ConsoleRay/ConsoleRay/obj/Debug/net6.0/linux-x64/ConsoleRay.csproj.CoreCompileInputs.cache
